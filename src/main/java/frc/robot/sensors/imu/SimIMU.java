@@ -19,7 +19,7 @@ public class SimIMU extends IMU {
 
     public SimIMU() {
         SimManager.getInstance().registerIMU(this);
-        lastTimestamp = Logger.getInstance().getTimestamp();
+        lastTimestamp = Logger.getTimestamp();
     }
 
     public void registerOrientationSuppliers(Supplier<ChassisSpeeds> speedSupplier) {
@@ -31,7 +31,7 @@ public class SimIMU extends IMU {
         super.periodic();
 
         long lastTimestamp = this.lastTimestamp;
-        long currentTimestamp = Logger.getInstance().getTimestamp();
+        long currentTimestamp = Logger.getTimestamp();
         this.lastTimestamp = currentTimestamp;
 
         double dt = (currentTimestamp - lastTimestamp) / 1000000.0;

@@ -24,16 +24,15 @@ public class NavX2 extends IMU {
     public void periodic() {
         super.periodic();
 
-        Logger logger = Logger.getInstance();
-        logger.recordOutput("/IMU/Displacement/x", this.ahrs.getDisplacementX());
-        logger.recordOutput("/IMU/Displacement/y", this.ahrs.getDisplacementY());
-        logger.recordOutput("/IMU/Displacement/z", this.ahrs.getDisplacementZ());
+        Logger.recordOutput("/IMU/Displacement/x", this.ahrs.getDisplacementX());
+        Logger.recordOutput("/IMU/Displacement/y", this.ahrs.getDisplacementY());
+        Logger.recordOutput("/IMU/Displacement/z", this.ahrs.getDisplacementZ());
 
-        logger.recordOutput("/IMU/Velocity/x", this.ahrs.getVelocityX());
-        logger.recordOutput("/IMU/Velocity/y", this.ahrs.getVelocityY());
-        logger.recordOutput("/IMU/Velocity/z", this.ahrs.getVelocityZ());
+        Logger.recordOutput("/IMU/Velocity/x", this.ahrs.getVelocityX());
+        Logger.recordOutput("/IMU/Velocity/y", this.ahrs.getVelocityY());
+        Logger.recordOutput("/IMU/Velocity/z", this.ahrs.getVelocityZ());
 
-        logger.recordOutput("/IMU/Calibrating", this.ahrs.isCalibrating());
+        Logger.recordOutput("/IMU/Calibrating", this.ahrs.isCalibrating());
     }
 
     @Override

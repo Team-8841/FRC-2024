@@ -20,7 +20,6 @@ import frc.robot.constants.Constants;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand, teleopCommand;
   private RobotContainer robotContainer;
-  private Logger logger = Logger.getInstance();
 
   @SuppressWarnings("unused")
   private PowerDistribution pdh;
@@ -29,29 +28,29 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     
     // Record metadata
-    logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
-    logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
-    logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-    logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
-    logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+    Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+    Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+    Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
 
     switch (BuildConstants.DIRTY) {
       case 0:
-        logger.recordMetadata("GitDirty", "All changes committed");
+        Logger.recordMetadata("GitDirty", "All changes committed");
         break;
       case 1:
-        logger.recordMetadata("GitDirty", "Uncomitted changes");
+        Logger.recordMetadata("GitDirty", "Uncomitted changes");
         break;
       default:
-        logger.recordMetadata("GitDirty", "Unknown");
+        Logger.recordMetadata("GitDirty", "Unknown");
         break;
     }
 
     if (isReal()) {
       // Log to usb stick
-      logger.addDataReceiver(new WPILOGWriter("/media/sda1/")); 
+      Logger.addDataReceiver(new WPILOGWriter("/media/sda1/")); 
       // Logs to NT4
-      logger.addDataReceiver(new NT4Publisher()); 
+      Logger.addDataReceiver(new NT4Publisher()); 
       // Enables logging of PDH data
       //this.pdh = new PowerDistribution(1, ModuleType.kRev); 
     } else if (Constants.simReplay) {
@@ -60,18 +59,18 @@ public class Robot extends LoggedRobot {
       // Get the replay log from AdvantageScope (or prompt the user)
       String logPath = LogFileUtil.findReplayLog();
       // Read replay log
-      logger.setReplaySource(new WPILOGReader(logPath)); 
+      Logger.setReplaySource(new WPILOGReader(logPath)); 
       // Log to a file
-      logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+      Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
     } else {
       // Log to a file
-      logger.addDataReceiver(new WPILOGWriter("/tmp/sim.wpilog"));
+      Logger.addDataReceiver(new WPILOGWriter("/tmp/sim.wpilog"));
       // Logs to NT4
-      logger.addDataReceiver(new NT4Publisher()); 
+      Logger.addDataReceiver(new NT4Publisher()); 
     }
 
-    // Starts advantagekit's logger
-    logger.start();
+    // Starts advantagekit's Logger
+    Logger.start();
 
     robotContainer = new RobotContainer();
   }
@@ -81,11 +80,11 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
 
     var canStatus = RobotController.getCANStatus();
-    logger.recordOutput("/CANStatus/busOffCount", canStatus.busOffCount);
-    logger.recordOutput("/CANStatus/percentBusUtilization", canStatus.percentBusUtilization);
-    logger.recordOutput("/CANStatus/receiveErrorCount", canStatus.receiveErrorCount);
-    logger.recordOutput("/CANStatus/transmitErrorCount", canStatus.transmitErrorCount);
-    logger.recordOutput("/CANStatus/txFullCount", canStatus.txFullCount);
+    Logger.recordOutput("/CANStatus/busOffCount", canStatus.busOffCount);
+    Logger.recordOutput("/CANStatus/percentBusUtilization", canStatus.percentBusUtilization);
+    Logger.recordOutput("/CANStatus/receiveErrorCount", canStatus.receiveErrorCount);
+    Logger.recordOutput("/CANStatus/transmitErrorCount", canStatus.transmitErrorCount);
+    Logger.recordOutput("/CANStatus/txFullCount", canStatus.txFullCount);
 
     if (isSimulation()) {
       SimManager.getInstance().periodic();

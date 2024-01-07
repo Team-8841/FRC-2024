@@ -32,7 +32,7 @@ public class SimSwerveModuleIO implements SwerveModuleIO {
         this.steeringPID.enableContinuousInput(0, 360);
 
         this.drivePID.setTolerance(0.1);
-        this.lastTimestamp = Logger.getInstance().getTimestamp();
+        this.lastTimestamp = Logger.getTimestamp();
     }
 
     private double rad2WheelSpeed(double rad) {
@@ -65,7 +65,7 @@ public class SimSwerveModuleIO implements SwerveModuleIO {
         }
 
         long lastTimestamp = this.lastTimestamp;
-        long currentTimestamp = Logger.getInstance().getTimestamp();
+        long currentTimestamp = Logger.getTimestamp();
         this.lastTimestamp = currentTimestamp;
         double dt = (currentTimestamp - lastTimestamp) / 1000000.0;
 

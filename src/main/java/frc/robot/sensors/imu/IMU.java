@@ -27,7 +27,7 @@ public abstract class IMU extends SubsystemBase {
     @Override
     public void periodic() {
         this.updateInputs(this.inputs);
-        Logger.getInstance().processInputs("/IMU/Inputs", this.inputs);
+        Logger.processInputs("/IMU/Inputs", this.inputs);
     }
 
     protected void updateInputs(IMUInputsAutoLogged inputs) {

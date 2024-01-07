@@ -11,9 +11,9 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -29,7 +29,7 @@ public final class MixedSwerveModuleIO implements SwerveModuleIO {
     private CANSparkMax driveMotor;
     private TalonFX steeringMotor;
     private CANcoder steeringEncoder;
-    private SparkMaxPIDController sparkMaxPID;
+    private SparkPIDController sparkMaxPID;
     private StatusSignal<Double> angleSignal, angleStatorSignal, angleSupplySignal;
 
     private SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(MixedMotorConstants.driveKS, MixedMotorConstants.driveKV, MixedMotorConstants.driveKA);
