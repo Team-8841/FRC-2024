@@ -2,7 +2,9 @@ package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -25,7 +27,7 @@ import frc.robot.sensors.imu.IMU;
  * Main swerve drive class, interfaces with a hardware IO class.
  */
 public class DriveTrainSubsystem extends SubsystemBase {
-    private SwerveDriveOdometry swerveOdometry;
+    private SwerveDrivePoseEstimator poseEstimator;
     private SwerveModuleIO swerveModules[];
     private SwerveModuleIOInputsAutoLogged autologgedInputs[];
     private IMU imu;
@@ -48,7 +50,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
         Timer.delay(1);
         this.resetModules();
 
-        this.swerveOdometry = new SwerveDriveOdometry(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions());
+        //this.swerveOdometry = new SwerveDriveOdometry(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions());
+        this.poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions(), new Pose2d(new Translation2d(14, 3), Rotation2d.
+fromRadians(0.5)));
 
         if (RobotBase.isSimulation() && !Constants.simReplay) {
             SimManager.getInstance().registerDriveTrain(this::getPose, this::getSpeed);
@@ -94,7 +98,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
     }
     
     public Pose2d getPose() {
-        return this.swerveOdometry.getPoseMeters();
+        return this.poseEstimator.getEstimatedPosition();
+    }
+    
+    public SwerveDrivePoseEstimator getPoseEstimator() {
+        return this.poseEstimator;
     }
 
     public SwerveModuleState[] getModuleStates() {
@@ -132,7 +140,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
             Logger.processInputs("/SwerveDriveInputs/Module" + i, this.autologgedInputs[i]);
         }
 
-        this.swerveOdometry.update(this.imu.getHeading(), this.getModulePositions());
-        Logger.recordOutput("/SwerveDrive/PoseOdometry", this.swerveOdometry.getPoseMeters());
+        this.poseEstimator.update(this.imu.getHeading(), this.getModulePositions());
+        Logger.recordOutput("/SwerveDrive/PoseOdometry", this.poseEstimator.getEstimatedPosition());
     }
 }
