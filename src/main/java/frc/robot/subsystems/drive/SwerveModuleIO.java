@@ -11,8 +11,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 public interface SwerveModuleIO {
     @AutoLog
     public static class SwerveModuleIOInputs {
-        public LoggableInputs extraInfo;
-        
         public double setSpeedMetersPerSecond, actualSpeedMetersPerSecond;
         public double setAngle, actualAngle;
         public double distance;
