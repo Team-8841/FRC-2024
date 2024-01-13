@@ -67,20 +67,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
         }
     }
 
-    public void drive(Translation2d translation, double rotation, boolean fieldRelative) {
-        SwerveModuleState[] swerveModuleStates =
-            SwerveConstants.swerveKinematics.toSwerveModuleStates(
-                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                    translation.getX(), 
-                                    translation.getY(), 
-                                    rotation, 
-                                    this.imu.getHeading()
-                                )
-                                : new ChassisSpeeds(
-                                    translation.getX(), 
-                                    translation.getY(), 
-                                    rotation)
-                                );
+    public void drive(ChassisSpeeds speeds) {
+        var swerveModuleStates = SwerveConstants.swerveKinematics.toSwerveModuleStates(speeds);
+
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
 
         for (int i = 0; i < this.swerveModules.length; i++) {
@@ -90,6 +79,31 @@ public class DriveTrainSubsystem extends SubsystemBase {
             this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
             this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
         }
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
+
+        for (int i = 0; i < this.swerveModules.length; i++) {
+            Logger.recordOutput("/SwerveDrive/moduleState" + i, swerveModuleStates[i]);
+
+            this.swerveModules[i].setDesiredState(swerveModuleStates[i]);
+            this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
+            this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
+        }
+        
+    }
+
+    public void drive(Translation2d translation, double rotation, boolean fieldRelative) {
+        this.drive(
+            fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                translation.getX(), 
+                                translation.getY(), 
+                                rotation, 
+                                this.imu.getHeading()
+                            )
+                            : new ChassisSpeeds(
+                                translation.getX(), 
+                                translation.getY(), 
+                                rotation)
+                            );
     }
     
     public ChassisSpeeds getSpeed() {

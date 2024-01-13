@@ -27,11 +27,15 @@ public class SwerveConstants {
         * No need to ever change this unless you are not doing a traditional
         * rectangular/square 4 module swerve
         */
-    public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-            new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
+
+    public static final Translation2d[] modulePositions = {
+        new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
+        new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
+        new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),    
+        new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0)
+    };
+            
+    public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(modulePositions);
 
     /* Module Gear Ratios */
     public static final double driveGearRatio = chosenModule.driveGearRatio;
