@@ -8,4 +8,5 @@ package frc.robot.constants;
 public final class Constants {
     public static final boolean simReplay = false;
     public static final double controllerDeadband = 0.1;
+    public static final int pigeonId = 10;
 }

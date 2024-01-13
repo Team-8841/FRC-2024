@@ -20,5 +20,5 @@ public final class PathingConstants {
 
     public static final PIDConstants translationConstants = new PIDConstants(1), rotationConstants = new PIDConstants(1);
 
-    public static final PPHolonomicDriveController driveController = new PPHolonomicDriveController(translationConstants, rotationConstants, SwerveConstants.maxSpeed, 0)
+    public static final PPHolonomicDriveController driveController = new PPHolonomicDriveController(translationConstants, rotationConstants, SwerveConstants.maxSpeed, 0);
 }

@@ -4,10 +4,6 @@
 
 package frc.robot;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 
 import edu.wpi.first.wpilibj.RobotBase;
@@ -20,16 +16,16 @@ import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TestCommand;
 import frc.robot.constants.Constants;
 import frc.robot.constants.PathingConstants;
-import frc.robot.constants.swerve.MixedMotorConstants;
+import frc.robot.constants.swerve.PureTalonFXConstants;
 import frc.robot.sensors.imu.DummyIMU;
 import frc.robot.sensors.imu.IMU;
-import frc.robot.sensors.imu.NavX2;
+import frc.robot.sensors.imu.Pigeon2IO;
 import frc.robot.sensors.imu.SimIMU;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
 import frc.robot.subsystems.drive.DummySwerveModuleIO;
-import frc.robot.subsystems.drive.MixedSwerveModuleIO;
 import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
+import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
 
 public class RobotContainer {
   // Sensors
@@ -47,13 +43,13 @@ public class RobotContainer {
     if (RobotBase.isReal()) {
       // Real robot
       swerveModules = new SwerveModuleIO[] {
-          new MixedSwerveModuleIO(MixedMotorConstants.Mod0.constants),
-          new MixedSwerveModuleIO(MixedMotorConstants.Mod1.constants),
-          new MixedSwerveModuleIO(MixedMotorConstants.Mod2.constants),
-          new MixedSwerveModuleIO(MixedMotorConstants.Mod3.constants),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod0.constants),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod1.constants),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod2.constants),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants),
       };
 
-      this.imu = new NavX2();
+      this.imu = new Pigeon2IO(Constants.pigeonId);
     } else if (Constants.simReplay) {
       // Replay
       swerveModules = new SwerveModuleIO[] {
