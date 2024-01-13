@@ -10,7 +10,7 @@ public class IntakeInOut extends Command {
     private boolean m_in, m_out, m_intakeSensor, m_feedSensor;
 
 
-    private IntakeInOut(boolean in, boolean out, boolean intakeSensor, boolean feedSensor, IntakeSubsytem intake) {
+    public IntakeInOut(boolean in, boolean out, boolean intakeSensor, boolean feedSensor, IntakeSubsytem intake) {
         intakeSubsystem = intake;
         m_in = in;
         m_out = out;

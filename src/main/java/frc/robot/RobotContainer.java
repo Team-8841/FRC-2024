@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.IntakeInOut;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TestCommand;
 import frc.robot.constants.Constants;
@@ -21,6 +22,7 @@ import frc.robot.sensors.imu.DummyIMU;
 import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.Pigeon2IO;
 import frc.robot.sensors.imu.SimIMU;
+import frc.robot.subsystems.Intake.IntakeSubsytem;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
 import frc.robot.subsystems.drive.DummySwerveModuleIO;
 import frc.robot.subsystems.drive.SimSwerveModuleIO;
@@ -33,6 +35,7 @@ public class RobotContainer {
 
   // Subsystems
   private DriveTrainSubsystem driveTrain;
+  private IntakeSubsytem intake = new IntakeSubsytem();
 
   // Controllers
   private CommandXboxController driveController;
@@ -82,7 +85,12 @@ public class RobotContainer {
     this.configureBindings(this.driveController);
   }
 
+  Command aCommand = new IntakeInOut(false, true, true, true, this.intake);
+  Command bCommand = new IntakeInOut(true, false, true, true, this.intake);
+
   private void configureBindings(CommandXboxController controller) {
+    controller.a().whileTrue(aCommand);
+    controller.b().whileTrue(bCommand);
   }
 
   public Command getAutonomousCommand() {
