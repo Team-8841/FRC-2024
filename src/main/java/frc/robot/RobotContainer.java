@@ -40,33 +40,35 @@ public class RobotContainer {
 
     if (RobotBase.isReal()) {
       // Real robot
-      swerveModules = new SwerveModuleIO[] {
-          new MixedSwerveModuleIO(MixedMotorConstants.Mod0.constants),
-          new MixedSwerveModuleIO(MixedMotorConstants.Mod1.constants),
-          new MixedSwerveModuleIO(MixedMotorConstants.Mod2.constants),
-          new MixedSwerveModuleIO(MixedMotorConstants.Mod3.constants),
-      };
+      swerveModules =
+          new SwerveModuleIO[] {
+            new MixedSwerveModuleIO(MixedMotorConstants.Mod0.constants),
+            new MixedSwerveModuleIO(MixedMotorConstants.Mod1.constants),
+            new MixedSwerveModuleIO(MixedMotorConstants.Mod2.constants),
+            new MixedSwerveModuleIO(MixedMotorConstants.Mod3.constants),
+          };
 
       this.imu = new NavX2();
     } else if (Constants.simReplay) {
       // Replay
-      swerveModules = new SwerveModuleIO[] {
-          new DummySwerveModuleIO(),
-          new DummySwerveModuleIO(),
-          new DummySwerveModuleIO(),
-          new DummySwerveModuleIO(),
-      };
+      swerveModules =
+          new SwerveModuleIO[] {
+            new DummySwerveModuleIO(),
+            new DummySwerveModuleIO(),
+            new DummySwerveModuleIO(),
+            new DummySwerveModuleIO(),
+          };
 
       this.imu = new DummyIMU();
-    }
-    else {
+    } else {
       // Physics sim
-      swerveModules = new SwerveModuleIO[] {
-          new SimSwerveModuleIO(),
-          new SimSwerveModuleIO(),
-          new SimSwerveModuleIO(),
-          new SimSwerveModuleIO(),
-      };
+      swerveModules =
+          new SwerveModuleIO[] {
+            new SimSwerveModuleIO(),
+            new SimSwerveModuleIO(),
+            new SimSwerveModuleIO(),
+            new SimSwerveModuleIO(),
+          };
 
       this.imu = new SimIMU();
     }
@@ -80,15 +82,16 @@ public class RobotContainer {
     this.configureBindings(this.driveController);
   }
 
-  private void configureBindings(CommandXboxController controller) {
-  }
+  private void configureBindings(CommandXboxController controller) {}
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
 
   public Command getTeleopCommand() {
-    return new TeleopSwerve(driveTrain, () -> -this.driveController.getLeftY(),
+    return new TeleopSwerve(
+        driveTrain,
+        () -> -this.driveController.getLeftY(),
         () -> -this.driveController.getLeftX(),
         () -> -this.driveController.getRightX());
   }
