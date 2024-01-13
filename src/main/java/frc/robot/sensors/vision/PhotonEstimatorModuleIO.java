@@ -39,7 +39,7 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
      * @param estimatedPose The estimated pose to guess standard deviations for.
      */
     private Matrix<N3, N1> getEstimationStdDevs(List<PhotonTrackedTarget> targets, Pose2d estimatedPose) {
-        Matrix<N3, N1> estStdDevs = VisionConstants.singleTagStdDevs;
+        var estStdDevs = VisionConstants.singleTagStdDevs;
         int numTags = 0;
         double avgDist = 0;
 
@@ -74,7 +74,7 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
 
     @Override
     public boolean updateInputs(EstimatorInputsAutoLogged inputs) {
-        PhotonPipelineResult latestResult = this.camera.getLatestResult();
+        var latestResult = this.camera.getLatestResult();
 
         if (latestResult.getTimestampSeconds() <= inputs.timestamp) {
             return false;
@@ -102,7 +102,7 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
         if (latestResult.hasTargets()) {
             inputs.targetCount = latestResult.getTargets().size();
 
-            PhotonTrackedTarget bestTgt = latestResult.getBestTarget();
+            var bestTgt = latestResult.getBestTarget();
 
             if (this.lastPoseEstimate != null) {
 
@@ -115,7 +115,7 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
             inputs.bestTgtID = bestTgt.getArea();
             inputs.bestTgtAmbiguity = bestTgt.getPoseAmbiguity();
 
-            List<TargetCorner> corners = bestTgt.getDetectedCorners();
+            var corners = bestTgt.getDetectedCorners();
 
             inputs.estTgtCornersX = new double[corners.size()];
             inputs.estTgtCornersY = new double[corners.size()];
@@ -152,7 +152,7 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
             return Optional.empty();
         }
 
-        PhotonPipelineResult pipelineResult = this.camera.getLatestResult();
+        var pipelineResult = this.camera.getLatestResult();
 
         // If the this is an old pipeline result return none
         if (pipelineResult.getTimestampSeconds() <= this.lastResult || !pipelineResult.hasTargets()) {
@@ -161,7 +161,7 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
         this.lastResult = pipelineResult.getTimestampSeconds();
 
         // Filters targets based on minimum area
-        List<PhotonTrackedTarget> targets = pipelineResult.getTargets();
+        var targets = pipelineResult.getTargets();
         for (int i = 0; i < targets.size(); i++) {
             if (targets.get(i).getArea() < VisionConstants.minimumTagArea) {
                 targets.remove(i--);
@@ -174,20 +174,20 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
         }
 
         // Calculates the standard deviation of the estimated pose
-        Matrix<N3, N1> stdDevs = this.getEstimationStdDevs(targets, currentEstimatedPose);
+        var stdDevs = this.getEstimationStdDevs(targets, currentEstimatedPose);
 
         // Calculates the estimated pose
-        PhotonPipelineResult filteredPipelineResult = new PhotonPipelineResult(pipelineResult.getLatencyMillis(),
+        var filteredPipelineResult = new PhotonPipelineResult(pipelineResult.getLatencyMillis(),
                 targets);
         filteredPipelineResult.setTimestampSeconds(pipelineResult.getTimestampSeconds());
-        Optional<EstimatedRobotPose> visionPoseOpt = this.estimator.update(filteredPipelineResult);
+        var visionPoseOpt = this.estimator.update(filteredPipelineResult);
 
         if (visionPoseOpt.isEmpty()) {
             return Optional.empty();
         }
 
-        Pose2d estimatedPose = visionPoseOpt.get().estimatedPose.toPose2d();
-        PoseEstimate estimate = new PoseEstimate(estimatedPose, stdDevs);
+        var estimatedPose = visionPoseOpt.get().estimatedPose.toPose2d();
+        var estimate = new PoseEstimate(estimatedPose, stdDevs);
         this.lastPoseEstimate = estimate;
 
         return Optional.of(estimate);
