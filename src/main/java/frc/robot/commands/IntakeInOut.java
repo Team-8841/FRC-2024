@@ -7,15 +7,12 @@ import frc.robot.subsystems.Intake.IntakeSubsytem;
 public class IntakeInOut extends Command {
     private IntakeSubsytem intakeSubsystem;
 
-    private boolean m_in, m_out, m_intakeSensor, m_feedSensor;
+    private boolean m_in, m_out;
 
-
-    public IntakeInOut(boolean in, boolean out, boolean intakeSensor, boolean feedSensor, IntakeSubsytem intake) {
+    public IntakeInOut(boolean in, boolean out, IntakeSubsytem intake) {
         intakeSubsystem = intake;
         m_in = in;
         m_out = out;
-        m_feedSensor = feedSensor;
-        m_intakeSensor = intakeSensor;
 
         addRequirements(intake);
 
@@ -26,19 +23,21 @@ public class IntakeInOut extends Command {
 
     @Override 
     public void execute() {
+    boolean feedSensor = intakeSubsystem.getFeedSensor(), intakeSensor = intakeSubsystem.getIntakeSensor();
+
     if(m_out) {
         intakeSubsystem.setIntakeSpeed(IntakeConstants.kIntakeOutSpeed);
         intakeSubsystem.setIntakeSpeed(IntakeConstants.kFeederOutSpeed);
-    } else if (m_intakeSensor && m_in) {
+    } else if (intakeSensor && m_in) {
         intakeSubsystem.setIntakeSpeed(IntakeConstants.kIntakeOutSpeed);
-        if(!m_feedSensor) {
+        if(!feedSensor) {
             intakeSubsystem.setFeedSpeed(IntakeConstants.kFeederInSpeed);
         } else {
             intakeSubsystem.setFeedSpeed(0);
         }
-    } else if (!m_intakeSensor && m_in) {
+    } else if (!intakeSensor && m_in) {
         intakeSubsystem.setIntakeSpeed(IntakeConstants.kIntakeInSpeed);
-            if(!m_feedSensor) {
+            if(!feedSensor) {
                 intakeSubsystem.setFeedSpeed(IntakeConstants.kFeederInSpeed);
             } else {
                 intakeSubsystem.setFeedSpeed(0);

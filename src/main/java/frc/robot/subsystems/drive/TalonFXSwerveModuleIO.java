@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drive;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
@@ -26,10 +27,10 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
 
     private Rotation2d lastAngle;
 
-    VelocityDutyCycle driveVelVoltage = new VelocityDutyCycle(0).withSlot(0);
-    PositionDutyCycle steeringPosVoltage = new PositionDutyCycle(0).withSlot(0);
+    private VelocityDutyCycle driveVelDutyCycle = new VelocityDutyCycle(0).withSlot(0);
+    private PositionDutyCycle steeringPosDutyCycle = new PositionDutyCycle(0).withSlot(0);
 
-    SwerveModuleConstants constants;
+    private SwerveModuleConstants constants;
 
     /**
      * Creates a new container from each of the components.
@@ -69,7 +70,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
         MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs();
         magnetSensorConfigs.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
         magnetSensorConfigs.SensorDirection = SwerveConstants.canCoderDir;
-        magnetSensorConfigs.MagnetOffset = -this.constants.angleOffset.getRotations();
+        magnetSensorConfigs.MagnetOffset = this.constants.angleOffset.getRotations();
         configurator.apply(magnetSensorConfigs);
     }
 
@@ -93,7 +94,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
         // Closed loop
         double velocity = Conversions.metersToRots(desiredState.speedMetersPerSecond,
                 SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio);
-        this.driveMotor.setControl(this.driveVelVoltage.withVelocity(velocity));
+        this.driveMotor.setControl(this.driveVelDutyCycle.withVelocity(velocity));
     }
 
     @Override
@@ -105,7 +106,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
 
         this.lastAngle = angle;
 
-        this.steeringMotor.setControl(this.steeringPosVoltage.withPosition(angle.getRotations()));
+        this.steeringMotor.setControl(this.steeringPosDutyCycle.withPosition(angle.getRotations()));
     }
 
     @Override

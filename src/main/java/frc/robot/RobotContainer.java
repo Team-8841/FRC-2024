@@ -85,8 +85,8 @@ public class RobotContainer {
     this.configureBindings(this.driveController);
   }
 
-  Command aCommand = new IntakeInOut(false, true, true, true, this.intake);
-  Command bCommand = new IntakeInOut(true, false, true, true, this.intake);
+  Command aCommand = new IntakeInOut(false, true, this.intake);
+  Command bCommand = new IntakeInOut(true, false, this.intake);
 
   private void configureBindings(CommandXboxController controller) {
     controller.a().whileTrue(aCommand);

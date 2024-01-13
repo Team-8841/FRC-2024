@@ -9,7 +9,7 @@ public class Pigeon2IO extends IMU {
     Pigeon2 pigeon;
 
     public Pigeon2IO(int canId) {
-        this.pigeon = new Pigeon2IO(canId);
+        this.pigeon = new Pigeon2(canId);
     }
 
     @Override
