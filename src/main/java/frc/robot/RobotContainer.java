@@ -89,12 +89,13 @@ public class RobotContainer {
     this.configureBindings(this.driveController);
   }
 
-  private Command aCommand = new IntakeInOut(false, true, this.intake);
-  private Command bCommand = new IntakeInOut(true, false, this.intake);
-
   private void configureBindings(CommandXboxController controller) {
-    controller.a().whileTrue(aCommand);
-    controller.b().whileTrue(bCommand);
+    if (this.intake != null) {
+      Command aCommand = new IntakeInOut(false, true, this.intake);
+      Command bCommand = new IntakeInOut(true, false, this.intake);
+      controller.a().whileTrue(aCommand);
+      controller.b().whileTrue(bCommand);
+    }
   }
 
   public Command getAutonomousCommand() {
@@ -116,6 +117,6 @@ public class RobotContainer {
   }
 
   public Command getTestCommand() {
-    return new TestCommand(driveTrain);
+    return new TestCommand(this.driveTrain);
   }
 }

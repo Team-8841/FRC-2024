@@ -50,8 +50,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
         this.resetModules();
 
         //this.swerveOdometry = new SwerveDriveOdometry(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions());
-        this.poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions(), new Pose2d(new Translation2d(14, 3), Rotation2d.
-            fromRadians(0.5)));
+        this.poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.
+            fromRadians(0)));
 
         if (RobotBase.isSimulation() && !Constants.simReplay) {
             SimManager.getInstance().registerDriveTrain(this::getPose, this::getSpeed);
@@ -141,6 +141,18 @@ public class DriveTrainSubsystem extends SubsystemBase {
     public void resetModules() {
         for (SwerveModuleIO swerveModule : this.swerveModules) {
             swerveModule.reset();
+        }
+    }
+
+    public void setDrivePIDs(double kS, double kV, double kA, double kP, double kI, double kD) {
+        for (var module : this.swerveModules) {
+            module.setDrivePID(kS, kV, kA, kP, kI, kD);
+        }
+    }
+
+    public void setSteeringPIDs(double kS, double kV, double kA, double kP, double kI, double kD) {
+        for (var module : this.swerveModules) {
+            module.setSteeringPID(kS, kV, kA, kP, kI, kD);
         }
     }
 

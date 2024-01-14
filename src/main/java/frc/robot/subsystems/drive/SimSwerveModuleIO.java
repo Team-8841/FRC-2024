@@ -20,7 +20,7 @@ public class SimSwerveModuleIO implements SwerveModuleIO {
     PIDController steeringPID = new PIDController(SimConstants.steeringKP, SimConstants.steeringKI,
             SimConstants.steeringKD);
 
-    SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(0, SimConstants.driveKV);
+    SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(0, SimConstants.driveKV, SimConstants.driveKA);
     PIDController drivePID = new PIDController(SimConstants.driveKP, SimConstants.driveKI,
             SimConstants.driveKD);
 
@@ -75,6 +75,17 @@ public class SimSwerveModuleIO implements SwerveModuleIO {
 
         this.steeringMotor.update(dt);
         this.driveMotor.update(dt);
+    }
+
+    @Override
+    public void setDrivePID(double kS, double kV, double kA, double kP, double kI, double kD) {
+        this.driveFeedForward = new SimpleMotorFeedforward(kS, kV, kA);
+        this.drivePID = new PIDController(kP, kI, kD);
+    }
+
+    @Override
+    public void setSteeringPID(double kS, double kV, double kA, double kP, double kI, double kD) {
+        this.steeringPID = new PIDController(kP, kI, kD);
     }
 
     @Override

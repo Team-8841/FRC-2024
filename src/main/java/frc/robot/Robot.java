@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.constants.Constants;
 
 public class Robot extends LoggedRobot {
-  private Command autonomousCommand, teleopCommand;
+  private Command autonomousCommand, teleopCommand, testCommand;
   private RobotContainer robotContainer;
 
   @SuppressWarnings("unused")
@@ -55,7 +55,7 @@ public class Robot extends LoggedRobot {
       //this.pdh = new PowerDistribution(1, ModuleType.kRev); 
     } else if (Constants.simReplay) {
       // Run as fast as possible
-      setUseTiming(false); 
+      this.setUseTiming(false); 
       // Get the replay log from AdvantageScope (or prompt the user)
       String logPath = LogFileUtil.findReplayLog();
       // Read replay log
@@ -63,6 +63,7 @@ public class Robot extends LoggedRobot {
       // Log to a file
       Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
     } else {
+      this.setUseTiming(true); 
       // Log to a file
       Logger.addDataReceiver(new WPILOGWriter("/tmp/sim.wpilog"));
       // Logs to NT4
@@ -137,6 +138,11 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
+
+    this.testCommand = this.robotContainer.getTestCommand();
+    if (this.testCommand != null) {
+      this.testCommand.schedule();
+    }
   }
 
   @Override

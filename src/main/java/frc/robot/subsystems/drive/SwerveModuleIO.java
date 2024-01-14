@@ -48,6 +48,34 @@ public interface SwerveModuleIO {
     }
 
     /**
+     * Sets the PID constants of the swerve module. The implementor is not required
+     * to implement this.
+     * 
+     * @param kS
+     * @param kV
+     * @param kA
+     * @param kP
+     * @param kI
+     * @param kD
+     */
+    public default void setSteeringPID(double kS, double kV, double kA, double kP, double kI, double kD) {
+    }
+
+    /**
+     * Sets the PID constants of the swerve module. The implementor is not required
+     * to implement this.
+     * 
+     * @param kS
+     * @param kV
+     * @param kA
+     * @param kP
+     * @param kI
+     * @param kD
+     */
+    public default void setDrivePID(double kS, double kV, double kA, double kP, double kI, double kD) {
+    }
+
+    /**
      * Set the angle of the swerve module.
      * 
      * @param desiredState State which contains the desired angle.
