@@ -22,12 +22,13 @@ import frc.robot.sensors.imu.DummyIMU;
 import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.Pigeon2IO;
 import frc.robot.sensors.imu.SimIMU;
-import frc.robot.subsystems.Intake.IntakeSubsytem;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
 import frc.robot.subsystems.drive.DummySwerveModuleIO;
 import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
+import frc.robot.subsystems.intake.CoolIntakeSubsytemIO;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 
 public class RobotContainer {
   // Sensors
@@ -35,7 +36,7 @@ public class RobotContainer {
 
   // Subsystems
   private DriveTrainSubsystem driveTrain;
-  private IntakeSubsytem intake = new IntakeSubsytem();
+  private IntakeSubsystem intake;
 
   // Controllers
   private CommandXboxController driveController;
@@ -63,6 +64,7 @@ public class RobotContainer {
       };
 
       this.imu = new DummyIMU();
+      this.intake = new IntakeSubsystem(new CoolIntakeSubsytemIO());
     }
     else {
       // Physics sim
