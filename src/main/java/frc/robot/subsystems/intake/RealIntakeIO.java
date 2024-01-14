@@ -6,7 +6,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.constants.Intake.IntakeConstants;
 
-public class CoolIntakeSubsytemIO implements IntakeSubsystemIO {
+public class RealIntakeIO implements IntakeIO {
   private final CANSparkMax intakeMotor =
       new CANSparkMax(IntakeConstants.intakeMotor, MotorType.kBrushed);
   private final CANSparkMax feedMotor =
@@ -16,7 +16,7 @@ public class CoolIntakeSubsytemIO implements IntakeSubsystemIO {
     private DigitalInput intakeSenor = new DigitalInput(IntakeConstants.intakeSensor);
     private DigitalInput feedSenor = new DigitalInput(IntakeConstants.feedSensor);
 
-  public CoolIntakeSubsytemIO() {
+  public RealIntakeIO() {
   }
 
   @Override
@@ -25,13 +25,13 @@ public class CoolIntakeSubsytemIO implements IntakeSubsystemIO {
   }
 
   @Override
-  public double getIntakeSpeed() {
-    return this.intakeMotor.get();
+  public void setFeedSpeed(double speed) {
+    this.feedMotor.set(speed);
   }
 
   @Override
-  public void setFeedSpeed(double speed) {
-    this.feedMotor.set(speed);
+  public double getIntakeSpeed() {
+    return this.intakeMotor.get();
   }
 
   @Override

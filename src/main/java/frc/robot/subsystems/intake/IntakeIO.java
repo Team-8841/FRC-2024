@@ -2,7 +2,7 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface IntakeSubsystemIO {
+public interface IntakeIO {
   @AutoLog
   public static class IntakeInputs {
     public double intakeSpeed, feedSpeed;
@@ -11,7 +11,7 @@ public interface IntakeSubsystemIO {
 
   public default void updateInputs(IntakeInputsAutoLogged inputs) {
     inputs.intakeSpeed = this.getIntakeSpeed();
-    inputs.feedSpeed = this.getFeedSpeed();
+    inputs.feedSpeed = this.getIntakeSpeed();
     inputs.intakeSensor = this.getIntakeSensor();
     inputs.feedSensor = this.getFeedSensor();
   }

@@ -5,12 +5,11 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private IntakeSubsystemIO impl;
+    private IntakeIO impl;
     private IntakeInputsAutoLogged implInputs = new IntakeInputsAutoLogged();
-    
-    public IntakeSubsystem(IntakeSubsystemIO implementation) {
-        this.impl = implementation;
 
+    public IntakeSubsystem(IntakeIO implementation) {
+        this.impl = implementation;
         this.initializeShuffleBoardWidgets();
     }
 
@@ -26,6 +25,15 @@ public class IntakeSubsystem extends SubsystemBase {
     public void setFeedSpeed(double speed) {
         this.impl.setFeedSpeed(speed);
     }
+
+    public double getIntakeSpeed() {
+        return this.impl.getIntakeSpeed();
+    }
+
+    public double getFeedSpeed() {
+        return this.impl.getFeedSpeed();
+    }
+
     // Conditions for sensor
     public boolean getIntakeSensor() {
         return this.impl.getIntakeSensor();
@@ -36,8 +44,8 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     private void initializeShuffleBoardWidgets() {
-      ShuffleboardLayout intakeLayout = Shuffleboard.getTab("Robot").getLayout("Intake");
-      intakeLayout.addBoolean("Intake Sensor", () -> this.getIntakeSensor());
-      intakeLayout.addBoolean("Feed Sensor", () -> this.getFeedSensor());
+        ShuffleboardLayout layout = Shuffleboard.getTab("Robot").getLayout("Intake");
+        layout.addBoolean("Intake Sensor", () -> this.getIntakeSensor());
+        layout.addBoolean("Feed Sensor", () -> this.getFeedSensor());
     }
 }
