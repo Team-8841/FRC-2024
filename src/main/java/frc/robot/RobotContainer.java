@@ -48,10 +48,10 @@ public class RobotContainer {
     if (RobotBase.isReal()) {
       // Real robot
       swerveModules = new SwerveModuleIO[] {
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod0.constants),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod1.constants),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod2.constants),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod0.constants, false),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod1.constants, false),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod2.constants, false),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants, false),
       };
 
       this.imu = new Pigeon2IO(Constants.pigeonId);

@@ -5,6 +5,8 @@ import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -22,11 +24,14 @@ import frc.robot.constants.swerve.PureTalonFXConstants;
 import frc.robot.constants.swerve.SwerveConstants;
 
 public class TalonFXSwerveModuleIO implements SwerveModuleIO {
+    private boolean driveMotionMagic;
+
     private TalonFX driveMotor, steeringMotor;
     private CANcoder steeringEncoder;
 
     private Rotation2d lastAngle;
 
+    private MotionMagicVelocityDutyCycle driveMagicVelDutyCycle = new MotionMagicVelocityDutyCycle(0).withSlot(0);
     private VelocityDutyCycle driveVelDutyCycle = new VelocityDutyCycle(0).withSlot(0);
     private PositionDutyCycle steeringPosDutyCycle = new PositionDutyCycle(0).withSlot(0);
 
@@ -41,7 +46,8 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
      * @param steeringEncoder The CTRE CANCoder attached to the steering motor.
      * @param constants Module specific constants.
      */
-    public TalonFXSwerveModuleIO(TalonFX driveMotor, TalonFX steeringMotor, CANcoder steeringEncoder, SwerveModuleConstants constants) {
+    public TalonFXSwerveModuleIO(TalonFX driveMotor, TalonFX steeringMotor, CANcoder steeringEncoder, SwerveModuleConstants constants, boolean driveMotionMagic) {
+        this.driveMotionMagic = driveMotionMagic;
         this.driveMotor = driveMotor;
         this.steeringMotor = steeringMotor;
         this.steeringEncoder = steeringEncoder;
@@ -57,12 +63,13 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
      * 
      * @param constants Module specific constants.
      */
-    public TalonFXSwerveModuleIO(SwerveModuleConstants constants) {
+    public TalonFXSwerveModuleIO(SwerveModuleConstants constants, boolean driveMotionMagic) {
         this(
                 new TalonFX(constants.driveMotorID),
                 new TalonFX(constants.angleMotorID),
                 new CANcoder(constants.cancoderID),
-                constants);
+                constants,
+                driveMotionMagic);
     }
 
     private void configSteeringEncoder() {
@@ -120,7 +127,12 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
         // Closed loop
         double velocity = Conversions.metersToRots(desiredState.speedMetersPerSecond,
                 SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio);
-        this.driveMotor.setControl(this.driveVelDutyCycle.withVelocity(velocity));
+        if (this.driveMotionMagic) {
+            this.driveMotor.setControl(this.driveMagicVelDutyCycle.withVelocity(velocity));
+        }
+        else {
+            this.driveMotor.setControl(this.driveVelDutyCycle.withVelocity(velocity));
+        }
     }
 
     @Override

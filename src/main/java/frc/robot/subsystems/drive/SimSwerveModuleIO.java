@@ -70,7 +70,7 @@ public class SimSwerveModuleIO implements SwerveModuleIO {
         double dt = (currentTimestamp - lastTimestamp) / 1000000.0;
 
         double currentVelocity = this.rad2WheelSpeed(this.driveMotor.getAngularVelocityRadPerSec());
-        this.totalDistanceDrove += (Math.abs(currentVelocity) + Math.abs(this.lastVelocity)) / 2 * dt;
+        this.totalDistanceDrove += (currentVelocity + this.lastVelocity) / 2 * dt;
         this.lastVelocity = currentVelocity;
 
         this.steeringMotor.update(dt);

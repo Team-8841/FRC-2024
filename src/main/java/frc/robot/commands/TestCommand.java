@@ -20,7 +20,7 @@ public class TestCommand extends Command {
     private DriveTrainSubsystem driveTrain;
     private boolean isMeasuring = true;
     private int curSample;
-    private double beginDist, curVoltage = Constants.testMinVoltage, lastDist = -1, lastSpeed = -1, stepSize = (Constants.testMaxVoltage - Constants.testMinVoltage) / Constants.testStepCount;
+    private double beginDist, curVoltage = Constants.testMinVoltage, lastSpeed = -1, stepSize = (Constants.testMaxVoltage - Constants.testMinVoltage) / Constants.testStepCount;
     private double[] voltages = new double[Constants.testSampleCount];
     private double[][] measurements = new double[Constants.testSampleCount][2];
     private PIDController returnPID = new PIDController(0.1, 0, 0);
@@ -60,26 +60,24 @@ public class TestCommand extends Command {
             System.out.format("[TestSuite] r^2 = %f std. error = %f\n", regression.calculateRSquared(),
                     regression.estimateRegressionStandardError());
 
-            new Thread(() -> {
-                try {
-                    var outPath = new File(Filesystem.getOperatingDirectory(), Constants.testResidualsFName);
-                    System.out.format("[TestSuite] Dumping residuals to `%s`\n", outPath.getAbsolutePath());
-                    var writer = new FileWriter(outPath);
-                    writer.write("voltage,omega,omegaDot,residual\n");
-                    var residuals = regression.estimateResiduals();
-                    for (int i = 0; i < Constants.testSampleCount; i++) {
-                        var line = String.format("%f,%f,%f,%f\n", voltages[i], measurements[i][0], measurements[i][1],
-                                residuals[i]);
-                        writer.write(line);
-                    }
-                    writer.flush();
-                    writer.close();
-                    System.out.println("[TestSuite] Done dumping residuals");
-                } catch (IOException e) {
-                    System.out.println("[TestSuite] Failed to write residuals: " + e.toString());
-                    e.printStackTrace();
+            try {
+                var outPath = new File(Filesystem.getOperatingDirectory(), Constants.testResidualsFName);
+                System.out.format("[TestSuite] Dumping residuals to `%s`\n", outPath.getAbsolutePath());
+                var writer = new FileWriter(outPath);
+                writer.write("voltage,omega,omegaDot,residual\n");
+                var residuals = regression.estimateResiduals();
+                for (int i = 0; i < Constants.testSampleCount; i++) {
+                    var line = String.format("%f,%f,%f,%f\n", voltages[i], measurements[i][0], measurements[i][1],
+                            residuals[i]);
+                    writer.write(line);
                 }
-            }).start();
+                writer.flush();
+                writer.close();
+                System.out.println("[TestSuite] Done dumping residuals");
+            } catch (IOException e) {
+                System.out.println("[TestSuite] Failed to write residuals: " + e.toString());
+                e.printStackTrace();
+            }
         });
 
     public TestCommand(DriveTrainSubsystem driveTrain) {
@@ -120,24 +118,22 @@ public class TestCommand extends Command {
 
             this.lastSpeed = curSpeed;
 
-            if (this.getDistance() - this.lastDist >= Constants.testMaxDistance) {
+            if (this.getDistance() >= Constants.testMaxDistance) {
                 // We've finished testing for this voltage, drive back
                 this.driveTrain.drive(new Translation2d(), 0, false);
-                this.lastDist = this.getDistance();
                 this.isMeasuring = false;
                 System.out.println("[TestSuite] Stopping measuring, driving back...");
             }
         } else {
             var speed = Math.max(
-                    Math.min(this.returnPID.calculate(this.getDistance() - this.lastDist, Constants.testMaxDistance),
+                    Math.min(this.returnPID.calculate(this.getDistance()),
                             Constants.testMaxVoltage),
                     -Constants.testMaxVoltage);
-            this.driveTrain.drive(new Translation2d(-speed, 0), 0, false);
+            this.driveTrain.drive(new Translation2d(speed, 0), 0, false);
             Logger.recordOutput("/TestSuite/ReturnError", this.returnPID.getPositionError());
             if (Math.abs(this.returnPID.getPositionError()) < 0.15) {
                 // We're back at the start, start measuring with a new voltage
                 this.driveTrain.drive(new Translation2d(), 0, false);
-                this.lastDist = this.getDistance();
                 this.lastSpeed = -1;
                 this.curVoltage = this.curVoltage + this.stepSize <= Constants.testMaxVoltage
                         ? this.curVoltage + this.stepSize
