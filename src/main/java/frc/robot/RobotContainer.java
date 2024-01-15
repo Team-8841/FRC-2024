@@ -20,6 +20,7 @@ import frc.robot.constants.PathingConstants;
 import frc.robot.constants.swerve.PureTalonFXConstants;
 import frc.robot.sensors.imu.DummyIMU;
 import frc.robot.sensors.imu.IMU;
+import frc.robot.sensors.imu.NavX2;
 import frc.robot.sensors.imu.Pigeon2IO;
 import frc.robot.sensors.imu.SimIMU;
 import frc.robot.subsystems.Intake.IntakeSubsytem;
@@ -52,7 +53,8 @@ public class RobotContainer {
           new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants),
       };
 
-      this.imu = new Pigeon2IO(Constants.pigeonId);
+      //this.imu = new Pigeon2IO(Constants.pigeonId);
+      this.imu = new NavX2();
     } else if (Constants.simReplay) {
       // Replay
       swerveModules = new SwerveModuleIO[] {

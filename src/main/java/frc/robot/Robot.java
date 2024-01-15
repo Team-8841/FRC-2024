@@ -52,7 +52,7 @@ public class Robot extends LoggedRobot {
       // Logs to NT4
       Logger.addDataReceiver(new NT4Publisher()); 
       // Enables logging of PDH data
-      //this.pdh = new PowerDistribution(1, ModuleType.kRev); 
+      //this.pdh = new PowerDistribution(22, ModuleType.kRev); 
     } else if (Constants.simReplay) {
       // Run as fast as possible
       setUseTiming(false); 
