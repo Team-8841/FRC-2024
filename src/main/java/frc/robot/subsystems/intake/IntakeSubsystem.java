@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,6 +18,7 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         this.impl.updateInputs(implInputs);
+        Logger.processInputs("/IntakeInputs", implInputs);
     }
 
     public void setIntakeSpeed(double speed) {
