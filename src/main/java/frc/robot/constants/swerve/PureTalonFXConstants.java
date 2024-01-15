@@ -3,6 +3,7 @@ package frc.robot.constants.swerve;
 import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -10,6 +11,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.lib.math.Conversions;
 import frc.lib.util.SwerveModuleConstants;
 
 public class PureTalonFXConstants {
@@ -42,7 +44,7 @@ public class PureTalonFXConstants {
 
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
-    public static final class Mod0 { 
+    public static final class Mod0 {
         public static final int driveMotorID = 1;
         public static final int angleMotorID = 2;
         public static final int canCoderID = 3;
@@ -52,8 +54,13 @@ public class PureTalonFXConstants {
     }
 
     /* Front Right Module - Module 1 */
+<<<<<<< HEAD
     public static final class Mod1 { 
         public static final int driveMotorID = 5;
+=======
+    public static final class Mod1 {
+        public static final int driveMotorID = 3;
+>>>>>>> 51500452d887345db521c6775a47943e153d15b5
         public static final int angleMotorID = 4;
         public static final int canCoderID = 6;
         public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
@@ -62,20 +69,34 @@ public class PureTalonFXConstants {
     }
 
     /* Back Left Module - Module 2 */
+<<<<<<< HEAD
     public static final class Mod2 { 
         public static final int driveMotorID = 8;
         public static final int angleMotorID = 7;
         public static final int canCoderID = 9;
+=======
+    public static final class Mod2 {
+        public static final int driveMotorID = 5;
+        public static final int angleMotorID = 6;
+        public static final int canCoderID = 3;
+>>>>>>> 51500452d887345db521c6775a47943e153d15b5
         public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
         public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                 angleMotorID, canCoderID, angleOffset, 2);
     }
 
     /* Back Right Module - Module 3 */
+<<<<<<< HEAD
     public static final class Mod3 { 
         public static final int driveMotorID = 11;
         public static final int angleMotorID = 10;
         public static final int canCoderID = 12;
+=======
+    public static final class Mod3 {
+        public static final int driveMotorID = 7;
+        public static final int angleMotorID = 8;
+        public static final int canCoderID = 4;
+>>>>>>> 51500452d887345db521c6775a47943e153d15b5
         public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
         public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                 angleMotorID, canCoderID, angleOffset, 3);
@@ -84,7 +105,7 @@ public class PureTalonFXConstants {
     static {
         /* Drive motor */
 
-        Slot0Configs drivePIDConfigs = new Slot0Configs();
+        var drivePIDConfigs = new Slot0Configs();
         drivePIDConfigs.kP = driveKP;
         drivePIDConfigs.kI = driveKI;
         drivePIDConfigs.kD = driveKD;
@@ -92,47 +113,54 @@ public class PureTalonFXConstants {
         drivePIDConfigs.kV = driveKV;
         driveMotorConfigs.Slot0 = drivePIDConfigs;
 
-        CurrentLimitsConfigs driveCurrentLimit = new CurrentLimitsConfigs();
+        var driveCurrentLimit = new CurrentLimitsConfigs();
         driveCurrentLimit.SupplyCurrentLimitEnable = SwerveConstants.driveEnableCurrentLimit;
         driveCurrentLimit.SupplyCurrentLimit = SwerveConstants.driveContinuousCurrentLimit;
         driveCurrentLimit.SupplyCurrentThreshold = SwerveConstants.drivePeakCurrentLimit;
         driveCurrentLimit.SupplyTimeThreshold = SwerveConstants.drivePeakCurrentDuration;
         driveMotorConfigs.CurrentLimits = driveCurrentLimit;
 
-        OpenLoopRampsConfigs driveOpenRampConfigs = new OpenLoopRampsConfigs();
+        var driveOpenRampConfigs = new OpenLoopRampsConfigs();
         driveOpenRampConfigs.VoltageOpenLoopRampPeriod = SwerveConstants.openLoopRamp;
         driveMotorConfigs.OpenLoopRamps = driveOpenRampConfigs;
 
-        ClosedLoopRampsConfigs driveClosedRampConfigs = new ClosedLoopRampsConfigs();
+        var driveClosedRampConfigs = new ClosedLoopRampsConfigs();
         driveClosedRampConfigs.VoltageClosedLoopRampPeriod = SwerveConstants.closedLoopRamp;
         driveMotorConfigs.ClosedLoopRamps = driveClosedRampConfigs;
 
-        MotorOutputConfigs driveMotorOutConfigs = new MotorOutputConfigs();
+        var driveMotorOutConfigs = new MotorOutputConfigs();
         driveMotorOutConfigs.Inverted = SwerveConstants.driveMotorInvert;
         driveMotorOutConfigs.NeutralMode = driveNeutralMode;
         driveMotorConfigs.MotorOutput = driveMotorOutConfigs;
 
+        var motionMagicConfigs = new MotionMagicConfigs();
+        motionMagicConfigs.MotionMagicAcceleration = Conversions.metersToRots(SwerveConstants.maxAcceleration,
+                SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio);
+        motionMagicConfigs.MotionMagicJerk = Conversions.metersToRots(SwerveConstants.maxJerk,
+                SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio);
+        driveMotorConfigs.MotionMagic = motionMagicConfigs;
+
         /* Angle motor */
 
-        Slot0Configs anglePIDConfigs = new Slot0Configs();
+        var anglePIDConfigs = new Slot0Configs();
         anglePIDConfigs.kP = angleKP;
         anglePIDConfigs.kI = angleKI;
         anglePIDConfigs.kD = angleKD;
         anglePIDConfigs.kV = angleKF;
         angleMotorConfigs.Slot0 = anglePIDConfigs;
 
-        CurrentLimitsConfigs angleCurrentConfigs = new CurrentLimitsConfigs();
+        var angleCurrentConfigs = new CurrentLimitsConfigs();
         angleCurrentConfigs.SupplyCurrentLimitEnable = SwerveConstants.angleEnableCurrentLimit;
         angleCurrentConfigs.SupplyCurrentLimit = SwerveConstants.angleContinuousCurrentLimit;
         angleCurrentConfigs.SupplyCurrentThreshold = SwerveConstants.anglePeakCurrentLimit;
         angleCurrentConfigs.SupplyTimeThreshold = SwerveConstants.anglePeakCurrentDuration;
         angleMotorConfigs.CurrentLimits = angleCurrentConfigs;
 
-        ClosedLoopGeneralConfigs angleClosedGeneralConfigs = new ClosedLoopGeneralConfigs();
+        var angleClosedGeneralConfigs = new ClosedLoopGeneralConfigs();
         angleClosedGeneralConfigs.ContinuousWrap = true;
         angleMotorConfigs.ClosedLoopGeneral = angleClosedGeneralConfigs;
 
-        MotorOutputConfigs angleMotorOutConfigs = new MotorOutputConfigs();
+        var angleMotorOutConfigs = new MotorOutputConfigs();
         angleMotorOutConfigs.Inverted = SwerveConstants.angleMotorInvert;
         angleMotorOutConfigs.NeutralMode = angleNeutralMode;
         angleMotorConfigs.MotorOutput = angleMotorOutConfigs;

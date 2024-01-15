@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.CTREModuleState;
 import frc.robot.SimManager;
 import frc.robot.constants.Constants;
 import frc.robot.constants.swerve.SwerveConstants;
@@ -43,15 +44,19 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
         this.initializeShuffleBoardWidgets();
 
-        /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
+        /*
+         * By pausing init for a second before setting module offsets, we avoid a bug
+         * with inverting motors.
          * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
          */
         Timer.delay(1);
         this.resetModules();
 
-        //this.swerveOdometry = new SwerveDriveOdometry(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions());
-        this.poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions(), new Pose2d(new Translation2d(14, 3), Rotation2d.
-            fromRadians(0.5)));
+        // this.swerveOdometry = new
+        // SwerveDriveOdometry(SwerveConstants.swerveKinematics, imu.getHeading(),
+        // this.getModulePositions());
+        this.poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.swerveKinematics, imu.getHeading(),
+                this.getModulePositions(), new Pose2d(new Translation2d(14, 3), Rotation2d.fromRadians(0.5)));
 
         if (RobotBase.isSimulation() && !Constants.simReplay) {
             SimManager.getInstance().registerDriveTrain(this::getPose, this::getSpeed);
@@ -73,6 +78,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
 
         for (int i = 0; i < this.swerveModules.length; i++) {
+            swerveModuleStates[i] = SwerveModuleState.optimize(swerveModuleStates[i], this.swerveModules[i].getAngle());
             Logger.recordOutput("/SwerveDrive/moduleState" + i, swerveModuleStates[i]);
 
             this.swerveModules[i].setDesiredState(swerveModuleStates[i]);
@@ -88,32 +94,30 @@ public class DriveTrainSubsystem extends SubsystemBase {
             this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
             this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
         }
-        
+
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative) {
         this.drive(
-            fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                translation.getX(), 
-                                translation.getY(), 
-                                rotation, 
-                                this.imu.getHeading()
-                            )
-                            : new ChassisSpeeds(
-                                translation.getX(), 
-                                translation.getY(), 
-                                rotation)
-                            );
+                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                        translation.getX(),
+                        translation.getY(),
+                        rotation,
+                        this.imu.getHeading())
+                        : new ChassisSpeeds(
+                                translation.getX(),
+                                translation.getY(),
+                                rotation));
     }
-    
+
     public ChassisSpeeds getSpeed() {
         return SwerveConstants.swerveKinematics.toChassisSpeeds(this.getModuleStates());
     }
-    
+
     public Pose2d getPose() {
         return this.poseEstimator.getEstimatedPosition();
     }
-    
+
     public SwerveDrivePoseEstimator getPoseEstimator() {
         return this.poseEstimator;
     }

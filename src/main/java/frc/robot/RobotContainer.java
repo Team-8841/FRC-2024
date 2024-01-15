@@ -23,12 +23,14 @@ import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.NavX2;
 import frc.robot.sensors.imu.Pigeon2IO;
 import frc.robot.sensors.imu.SimIMU;
-import frc.robot.subsystems.Intake.IntakeSubsytem;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
 import frc.robot.subsystems.drive.DummySwerveModuleIO;
 import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
+import frc.robot.subsystems.intake.RealIntakeIO;
+import frc.robot.subsystems.intake.DummyIntakeIO;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 
 public class RobotContainer {
   // Sensors
@@ -36,7 +38,7 @@ public class RobotContainer {
 
   // Subsystems
   private DriveTrainSubsystem driveTrain;
-  private IntakeSubsytem intake = new IntakeSubsytem();
+  private IntakeSubsystem intake;
 
   // Controllers
   private CommandXboxController driveController;
@@ -47,14 +49,19 @@ public class RobotContainer {
     if (RobotBase.isReal()) {
       // Real robot
       swerveModules = new SwerveModuleIO[] {
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod0.constants),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod1.constants),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod2.constants),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod0.constants, false),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod1.constants, false),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod2.constants, false),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants, false),
       };
 
+<<<<<<< HEAD
       //this.imu = new Pigeon2IO(Constants.pigeonId);
       this.imu = new NavX2();
+=======
+      this.imu = new Pigeon2IO(Constants.pigeonId);
+      this.intake = new IntakeSubsystem(new RealIntakeIO());
+>>>>>>> 51500452d887345db521c6775a47943e153d15b5
     } else if (Constants.simReplay) {
       // Replay
       swerveModules = new SwerveModuleIO[] {
@@ -65,6 +72,7 @@ public class RobotContainer {
       };
 
       this.imu = new DummyIMU();
+      this.intake = new IntakeSubsystem(new DummyIntakeIO());
     }
     else {
       // Physics sim
@@ -87,8 +95,8 @@ public class RobotContainer {
     this.configureBindings(this.driveController);
   }
 
-  Command aCommand = new IntakeInOut(false, true, this.intake);
-  Command bCommand = new IntakeInOut(true, false, this.intake);
+  private Command aCommand = new IntakeInOut(false, true, this.intake);
+  private Command bCommand = new IntakeInOut(true, false, this.intake);
 
   private void configureBindings(CommandXboxController controller) {
     controller.a().whileTrue(aCommand);
