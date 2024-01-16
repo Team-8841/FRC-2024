@@ -55,13 +55,8 @@ public class RobotContainer {
           new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants, false),
       };
 
-<<<<<<< HEAD
-      //this.imu = new Pigeon2IO(Constants.pigeonId);
-      this.imu = new NavX2();
-=======
       this.imu = new Pigeon2IO(Constants.pigeonId);
       this.intake = new IntakeSubsystem(new RealIntakeIO());
->>>>>>> 51500452d887345db521c6775a47943e153d15b5
     } else if (Constants.simReplay) {
       // Replay
       swerveModules = new SwerveModuleIO[] {
