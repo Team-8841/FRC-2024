@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
@@ -85,14 +86,40 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
     }
 
     private void configSteeringMotor() {
-        TalonFXConfigurator configurator = this.steeringMotor.getConfigurator();
+        var configurator = this.steeringMotor.getConfigurator();
         configurator.apply(PureTalonFXConstants.angleMotorConfigs);
 
-        FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
+        var feedbackConfigs = new FeedbackConfigs();
         feedbackConfigs.FeedbackRemoteSensorID = this.constants.cancoderID;
         feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         feedbackConfigs.RotorToSensorRatio = SwerveConstants.angleGearRatio;
         configurator.apply(feedbackConfigs);
+    }
+
+    @Override
+    public void setDrivePID(double kS, double kV, double kA, double kP, double kI, double kD) {
+        var configurator = this.driveMotor.getConfigurator();
+        var pidConfigs = new Slot0Configs();
+        pidConfigs.kS = kS;
+        pidConfigs.kV = kV;
+        pidConfigs.kA = kA;
+        pidConfigs.kP = kP;
+        pidConfigs.kI = kI;
+        pidConfigs.kD = kD;
+        configurator.apply(pidConfigs);
+    }
+
+    @Override
+    public void setSteeringPID(double kS, double kV, double kA, double kP, double kI, double kD) {
+        var configurator = this.steeringMotor.getConfigurator();
+        var pidConfigs = new Slot0Configs();
+        pidConfigs.kS = kS;
+        pidConfigs.kV = kV;
+        pidConfigs.kA = kA;
+        pidConfigs.kP = kP;
+        pidConfigs.kI = kI;
+        pidConfigs.kD = kD;
+        configurator.apply(pidConfigs);
     }
 
     @Override

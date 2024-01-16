@@ -92,6 +92,7 @@ public class PureTalonFXConstants {
         drivePIDConfigs.kD = driveKD;
         drivePIDConfigs.kS = driveKS;
         drivePIDConfigs.kV = driveKV;
+        drivePIDConfigs.kA = driveKA;
         driveMotorConfigs.Slot0 = drivePIDConfigs;
 
         var driveCurrentLimit = new CurrentLimitsConfigs();
