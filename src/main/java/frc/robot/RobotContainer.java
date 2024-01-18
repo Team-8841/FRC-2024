@@ -49,14 +49,18 @@ public class RobotContainer {
     if (RobotBase.isReal()) {
       // Real robot
       swerveModules = new SwerveModuleIO[] {
+          //new DummySwerveModuleIO(),
           new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod0.constants, false),
           new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod1.constants, false),
           new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod2.constants, false),
           new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants, false),
+          //new DummySwerveModuleIO(),
+          //new DummySwerveModuleIO(),
       };
 
-      this.imu = new Pigeon2IO(Constants.pigeonId);
-      this.intake = new IntakeSubsystem(new RealIntakeIO());
+      //this.imu = new Pigeon2IO(Constants.pigeonId);
+      this.imu = new NavX2();
+      //this.intake = new IntakeSubsystem(new RealIntakeIO());
     } else if (Constants.simReplay) {
       // Replay
       swerveModules = new SwerveModuleIO[] {
@@ -67,7 +71,7 @@ public class RobotContainer {
       };
 
       this.imu = new DummyIMU();
-      this.intake = new IntakeSubsystem(new DummyIntakeIO());
+      //this.intake = new IntakeSubsystem(new DummyIntakeIO());
     }
     else {
       // Physics sim
@@ -91,12 +95,12 @@ public class RobotContainer {
   }
 
   private void configureBindings(CommandXboxController controller) {
-    if (this.intake != null) {
-      Command aCommand = new IntakeInOut(false, true, this.intake);
-      Command bCommand = new IntakeInOut(true, false, this.intake);
-      controller.a().whileTrue(aCommand);
-      controller.b().whileTrue(bCommand);
-    }
+    //if (this.intake != null) {
+    //  Command aCommand = new IntakeInOut(false, true, this.intake);
+    //  Command bCommand = new IntakeInOut(true, false, this.intake);
+    //  controller.a().whileTrue(aCommand);
+    //  controller.b().whileTrue(bCommand);
+    //}
   }
 
   public Command getAutonomousCommand() {

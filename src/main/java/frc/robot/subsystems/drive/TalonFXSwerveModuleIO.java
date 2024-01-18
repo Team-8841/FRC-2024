@@ -4,11 +4,9 @@ import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfigurator;
-import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
-import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -29,11 +27,11 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
     private TalonFX driveMotor, steeringMotor;
     private CANcoder steeringEncoder;
 
-    private Rotation2d lastAngle;
+    private Rotation2d lastAngle = new Rotation2d();
 
-    private MotionMagicVelocityDutyCycle driveMagicVelDutyCycle = new MotionMagicVelocityDutyCycle(0).withSlot(0);
-    private VelocityDutyCycle driveVelDutyCycle = new VelocityDutyCycle(0).withSlot(0);
-    private PositionDutyCycle steeringPosDutyCycle = new PositionDutyCycle(0).withSlot(0);
+    private MotionMagicVelocityVoltage driveMagicVelVoltage = new MotionMagicVelocityVoltage(0).withSlot(0);
+    private VelocityVoltage driveVelVoltage = new VelocityVoltage(0).withSlot(0);
+    private PositionVoltage steeringPosVoltage = new PositionVoltage(0).withSlot(0);
 
     private SwerveModuleConstants constants;
 
@@ -90,7 +88,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
         configurator.apply(PureTalonFXConstants.angleMotorConfigs);
 
         var feedbackConfigs = new FeedbackConfigs();
-        feedbackConfigs.FeedbackRemoteSensorID = this.constants.cancoderID;
+        feedbackConfigs.FeedbackRemoteSensorID = this.steeringEncoder.getDeviceID();
         feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         feedbackConfigs.RotorToSensorRatio = SwerveConstants.angleGearRatio;
         configurator.apply(feedbackConfigs);
@@ -128,10 +126,10 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
         double velocity = Conversions.metersToRots(desiredState.speedMetersPerSecond,
                 SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio);
         if (this.driveMotionMagic) {
-            this.driveMotor.setControl(this.driveMagicVelDutyCycle.withVelocity(velocity));
+            this.driveMotor.setControl(this.driveMagicVelVoltage.withVelocity(velocity));
         }
         else {
-            this.driveMotor.setControl(this.driveVelDutyCycle.withVelocity(velocity));
+            this.driveMotor.setControl(this.driveVelVoltage.withVelocity(velocity));
         }
     }
 
@@ -142,9 +140,10 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
                 ? lastAngle
                 : desiredState.angle;
 
+
         this.lastAngle = angle;
 
-        this.steeringMotor.setControl(this.steeringPosDutyCycle.withPosition(angle.getRotations()));
+        this.steeringMotor.setControl(this.steeringPosVoltage.withPosition(angle.getRotations()));
     }
 
     @Override

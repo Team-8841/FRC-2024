@@ -19,7 +19,8 @@ public class PureTalonFXConstants {
     public static final TalonFXConfiguration driveMotorConfigs = new TalonFXConfiguration();
 
     /* Angle Motor PID Values */
-    public static final double angleKP = SwerveConstants.chosenModule.angleKP;
+    //public static final double angleKP = SwerveConstants.chosenModule.angleKP;
+    public static final double angleKP = 10;
     public static final double angleKI = SwerveConstants.chosenModule.angleKI;
     public static final double angleKD = SwerveConstants.chosenModule.angleKD;
     public static final double angleKF = SwerveConstants.chosenModule.angleKF;
@@ -34,9 +35,9 @@ public class PureTalonFXConstants {
      * Divide SYSID values by 12 to convert from volts to percent output for CTRE
      */
     // TODO: Check if these need to be converted.
-    public static final double driveKS = (0.32 / 12); // TODO: This must be tuned to specific robot
-    public static final double driveKV = (1.51 / 12);
-    public static final double driveKA = (0.27 / 12); // (unused)
+    public static final double driveKS = 0.32 / 10; // TODO: This must be tuned to specific robot
+    public static final double driveKV = 1.51 / 10;
+    public static final double driveKA = 0.27 / 10; // (unused)
 
     /* Neutral Modes */
     public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
@@ -48,7 +49,8 @@ public class PureTalonFXConstants {
         public static final int driveMotorID = 2;
         public static final int angleMotorID = 1;
         public static final int canCoderID = 3;
-        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
+        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-102.83203125);
+        //public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0);
         public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                 angleMotorID, canCoderID, angleOffset, 0);
     }
@@ -58,7 +60,7 @@ public class PureTalonFXConstants {
         public static final int driveMotorID = 5;
         public static final int angleMotorID = 4;
         public static final int canCoderID = 6;
-        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
+        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-131.484375);
         public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                 angleMotorID, canCoderID, angleOffset, 1);
     }
@@ -68,7 +70,7 @@ public class PureTalonFXConstants {
         public static final int driveMotorID = 8;
         public static final int angleMotorID = 7;
         public static final int canCoderID = 9;
-        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
+        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-220.869140625);
         public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                 angleMotorID, canCoderID, angleOffset, 2);
     }
@@ -78,7 +80,7 @@ public class PureTalonFXConstants {
         public static final int driveMotorID = 11;
         public static final int angleMotorID = 10;
         public static final int canCoderID = 12;
-        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
+        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-12.12890625);
         public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                 angleMotorID, canCoderID, angleOffset, 3);
     }

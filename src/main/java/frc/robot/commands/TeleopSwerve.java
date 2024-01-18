@@ -36,6 +36,6 @@ public class TeleopSwerve extends Command {
         double rotation = MathUtil.applyDeadband(this.rotationSupplier.getAsDouble(), Constants.controllerDeadband)
                 * AutoConstants.MaxAngularSpeedRadiansPerSecond;
 
-        this.driveTrain.drive(driveTranslation, rotation, false);
+        this.driveTrain.drive(driveTranslation, rotation, true);
     }
 }
