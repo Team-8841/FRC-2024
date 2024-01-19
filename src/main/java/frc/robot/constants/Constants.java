@@ -17,4 +17,7 @@ public final class Constants {
     public static final double testMaxDistance = 2;
     public static final String testMeasurementFName = "test_measurement.csv";
     public static final String testResidualsFName = "test_residuals.csv";
+
+    public static final int mainShooterId = 10;
+    public static final int followerShooterId = 11;
 }

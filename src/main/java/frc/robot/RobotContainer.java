@@ -49,17 +49,13 @@ public class RobotContainer {
     if (RobotBase.isReal()) {
       // Real robot
       swerveModules = new SwerveModuleIO[] {
-          //new DummySwerveModuleIO(),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod0.constants, false),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod1.constants, false),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod2.constants, false),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants, false),
-          //new DummySwerveModuleIO(),
-          //new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
       };
 
-      //this.imu = new Pigeon2IO(Constants.pigeonId);
-      this.imu = new NavX2();
+      this.imu = new DummyIMU();
       //this.intake = new IntakeSubsystem(new RealIntakeIO());
     } else if (Constants.simReplay) {
       // Replay
@@ -118,7 +114,8 @@ public class RobotContainer {
   public Command getTeleopCommand() {
     return new TeleopSwerve(driveTrain, () -> -this.driveController.getLeftY(),
         () -> -this.driveController.getLeftX(),
-        () -> -this.driveController.getRightX());
+        () -> -this.driveController.getRightX(),
+        () -> this.driveController.getRightTriggerAxis());
   }
 
   public Command getTestCommand() {
