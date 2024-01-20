@@ -10,6 +10,8 @@ This repo contains the code we're writing for the 2024 FRC game and season: [Cre
 
 To generate the javadocs run `./gradlew generateDocs` in the root directory of the project. The generated documentation should be put into `build/docs`.
 
+![CAN ID MAP](./2024_canid_map.png)
+
 ## Building
 
 TBD
