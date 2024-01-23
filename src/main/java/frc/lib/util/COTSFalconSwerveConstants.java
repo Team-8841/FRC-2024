@@ -72,7 +72,7 @@ public class COTSFalconSwerveConstants {
         //boolean angleMotorInvert = false;
         //boolean canCoderInvert = false;
 
-        InvertedValue driveMotorInvert = InvertedValue.Clockwise_Positive;
+        InvertedValue driveMotorInvert = InvertedValue.CounterClockwise_Positive;
         InvertedValue angleMotorInvert = InvertedValue.Clockwise_Positive;
         SensorDirectionValue canCoderDir = SensorDirectionValue.Clockwise_Positive;
 
