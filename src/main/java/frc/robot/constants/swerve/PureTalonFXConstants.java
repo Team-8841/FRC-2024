@@ -18,14 +18,14 @@ public class PureTalonFXConstants {
     public static final TalonFXConfiguration angleMotorConfigs = new TalonFXConfiguration();
     public static final TalonFXConfiguration driveMotorConfigs = new TalonFXConfiguration();
 
-    /* Angle Motor PID Values */
+    /* Angle Motor PID Values */ // NEEDS TO BE TUNED
     //public static final double angleKP = SwerveConstants.chosenModule.angleKP;
     public static final double angleKP = 10;
     public static final double angleKI = SwerveConstants.chosenModule.angleKI;
     public static final double angleKD = SwerveConstants.chosenModule.angleKD;
     public static final double angleKF = SwerveConstants.chosenModule.angleKF;
 
-    /* Drive Motor PID Values */
+    /* Drive Motor PID Values */ // NEEDS TO BE TUNED
     public static final double driveKP = 0.010009775171065494; // TODO: This must be tuned to specific robot
     public static final double driveKI = 0.0;
     public static final double driveKD = 0.0;
@@ -34,7 +34,7 @@ public class PureTalonFXConstants {
      * Drive Motor Characterization Values
      * Divide SYSID values by 12 to convert from volts to percent output for CTRE
      */
-    // TODO: Check if these need to be converted.
+    // TODO: Check if these need to be converted. // NEEDS TO BE TUNED
     public static final double driveKS = 0.32 / 10; // TODO: This must be tuned to specific robot
     public static final double driveKV = 1.51 / 10;
     public static final double driveKA = 0.27 / 10; // (unused)
