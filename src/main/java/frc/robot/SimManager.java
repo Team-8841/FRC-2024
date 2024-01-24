@@ -1,44 +1,45 @@
 package frc.robot;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.sensors.imu.SimIMU;
-import java.util.function.Supplier;
 
 public class SimManager {
-  private static SimManager instance;
+    private static SimManager instance;
 
-  private SimIMU imu;
+    private SimIMU imu;
 
-  private Supplier<Pose2d> poseSupplier;
-  private Supplier<ChassisSpeeds> speedSupplier;
+    private Supplier<Pose2d> poseSupplier;
+    private Supplier<ChassisSpeeds> speedSupplier;
 
-  private SimManager() {
-    if (!RobotBase.isSimulation()) {
-      throw new Error("Cannot open SimManager outside of a simulation.");
-    }
-  }
-
-  public static SimManager getInstance() {
-    if (instance == null) {
-      SimManager.instance = new SimManager();
+    private SimManager() {
+        if (!RobotBase.isSimulation()) {
+            throw new Error("Cannot open SimManager outside of a simulation.");
+        }
     }
 
-    return SimManager.instance;
-  }
+    public static SimManager getInstance() {
+        if (instance == null) {
+            SimManager.instance = new SimManager();
+        }
 
-  public void registerIMU(SimIMU imu) {
-    this.imu = imu;
-  }
+        return SimManager.instance;
+    }
 
-  public void registerDriveTrain(
-      Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> speedSupplier) {
-    this.poseSupplier = poseSupplier;
-    this.speedSupplier = speedSupplier;
+    public void registerIMU(SimIMU imu) {
+        this.imu = imu;
+    }
 
-    this.imu.registerOrientationSuppliers(speedSupplier);
-  }
+    public void registerDriveTrain(Supplier<Pose2d> poseSupplier, Supplier<ChassisSpeeds> speedSupplier) {
+        this.poseSupplier = poseSupplier;
+        this.speedSupplier = speedSupplier;
 
-  public void periodic() {}
+        this.imu.registerOrientationSuppliers(speedSupplier);
+    }
+
+    public void periodic() {
+    }
 }

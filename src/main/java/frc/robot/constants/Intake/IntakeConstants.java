@@ -1,18 +1,18 @@
 package frc.robot.constants.Intake;
 
 public class IntakeConstants {
-  // Intake motor constant
-  public static final int intakeMotor = 14;
-  public static final int feedMotor = 15;
+    // Intake motor constant 
+    public static final int intakeMotor = 14;
+    public static final int feedMotor = 15;
+    
+    // Senor constants
+    public static final int intakeSensor = 0;
+    public static final int feedSensor = 1;
 
-  // Senor constants
-  public static final int intakeSensor = 0;
-  public static final int feedSensor = 1;
+    // Intake and Feeder Motor Speed
+    public static final  double kIntakeInSpeed = 0.5; 
+    public static final  double kIntakeOutSpeed = 0.7; 
 
-  // Intake and Feeder Motor Speed
-  public static final double kIntakeInSpeed = 0.5;
-  public static final double kIntakeOutSpeed = 0.7;
-
-  public static final double kFeederInSpeed = 0.5;
-  public static final double kFeederOutSpeed = 0.7;
+    public static final double kFeederInSpeed = 0.5;
+    public static final double kFeederOutSpeed = 0.7;
 }

@@ -1,14 +1,9 @@
 package frc.robot.sensors.vision;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import frc.robot.constants.PhotonConstants;
-import frc.robot.constants.VisionConstants;
 import java.util.List;
 import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.common.hardware.VisionLEDMode;
@@ -16,188 +11,185 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.targeting.TargetCorner;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import frc.robot.constants.PhotonConstants;
+import frc.robot.constants.VisionConstants;
+
 public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
-  private final PhotonConstants.EstimatorConfig config;
-  private double lastResult;
-  private PhotonCamera camera;
-  private PhotonPoseEstimator estimator;
-  private PoseEstimate lastPoseEstimate;
+    private final PhotonConstants.EstimatorConfig config;
+    private double lastResult;
+    private PhotonCamera camera;
+    private PhotonPoseEstimator estimator;
+    private PoseEstimate lastPoseEstimate;
 
-  public PhotonEstimatorModuleIO(PhotonConstants.EstimatorConfig config) {
-    this.config = config;
-  }
-
-  /**
-   * The standard deviations of the estimated pose the estimator for use with {@link
-   * edu.wpi.first.math.estimator.SwerveDrivePoseEstimator} SwerveDrivePoseEstimator}. This should
-   * only be used when there are targets visible.
-   *
-   * @param estimatedPose The estimated pose to guess standard deviations for.
-   */
-  private Matrix<N3, N1> getEstimationStdDevs(
-      List<PhotonTrackedTarget> targets, Pose2d estimatedPose) {
-    var estStdDevs = VisionConstants.singleTagStdDevs;
-    int numTags = 0;
-    double avgDist = 0;
-
-    for (PhotonTrackedTarget tgt : targets) {
-      Optional<Pose3d> tagPose = VisionConstants.fieldLayout.getTagPose(tgt.getFiducialId());
-      if (tagPose.isEmpty()) {
-        continue;
-      }
-      numTags++;
-      avgDist +=
-          tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+    public PhotonEstimatorModuleIO(PhotonConstants.EstimatorConfig config) {
+        this.config = config;
     }
 
-    if (numTags == 0) {
-      return estStdDevs;
-    }
-    avgDist /= numTags;
-    // Decrease std devs if multiple targets are visible
-    if (numTags > 1) {
-      estStdDevs = VisionConstants.multiTagStdDevs;
-    }
-    // Increase std devs based on (average) distance
-    estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
-    // if (numTags == 1 && avgDist > 4) {
-    // estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE,
-    // Double.MAX_VALUE);
-    // } else {
-    // estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
-    // }
+    /**
+     * The standard deviations of the estimated pose the estimator for use
+     * with {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator}
+     * SwerveDrivePoseEstimator}.
+     * This should only be used when there are targets visible.
+     *
+     * @param estimatedPose The estimated pose to guess standard deviations for.
+     */
+    private Matrix<N3, N1> getEstimationStdDevs(List<PhotonTrackedTarget> targets, Pose2d estimatedPose) {
+        var estStdDevs = VisionConstants.singleTagStdDevs;
+        int numTags = 0;
+        double avgDist = 0;
 
-    return estStdDevs;
-  }
+        for (PhotonTrackedTarget tgt : targets) {
+            Optional<Pose3d> tagPose = VisionConstants.fieldLayout.getTagPose(tgt.getFiducialId());
+            if (tagPose.isEmpty()) {
+                continue;
+            }
+            numTags++;
+            avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+        }
 
-  @Override
-  public boolean updateInputs(EstimatorInputsAutoLogged inputs) {
-    var latestResult = this.camera.getLatestResult();
+        if (numTags == 0) {
+            return estStdDevs;
+        }
+        avgDist /= numTags;
+        // Decrease std devs if multiple targets are visible
+        if (numTags > 1) {
+            estStdDevs = VisionConstants.multiTagStdDevs;
+        }
+        // Increase std devs based on (average) distance
+        estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+        // if (numTags == 1 && avgDist > 4) {
+        // estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE,
+        // Double.MAX_VALUE);
+        // } else {
+        // estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+        // }
 
-    if (latestResult.getTimestampSeconds() <= inputs.timestamp) {
-      return false;
-    }
-
-    inputs.timestamp = latestResult.getTimestampSeconds();
-    inputs.latency = latestResult.getLatencyMillis();
-    inputs.isConnected = this.camera.isConnected();
-
-    if (this.lastPoseEstimate != null) {
-      inputs.lastPoseTimestamp = this.lastPoseEstimate.timestamp;
-
-      inputs.estPose =
-          new double[] {
-            this.lastPoseEstimate.estimatedPose.getX(),
-            this.lastPoseEstimate.estimatedPose.getY(),
-            this.lastPoseEstimate.estimatedPose.getRotation().getRadians(),
-          };
-      inputs.stdDevs =
-          new double[] {
-            this.lastPoseEstimate.stdDevs.get(0, 0),
-            this.lastPoseEstimate.stdDevs.get(1, 0),
-            this.lastPoseEstimate.stdDevs.get(2, 0)
-          };
+        return estStdDevs;
     }
 
-    if (latestResult.hasTargets()) {
-      inputs.targetCount = latestResult.getTargets().size();
+    @Override
+    public boolean updateInputs(EstimatorInputsAutoLogged inputs) {
+        var latestResult = this.camera.getLatestResult();
 
-      var bestTgt = latestResult.getBestTarget();
+        if (latestResult.getTimestampSeconds() <= inputs.timestamp) {
+            return false;
+        }
 
-      if (this.lastPoseEstimate != null) {
+        inputs.timestamp = latestResult.getTimestampSeconds();
+        inputs.latency = latestResult.getLatencyMillis();
+        inputs.isConnected = this.camera.isConnected();
 
-        Pose2d tagPose =
-            VisionConstants.fieldLayout.getTagPose(bestTgt.getFiducialId()).get().toPose2d();
-        inputs.bestTgtDist =
-            this.lastPoseEstimate
-                .estimatedPose
-                .getTranslation()
-                .getDistance(tagPose.getTranslation());
-      }
+        if (this.lastPoseEstimate != null) {
+            inputs.lastPoseTimestamp = this.lastPoseEstimate.timestamp;
 
-      inputs.bestTgtArea = bestTgt.getArea();
-      inputs.bestTgtID = bestTgt.getArea();
-      inputs.bestTgtAmbiguity = bestTgt.getPoseAmbiguity();
+            inputs.estPose = new double[] {
+                    this.lastPoseEstimate.estimatedPose.getX(),
+                    this.lastPoseEstimate.estimatedPose.getY(),
+                    this.lastPoseEstimate.estimatedPose.getRotation().getRadians(),
+            };
+            inputs.stdDevs = new double[] {
+                    this.lastPoseEstimate.stdDevs.get(0, 0),
+                    this.lastPoseEstimate.stdDevs.get(1, 0),
+                    this.lastPoseEstimate.stdDevs.get(2, 0)
+            };
+        }
 
-      var corners = bestTgt.getDetectedCorners();
+        if (latestResult.hasTargets()) {
+            inputs.targetCount = latestResult.getTargets().size();
 
-      inputs.estTgtCornersX = new double[corners.size()];
-      inputs.estTgtCornersY = new double[corners.size()];
+            var bestTgt = latestResult.getBestTarget();
 
-      int i = 0;
-      for (TargetCorner corner : corners) {
-        inputs.estTgtCornersX[i] = corner.x;
-        inputs.estTgtCornersY[i++] = corner.y;
-      }
-    } else {
-      inputs.targetCount = 0;
+            if (this.lastPoseEstimate != null) {
+
+                Pose2d tagPose = VisionConstants.fieldLayout.getTagPose(bestTgt.getFiducialId()).get().toPose2d();
+                inputs.bestTgtDist = this.lastPoseEstimate.estimatedPose.getTranslation()
+                        .getDistance(tagPose.getTranslation());
+            }
+
+            inputs.bestTgtArea = bestTgt.getArea();
+            inputs.bestTgtID = bestTgt.getArea();
+            inputs.bestTgtAmbiguity = bestTgt.getPoseAmbiguity();
+
+            var corners = bestTgt.getDetectedCorners();
+
+            inputs.estTgtCornersX = new double[corners.size()];
+            inputs.estTgtCornersY = new double[corners.size()];
+
+            int i = 0;
+            for (TargetCorner corner : corners) {
+                inputs.estTgtCornersX[i] = corner.x;
+                inputs.estTgtCornersY[i++] = corner.y;
+            }
+        } else {
+            inputs.targetCount = 0;
+        }
+
+        return true;
     }
 
-    return true;
-  }
+    @Override
+    public void setCamera(EstimatorCamera camera) {
+        System.out.println("Connecting to camera: " + camera);
 
-  @Override
-  public void setCamera(EstimatorCamera camera) {
-    System.out.println("Connecting to camera: " + camera);
+        this.camera = new PhotonCamera(camera.name);
 
-    this.camera = new PhotonCamera(camera.name);
+        this.camera.setPipelineIndex(0);
+        this.camera.setDriverMode(false);
+        this.camera.setLED(VisionLEDMode.kOff);
 
-    this.camera.setPipelineIndex(0);
-    this.camera.setDriverMode(false);
-    this.camera.setLED(VisionLEDMode.kOff);
-
-    this.estimator =
-        new PhotonPoseEstimator(
-            VisionConstants.fieldLayout,
-            this.config.strategy,
-            this.camera,
-            this.config.robotToCamera);
-  }
-
-  @Override
-  public Optional<PoseEstimate> getPoseEstimation(Pose2d currentEstimatedPose) {
-    if (!this.camera.isConnected()) {
-      return Optional.empty();
+        this.estimator = new PhotonPoseEstimator(VisionConstants.fieldLayout, this.config.strategy,
+                this.camera, this.config.robotToCamera);
     }
 
-    var pipelineResult = this.camera.getLatestResult();
+    @Override
+    public Optional<PoseEstimate> getPoseEstimation(Pose2d currentEstimatedPose) {
+        if (!this.camera.isConnected()) {
+            return Optional.empty();
+        }
 
-    // If the this is an old pipeline result return none
-    if (pipelineResult.getTimestampSeconds() <= this.lastResult || !pipelineResult.hasTargets()) {
-      return Optional.empty();
+        var pipelineResult = this.camera.getLatestResult();
+
+        // If the this is an old pipeline result return none
+        if (pipelineResult.getTimestampSeconds() <= this.lastResult || !pipelineResult.hasTargets()) {
+            return Optional.empty();
+        }
+        this.lastResult = pipelineResult.getTimestampSeconds();
+
+        // Filters targets based on minimum area
+        var targets = pipelineResult.getTargets();
+        for (int i = 0; i < targets.size(); i++) {
+            if (targets.get(i).getArea() < VisionConstants.minimumTagArea) {
+                targets.remove(i--);
+            }
+        }
+
+        // If no targets are left return none
+        if (targets.size() == 0) {
+            return Optional.empty();
+        }
+
+        // Calculates the standard deviation of the estimated pose
+        var stdDevs = this.getEstimationStdDevs(targets, currentEstimatedPose);
+
+        // Calculates the estimated pose
+        var filteredPipelineResult = new PhotonPipelineResult(pipelineResult.getLatencyMillis(),
+                targets);
+        filteredPipelineResult.setTimestampSeconds(pipelineResult.getTimestampSeconds());
+        var visionPoseOpt = this.estimator.update(filteredPipelineResult);
+
+        if (visionPoseOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        var estimatedPose = visionPoseOpt.get().estimatedPose.toPose2d();
+        var estimate = new PoseEstimate(estimatedPose, stdDevs);
+        this.lastPoseEstimate = estimate;
+
+        return Optional.of(estimate);
     }
-    this.lastResult = pipelineResult.getTimestampSeconds();
-
-    // Filters targets based on minimum area
-    var targets = pipelineResult.getTargets();
-    for (int i = 0; i < targets.size(); i++) {
-      if (targets.get(i).getArea() < VisionConstants.minimumTagArea) {
-        targets.remove(i--);
-      }
-    }
-
-    // If no targets are left return none
-    if (targets.size() == 0) {
-      return Optional.empty();
-    }
-
-    // Calculates the standard deviation of the estimated pose
-    var stdDevs = this.getEstimationStdDevs(targets, currentEstimatedPose);
-
-    // Calculates the estimated pose
-    var filteredPipelineResult =
-        new PhotonPipelineResult(pipelineResult.getLatencyMillis(), targets);
-    filteredPipelineResult.setTimestampSeconds(pipelineResult.getTimestampSeconds());
-    var visionPoseOpt = this.estimator.update(filteredPipelineResult);
-
-    if (visionPoseOpt.isEmpty()) {
-      return Optional.empty();
-    }
-
-    var estimatedPose = visionPoseOpt.get().estimatedPose.toPose2d();
-    var estimate = new PoseEstimate(estimatedPose, stdDevs);
-    this.lastPoseEstimate = estimate;
-
-    return Optional.of(estimate);
-  }
 }

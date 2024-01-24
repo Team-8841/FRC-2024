@@ -1,5 +1,7 @@
 package frc.robot.subsystems.drive;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,123 +21,125 @@ import frc.robot.SimManager;
 import frc.robot.constants.Constants;
 import frc.robot.constants.swerve.SwerveConstants;
 import frc.robot.sensors.imu.IMU;
-import org.littletonrobotics.junction.Logger;
 
-/** Main swerve drive class, interfaces with a hardware IO class. */
+/**
+ * Main swerve drive class, interfaces with a hardware IO class.
+ */
 public class DriveTrainSubsystem extends SubsystemBase {
-  private SwerveDrivePoseEstimator poseEstimator;
-  private SwerveModuleIO swerveModules[];
-  private SwerveModuleIOInputsAutoLogged autologgedInputs[];
-  private IMU imu;
+    private SwerveDrivePoseEstimator poseEstimator;
+    private SwerveModuleIO swerveModules[];
+    private SwerveModuleIOInputsAutoLogged autologgedInputs[];
+    private IMU imu;
 
-  @SuppressWarnings("all")
-  public DriveTrainSubsystem(SwerveModuleIO[] swerveModules, IMU imu) {
-    this.swerveModules = swerveModules;
-    this.imu = imu;
+    @SuppressWarnings("all")
+    public DriveTrainSubsystem(SwerveModuleIO[] swerveModules, IMU imu) {
+        this.swerveModules = swerveModules;
+        this.imu = imu;
 
-    this.autologgedInputs = new SwerveModuleIOInputsAutoLogged[4];
-    for (int i = 0; i < this.autologgedInputs.length; i++) {
-      this.autologgedInputs[i] = new SwerveModuleIOInputsAutoLogged();
+        this.autologgedInputs = new SwerveModuleIOInputsAutoLogged[4];
+        for (int i = 0; i < this.autologgedInputs.length; i++) {
+            this.autologgedInputs[i] = new SwerveModuleIOInputsAutoLogged();
+        }
+
+        this.initializeShuffleBoardWidgets();
+
+        /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
+         * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
+         */
+        Timer.delay(1);
+        this.resetModules();
+
+        //this.swerveOdometry = new SwerveDriveOdometry(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions());
+        this.poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions(), new Pose2d(new Translation2d(14, 3), Rotation2d.
+            fromRadians(0.5)));
+
+        if (RobotBase.isSimulation() && !Constants.simReplay) {
+            SimManager.getInstance().registerDriveTrain(this::getPose, this::getSpeed);
+        }
     }
 
-    this.initializeShuffleBoardWidgets();
+    private void initializeShuffleBoardWidgets() {
+        ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
 
-    /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
-     * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
-     */
-    Timer.delay(1);
-    this.resetModules();
-
-    // this.swerveOdometry = new SwerveDriveOdometry(SwerveConstants.swerveKinematics,
-    // imu.getHeading(), this.getModulePositions());
-    this.poseEstimator =
-        new SwerveDrivePoseEstimator(
-            SwerveConstants.swerveKinematics,
-            imu.getHeading(),
-            this.getModulePositions(),
-            new Pose2d(new Translation2d(14, 3), Rotation2d.fromRadians(0.5)));
-
-    if (RobotBase.isSimulation() && !Constants.simReplay) {
-      SimManager.getInstance().registerDriveTrain(this::getPose, this::getSpeed);
-    }
-  }
-
-  private void initializeShuffleBoardWidgets() {
-    ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
-
-    for (int i = 0; i < this.swerveModules.length; i++) {
-      ShuffleboardLayout moduleLayout =
-          robotTab.getLayout("Sweve Module " + i, BuiltInLayouts.kList);
-      this.swerveModules[i].initializeShuffleBoardLayout(moduleLayout);
-    }
-  }
-
-  public void drive(Translation2d translation, double rotation, boolean fieldRelative) {
-    SwerveModuleState[] swerveModuleStates =
-        SwerveConstants.swerveKinematics.toSwerveModuleStates(
-            fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                    translation.getX(), translation.getY(), rotation, this.imu.getHeading())
-                : new ChassisSpeeds(translation.getX(), translation.getY(), rotation));
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
-
-    for (int i = 0; i < this.swerveModules.length; i++) {
-      Logger.recordOutput("/SwerveDrive/moduleState" + i, swerveModuleStates[i]);
-
-      this.swerveModules[i].setDesiredState(swerveModuleStates[i]);
-      this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
-      this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
-    }
-  }
-
-  public ChassisSpeeds getSpeed() {
-    return SwerveConstants.swerveKinematics.toChassisSpeeds(this.getModuleStates());
-  }
-
-  public Pose2d getPose() {
-    return this.poseEstimator.getEstimatedPosition();
-  }
-
-  public SwerveDrivePoseEstimator getPoseEstimator() {
-    return this.poseEstimator;
-  }
-
-  public SwerveModuleState[] getModuleStates() {
-    SwerveModuleState states[] = new SwerveModuleState[4];
-
-    for (int i = 0; i < this.swerveModules.length; i++) {
-      states[i] = this.swerveModules[i].getState();
+        for (int i = 0; i < this.swerveModules.length; i++) {
+            ShuffleboardLayout moduleLayout = robotTab.getLayout("Sweve Module " + i, BuiltInLayouts.kList);
+            this.swerveModules[i].initializeShuffleBoardLayout(moduleLayout);
+        }
     }
 
-    return states;
-  }
+    public void drive(Translation2d translation, double rotation, boolean fieldRelative) {
+        SwerveModuleState[] swerveModuleStates =
+            SwerveConstants.swerveKinematics.toSwerveModuleStates(
+                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                    translation.getX(), 
+                                    translation.getY(), 
+                                    rotation, 
+                                    this.imu.getHeading()
+                                )
+                                : new ChassisSpeeds(
+                                    translation.getX(), 
+                                    translation.getY(), 
+                                    rotation)
+                                );
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
 
-  public SwerveModulePosition[] getModulePositions() {
-    SwerveModulePosition positions[] = new SwerveModulePosition[4];
+        for (int i = 0; i < this.swerveModules.length; i++) {
+            Logger.recordOutput("/SwerveDrive/moduleState" + i, swerveModuleStates[i]);
 
-    for (int i = 0; i < this.swerveModules.length; i++) {
-      positions[i] = this.swerveModules[i].getPosition();
+            this.swerveModules[i].setDesiredState(swerveModuleStates[i]);
+            this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
+            this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
+        }
+    }
+    
+    public ChassisSpeeds getSpeed() {
+        return SwerveConstants.swerveKinematics.toChassisSpeeds(this.getModuleStates());
+    }
+    
+    public Pose2d getPose() {
+        return this.poseEstimator.getEstimatedPosition();
+    }
+    
+    public SwerveDrivePoseEstimator getPoseEstimator() {
+        return this.poseEstimator;
     }
 
-    return positions;
-  }
+    public SwerveModuleState[] getModuleStates() {
+        SwerveModuleState states[] = new SwerveModuleState[4];
 
-  public void resetModules() {
-    for (SwerveModuleIO swerveModule : this.swerveModules) {
-      swerveModule.reset();
-    }
-  }
+        for (int i = 0; i < this.swerveModules.length; i++) {
+            states[i] = this.swerveModules[i].getState();
+        }
 
-  @Override
-  public void periodic() {
-    for (int i = 0; i < this.swerveModules.length; i++) {
-      SwerveModuleIO swerveModule = this.swerveModules[i];
-      swerveModule.periodic();
-      swerveModule.updateInputs(this.autologgedInputs[i]);
-      Logger.processInputs("/SwerveDriveInputs/Module" + i, this.autologgedInputs[i]);
+        return states;
     }
 
-    this.poseEstimator.update(this.imu.getHeading(), this.getModulePositions());
-    Logger.recordOutput("/SwerveDrive/PoseOdometry", this.poseEstimator.getEstimatedPosition());
-  }
+    public SwerveModulePosition[] getModulePositions() {
+        SwerveModulePosition positions[] = new SwerveModulePosition[4];
+
+        for (int i = 0; i < this.swerveModules.length; i++) {
+            positions[i] = this.swerveModules[i].getPosition();
+        }
+
+        return positions;
+    }
+
+    public void resetModules() {
+        for (SwerveModuleIO swerveModule : this.swerveModules) {
+            swerveModule.reset();
+        }
+    }
+
+    @Override
+    public void periodic() {
+        for (int i = 0; i < this.swerveModules.length; i++) {
+            SwerveModuleIO swerveModule = this.swerveModules[i];
+            swerveModule.periodic();
+            swerveModule.updateInputs(this.autologgedInputs[i]);
+            Logger.processInputs("/SwerveDriveInputs/Module" + i, this.autologgedInputs[i]);
+        }
+
+        this.poseEstimator.update(this.imu.getHeading(), this.getModulePositions());
+        Logger.recordOutput("/SwerveDrive/PoseOdometry", this.poseEstimator.getEstimatedPosition());
+    }
 }
