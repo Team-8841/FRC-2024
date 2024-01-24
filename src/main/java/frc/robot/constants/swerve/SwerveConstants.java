@@ -27,11 +27,15 @@ public class SwerveConstants {
         * No need to ever change this unless you are not doing a traditional
         * rectangular/square 4 module swerve
         */
-    public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-            new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
+
+    public static final Translation2d[] modulePositions = {
+        new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
+        new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
+        new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),    
+        new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0)
+    };
+            
+    public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(modulePositions);
 
     /* Module Gear Ratios */
     public static final double driveGearRatio = chosenModule.driveGearRatio;
@@ -68,8 +72,9 @@ public class SwerveConstants {
     public static final double closedLoopRamp = 0.0;
 
     /* Swerve Profiling Values */
-    /** Meters per Second */
-    public static final double maxSpeed = 3; // TODO: This must be tuned to specific robot
-    /** Radians per Second */
-    public static final double maxAngularVelocity = 3; // TODO: This must be tuned to specific robot
+    public static final double maxSpeed = 3; // m/s
+    public static final double maxAcceleration = 3; // m/s^2
+    public static final double maxJerk = 30; // m/s^3
+
+    public static final double maxAngularVelocity = 3; // rad/s
 }

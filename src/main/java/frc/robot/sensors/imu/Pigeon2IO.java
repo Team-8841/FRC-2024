@@ -5,10 +5,10 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 
-public class Pigeon extends IMU {
+public class Pigeon2IO extends IMU {
     Pigeon2 pigeon;
 
-    public Pigeon(int canId) {
+    public Pigeon2IO(int canId) {
         this.pigeon = new Pigeon2(canId);
     }
 
