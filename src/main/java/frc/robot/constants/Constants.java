@@ -1,6 +1,8 @@
 
 package frc.robot.constants;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
 /**
  * Various constants used throughout the program are defined here. They're
  * defined here instead of elsewhere just for ease of changing them.
@@ -17,4 +19,6 @@ public final class Constants {
     public static final double testMaxDistance = 2;
     public static final String testMeasurementFName = "test_measurement.csv";
     public static final String testResidualsFName = "test_residuals.csv";
+
+    public static final DriverStation.Alliance defaultAlliance = DriverStation.Alliance.Blue;
 }

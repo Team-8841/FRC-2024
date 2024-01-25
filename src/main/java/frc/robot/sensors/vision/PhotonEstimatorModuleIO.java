@@ -3,29 +3,29 @@ package frc.robot.sensors.vision;
 import java.util.List;
 import java.util.Optional;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.common.hardware.VisionLEDMode;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
-import org.photonvision.targeting.TargetCorner;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import frc.robot.constants.PhotonConstants;
+import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.constants.Constants;
 import frc.robot.constants.VisionConstants;
 
 public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
-    private final PhotonConstants.EstimatorConfig config;
+    private final VisionConstants.EstimatorConfig config;
     private double lastResult;
     private PhotonCamera camera;
-    private PhotonPoseEstimator estimator;
     private PoseEstimate lastPoseEstimate;
+    private Transform3d cameraToRobot;
 
-    public PhotonEstimatorModuleIO(PhotonConstants.EstimatorConfig config) {
+    public PhotonEstimatorModuleIO(VisionConstants.EstimatorConfig config) {
         this.config = config;
     }
 
@@ -37,13 +37,13 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
      *
      * @param estimatedPose The estimated pose to guess standard deviations for.
      */
-    private Matrix<N3, N1> getEstimationStdDevs(List<PhotonTrackedTarget> targets, Pose2d estimatedPose) {
+    private Matrix<N3, N1> getEstimationStdDevs(List<Integer> targetIds, Pose2d estimatedPose) {
         var estStdDevs = VisionConstants.singleTagStdDevs;
         int numTags = 0;
         double avgDist = 0;
 
-        for (PhotonTrackedTarget tgt : targets) {
-            Optional<Pose3d> tagPose = VisionConstants.fieldLayout.getTagPose(tgt.getFiducialId());
+        for (var tgt : targetIds) {
+            Optional<Pose3d> tagPose = VisionConstants.fieldLayout.getTagPose(tgt);
             if (tagPose.isEmpty()) {
                 continue;
             }
@@ -73,14 +73,14 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
 
     @Override
     public boolean updateInputs(EstimatorInputsAutoLogged inputs) {
-        var latestResult = this.camera.getLatestResult();
+        var latestPipelineResult = this.camera.getLatestResult();
 
-        if (latestResult.getTimestampSeconds() <= inputs.timestamp) {
+        if (latestPipelineResult.getTimestampSeconds() <= inputs.timestamp) {
             return false;
         }
 
-        inputs.timestamp = latestResult.getTimestampSeconds();
-        inputs.latency = latestResult.getLatencyMillis();
+        inputs.timestamp = latestPipelineResult.getTimestampSeconds();
+        inputs.latency = latestPipelineResult.getLatencyMillis();
         inputs.isConnected = this.camera.isConnected();
 
         if (this.lastPoseEstimate != null) {
@@ -98,10 +98,10 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
             };
         }
 
-        if (latestResult.hasTargets()) {
-            inputs.targetCount = latestResult.getTargets().size();
+        if (latestPipelineResult.hasTargets()) {
+            inputs.targetCount = latestPipelineResult.getTargets().size();
 
-            var bestTgt = latestResult.getBestTarget();
+            var bestTgt = latestPipelineResult.getBestTarget();
 
             if (this.lastPoseEstimate != null) {
 
@@ -120,7 +120,7 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
             inputs.estTgtCornersY = new double[corners.size()];
 
             int i = 0;
-            for (TargetCorner corner : corners) {
+            for (var corner : corners) {
                 inputs.estTgtCornersX[i] = corner.x;
                 inputs.estTgtCornersY[i++] = corner.y;
             }
@@ -137,12 +137,11 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
 
         this.camera = new PhotonCamera(camera.name);
 
-        this.camera.setPipelineIndex(0);
+        this.camera.setPipelineIndex(this.config.pipelineIndex);
         this.camera.setDriverMode(false);
         this.camera.setLED(VisionLEDMode.kOff);
 
-        this.estimator = new PhotonPoseEstimator(VisionConstants.fieldLayout, this.config.strategy,
-                this.camera, this.config.robotToCamera);
+        this.cameraToRobot = this.config.robotToCamera.inverse();
     }
 
     @Override
@@ -152,40 +151,40 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
         }
 
         var pipelineResult = this.camera.getLatestResult();
+        var multiTagResult = pipelineResult.getMultiTagResult();
 
-        // If the this is an old pipeline result return none
-        if (pipelineResult.getTimestampSeconds() <= this.lastResult || !pipelineResult.hasTargets()) {
+        // If the this is an old or empty pipeline result return none
+        if (pipelineResult.getTimestampSeconds() <= this.lastResult || !pipelineResult.hasTargets()
+                || !multiTagResult.estimatedPose.isPresent) {
             return Optional.empty();
         }
         this.lastResult = pipelineResult.getTimestampSeconds();
 
-        // Filters targets based on minimum area
-        var targets = pipelineResult.getTargets();
-        for (int i = 0; i < targets.size(); i++) {
-            if (targets.get(i).getArea() < VisionConstants.minimumTagArea) {
-                targets.remove(i--);
-            }
-        }
-
-        // If no targets are left return none
-        if (targets.size() == 0) {
-            return Optional.empty();
-        }
-
         // Calculates the standard deviation of the estimated pose
-        var stdDevs = this.getEstimationStdDevs(targets, currentEstimatedPose);
+        var stdDevs = this.getEstimationStdDevs(multiTagResult.fiducialIDsUsed, currentEstimatedPose);
 
-        // Calculates the estimated pose
-        var filteredPipelineResult = new PhotonPipelineResult(pipelineResult.getLatencyMillis(),
-                targets);
-        filteredPipelineResult.setTimestampSeconds(pipelineResult.getTimestampSeconds());
-        var visionPoseOpt = this.estimator.update(filteredPipelineResult);
+        var bestPoseTransform = multiTagResult.estimatedPose.best.plus(this.cameraToRobot);
 
-        if (visionPoseOpt.isEmpty()) {
+        var prefix = String.format("/Vision/%s/", this.camera.getName());
+        Logger.recordOutput(prefix + "rawEstTransform", multiTagResult.estimatedPose.best);
+
+        var estimatedPose = new Pose3d(bestPoseTransform.getTranslation(), bestPoseTransform.getRotation()).toPose2d();
+        Logger.recordOutput(prefix + "rawEstPose", estimatedPose);
+
+        var alliance = DriverStation.getAlliance().orElse(Constants.defaultAlliance);
+        if (alliance == DriverStation.Alliance.Red) {
+            estimatedPose = new Pose2d(
+                    VisionConstants.fieldLayout.getFieldWidth() - estimatedPose.getX(),
+                    VisionConstants.fieldLayout.getFieldLength() - estimatedPose.getY(),
+                    Rotation2d.fromDegrees(180).plus(estimatedPose.getRotation()));
+        }
+
+        // Filters estimates greater than 1 meter away from the current estimated
+        // position
+        if (estimatedPose.getTranslation().getDistance(currentEstimatedPose.getTranslation()) > 1) {
             return Optional.empty();
         }
 
-        var estimatedPose = visionPoseOpt.get().estimatedPose.toPose2d();
         var estimate = new PoseEstimate(estimatedPose, stdDevs);
         this.lastPoseEstimate = estimate;
 
