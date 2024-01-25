@@ -26,7 +26,8 @@ public interface EstimatorModuleIO {
     @AutoLog
     public static class EstimatorInputs {
         public double timestamp, latency, ambiguity, targetCount;
-        public double bestTgtArea, bestTgtID, bestTgtAmbiguity, bestTgtDist;
+        public double bestTgtArea, bestTgtAmbiguity, bestTgtDist;
+        public int bestTgtId;
 
         public double lastPoseTimestamp;
         public double[] stdDevs = new double[0];

@@ -1,20 +1,17 @@
 package frc.robot.sensors.vision;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.common.hardware.VisionLEDMode;
 
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.lib.util.VisionState;
 import frc.robot.constants.Constants;
 import frc.robot.constants.VisionConstants;
 
@@ -27,48 +24,7 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
 
     public PhotonEstimatorModuleIO(VisionConstants.EstimatorConfig config) {
         this.config = config;
-    }
-
-    /**
-     * The standard deviations of the estimated pose the estimator for use
-     * with {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator}
-     * SwerveDrivePoseEstimator}.
-     * This should only be used when there are targets visible.
-     *
-     * @param estimatedPose The estimated pose to guess standard deviations for.
-     */
-    private Matrix<N3, N1> getEstimationStdDevs(List<Integer> targetIds, Pose2d estimatedPose) {
-        var estStdDevs = VisionConstants.singleTagStdDevs;
-        int numTags = 0;
-        double avgDist = 0;
-
-        for (var tgt : targetIds) {
-            Optional<Pose3d> tagPose = VisionConstants.fieldLayout.getTagPose(tgt);
-            if (tagPose.isEmpty()) {
-                continue;
-            }
-            numTags++;
-            avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
-        }
-
-        if (numTags == 0) {
-            return estStdDevs;
-        }
-        avgDist /= numTags;
-        // Decrease std devs if multiple targets are visible
-        if (numTags > 1) {
-            estStdDevs = VisionConstants.multiTagStdDevs;
-        }
-        // Increase std devs based on (average) distance
-        estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
-        // if (numTags == 1 && avgDist > 4) {
-        // estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE,
-        // Double.MAX_VALUE);
-        // } else {
-        // estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
-        // }
-
-        return estStdDevs;
+        this.cameraToRobot = this.config.robotToCamera.inverse();
     }
 
     @Override
@@ -104,14 +60,13 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
             var bestTgt = latestPipelineResult.getBestTarget();
 
             if (this.lastPoseEstimate != null) {
-
                 Pose2d tagPose = VisionConstants.fieldLayout.getTagPose(bestTgt.getFiducialId()).get().toPose2d();
                 inputs.bestTgtDist = this.lastPoseEstimate.estimatedPose.getTranslation()
                         .getDistance(tagPose.getTranslation());
             }
 
             inputs.bestTgtArea = bestTgt.getArea();
-            inputs.bestTgtID = bestTgt.getArea();
+            inputs.bestTgtId = bestTgt.getFiducialId();
             inputs.bestTgtAmbiguity = bestTgt.getPoseAmbiguity();
 
             var corners = bestTgt.getDetectedCorners();
@@ -140,8 +95,6 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
         this.camera.setPipelineIndex(this.config.pipelineIndex);
         this.camera.setDriverMode(false);
         this.camera.setLED(VisionLEDMode.kOff);
-
-        this.cameraToRobot = this.config.robotToCamera.inverse();
     }
 
     @Override
@@ -161,7 +114,7 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
         this.lastResult = pipelineResult.getTimestampSeconds();
 
         // Calculates the standard deviation of the estimated pose
-        var stdDevs = this.getEstimationStdDevs(multiTagResult.fiducialIDsUsed, currentEstimatedPose);
+        var stdDevs = VisionState.getEstimationStdDevs(multiTagResult.fiducialIDsUsed, currentEstimatedPose);
 
         var bestPoseTransform = multiTagResult.estimatedPose.best.plus(this.cameraToRobot);
 
@@ -184,6 +137,9 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
         if (estimatedPose.getTranslation().getDistance(currentEstimatedPose.getTranslation()) > 1) {
             return Optional.empty();
         }
+
+        Logger.recordOutput(prefix + "lastEstPose", estimatedPose);
+        Logger.recordOutput(prefix + "lastStdDevs", stdDevs.getData());
 
         var estimate = new PoseEstimate(estimatedPose, stdDevs);
         this.lastPoseEstimate = estimate;
