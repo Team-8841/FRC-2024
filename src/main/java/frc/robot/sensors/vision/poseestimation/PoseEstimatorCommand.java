@@ -1,4 +1,4 @@
-package frc.robot.sensors.vision;
+package frc.robot.sensors.vision.poseestimation;
 
 import java.util.Optional;
 
@@ -6,14 +6,15 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.sensors.vision.Camera;
 
 public class PoseEstimatorCommand extends Command {
-    private EstimatorCamera camera;
+    private Camera camera;
     private EstimatorModuleIO estimatorModule;
     private SwerveDrivePoseEstimator poseEstimator;
     private EstimatorInputsAutoLogged loggedInputs;
 
-    public PoseEstimatorCommand(EstimatorCamera camera, EstimatorModuleIO estimatorModule, SwerveDrivePoseEstimator poseEstimator) {
+    public PoseEstimatorCommand(Camera camera, EstimatorModuleIO estimatorModule, SwerveDrivePoseEstimator poseEstimator) {
         this.addRequirements(camera);
 
         this.camera = camera;
@@ -42,7 +43,7 @@ public class PoseEstimatorCommand extends Command {
         }
 
         poseEstimateOpt.ifPresent((poseEstimate) -> {
-            var prefix = String.format("/Vision/%s/", this.camera.name);
+            var prefix = String.format("/AprilTags/%s/", this.camera.name);
             Logger.recordOutput(prefix + "processedEstPose", poseEstimate.estimatedPose);
             Logger.recordOutput(prefix + "processedEstStdDevs", poseEstimate.stdDevs.getData());
 

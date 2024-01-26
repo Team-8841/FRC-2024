@@ -1,4 +1,4 @@
-package frc.robot.sensors.vision;
+package frc.robot.sensors.vision.poseestimation;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -20,16 +20,17 @@ import edu.wpi.first.wpilibj.RobotController;
 import frc.lib.util.VisionState;
 import frc.robot.constants.Constants;
 import frc.robot.constants.VisionConstants;
-import frc.robot.constants.VisionConstants.EstimatorConfig;
+import frc.robot.constants.VisionConstants.CameraConfig;
+import frc.robot.sensors.vision.Camera;
 
 public class LimelightEstimatorModuleIO implements EstimatorModuleIO {
     private NetworkTable table;
     private long lastChange, lastUpdate;
     private PoseEstimate lastPoseEstimate;
-    private EstimatorConfig config;
+    private CameraConfig config;
     private String name;
 
-    public LimelightEstimatorModuleIO(EstimatorConfig config) {
+    public LimelightEstimatorModuleIO(CameraConfig config) {
         this.config = config;
     }
 
@@ -71,9 +72,9 @@ public class LimelightEstimatorModuleIO implements EstimatorModuleIO {
     }
 
     @Override
-    public void setCamera(EstimatorCamera camera) {
+    public void setCamera(Camera camera) {
         this.table = NetworkTableInstance.getDefault().getTable(camera.name);
-        this.table.getEntry("pipeline").setInteger(this.config.pipelineIndex);
+        this.table.getEntry("pipeline").setInteger(this.config.apriltagPipeline);
         this.table.getEntry("ledMode").setInteger(1);
         this.name = camera.name;
     }
@@ -82,7 +83,7 @@ public class LimelightEstimatorModuleIO implements EstimatorModuleIO {
     public Optional<PoseEstimate> getPoseEstimation(Pose2d currentEstimatedPose) {
         NetworkTableEntry poseEntry;
 
-        if (this.table.getEntry("getpipe").getInteger(-1) != this.config.pipelineIndex
+        if (this.table.getEntry("getpipe").getInteger(-1) != this.config.apriltagPipeline
                 || this.table.getEntry("tv").getInteger(0) != 1) {
             return Optional.empty();
         }

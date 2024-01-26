@@ -1,4 +1,4 @@
-package frc.robot.sensors.vision;
+package frc.robot.sensors.vision.poseestimation;
 
 import java.util.Optional;
 
@@ -9,6 +9,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import frc.robot.sensors.vision.Camera;
 
 public interface EstimatorModuleIO {
     public static final class PoseEstimate {
@@ -40,7 +41,7 @@ public interface EstimatorModuleIO {
 
     public boolean updateInputs(EstimatorInputsAutoLogged inputs);
 
-    public void setCamera(EstimatorCamera camera);
+    public void setCamera(Camera camera);
 
     public Optional<PoseEstimate> getPoseEstimation(Pose2d currentEstimatedPose);
 }

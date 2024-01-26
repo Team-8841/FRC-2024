@@ -1,4 +1,4 @@
-package frc.robot.sensors.vision;
+package frc.robot.sensors.vision.poseestimation;
 
 import java.util.Optional;
 
@@ -14,15 +14,16 @@ import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib.util.VisionState;
 import frc.robot.constants.Constants;
 import frc.robot.constants.VisionConstants;
+import frc.robot.sensors.vision.Camera;
 
 public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
-    private final VisionConstants.EstimatorConfig config;
+    private final VisionConstants.CameraConfig config;
     private double lastResult;
     private PhotonCamera camera;
     private PoseEstimate lastPoseEstimate;
     private Transform3d cameraToRobot;
 
-    public PhotonEstimatorModuleIO(VisionConstants.EstimatorConfig config) {
+    public PhotonEstimatorModuleIO(VisionConstants.CameraConfig config) {
         this.config = config;
         this.cameraToRobot = this.config.robotToCamera.inverse();
     }
@@ -87,12 +88,12 @@ public class PhotonEstimatorModuleIO implements EstimatorModuleIO {
     }
 
     @Override
-    public void setCamera(EstimatorCamera camera) {
-        System.out.println("Connecting to camera: " + camera);
+    public void setCamera(Camera camera) {
+        System.out.println("Connecting to camera: " + camera.name);
 
         this.camera = new PhotonCamera(camera.name);
 
-        this.camera.setPipelineIndex(this.config.pipelineIndex);
+        this.camera.setPipelineIndex(this.config.apriltagPipeline);
         this.camera.setDriverMode(false);
         this.camera.setLED(VisionLEDMode.kOff);
     }
