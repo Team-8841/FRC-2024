@@ -1,21 +1,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.Intake.IntakeConstants;
 import frc.robot.subsystems.Intake.IntakeSubsytem;
+import frc.robot.subsystems.Intake.IntakeSubsytem.IntakeState;
 
 public class IntakeInOut extends Command {
   private IntakeSubsytem intakeSubsystem;
 
-  private boolean m_in, m_out, m_intakeSensor, m_feedSensor;
+  private int m_intakeInput;
 
-  private IntakeInOut(
-      boolean in, boolean out, boolean intakeSensor, boolean feedSensor, IntakeSubsytem intake) {
+  public IntakeInOut(int intakeInput, IntakeSubsytem intake) {
     intakeSubsystem = intake;
-    m_in = in;
-    m_out = out;
-    m_feedSensor = feedSensor;
-    m_intakeSensor = intakeSensor;
+    m_intakeInput = intakeInput;
 
     addRequirements(intake);
   }
@@ -25,33 +21,33 @@ public class IntakeInOut extends Command {
 
   @Override
   public void execute() {
-    if (m_out) {
-      intakeSubsystem.setIntakeSpeed(IntakeConstants.kIntakeOutSpeed);
-      intakeSubsystem.setIntakeSpeed(IntakeConstants.kFeederOutSpeed);
-    } else if (m_intakeSensor && m_in) {
-      intakeSubsystem.setIntakeSpeed(IntakeConstants.kIntakeOutSpeed);
-      if (!m_feedSensor) {
-        intakeSubsystem.setFeedSpeed(IntakeConstants.kFeederInSpeed);
-      } else {
-        intakeSubsystem.setFeedSpeed(0);
-      }
-    } else if (!m_intakeSensor && m_in) {
-      intakeSubsystem.setIntakeSpeed(IntakeConstants.kIntakeInSpeed);
-      if (!m_feedSensor) {
-        intakeSubsystem.setFeedSpeed(IntakeConstants.kFeederInSpeed);
-      } else {
-        intakeSubsystem.setFeedSpeed(0);
-      }
-    } else {
-      intakeSubsystem.setIntakeSpeed(0);
-      intakeSubsystem.setFeedSpeed(0);
+    switch (m_intakeInput) {
+
+      case -1:
+        intakeSubsystem.intake(IntakeState.OUTAKE);
+        break;
+
+      case 0:
+        intakeSubsystem.intake(IntakeState.OFF);
+        break;
+      
+      case 1:
+
+        if(intakeSubsystem.getIndexSensor()) {
+          intakeSubsystem.intake(IntakeState.INTAKEANDHOLD);
+        } else {
+          intakeSubsystem.intake(IntakeState.INTAKE);
+        }
+        break;
+      default:
+        intakeSubsystem.intake(IntakeState.OFF);
+        break;
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    intakeSubsystem.setFeedSpeed(0);
-    intakeSubsystem.setIntakeSpeed(0);
+    intakeSubsystem.intake(IntakeState.OFF);
   }
 
   @Override
