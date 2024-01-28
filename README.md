@@ -1,7 +1,5 @@
 # Team 8841's 2024 Season
 
-[![CI](https://github.com/Team-8841/FRC-2024/actions/workflows/main.yml/badge.svg)](https://github.com/Team-8841/FRC-2024/actions/workflows/main.yml)
-
 ![Team logo](./team_logo.jpg)
 
 This repo contains the code we're writing for the 2024 FRC game and season: [Crescendo](https://www.firstinspires.org/robotics/frc/game-and-season). I'm not really sure what to write here tbh. Trans rights are human rights.

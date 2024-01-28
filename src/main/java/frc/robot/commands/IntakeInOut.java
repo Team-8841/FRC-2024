@@ -1,15 +1,14 @@
 package frc.robot.commands;
-
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.intake.IntakeSubsytem;
-import frc.robot.subsystems.intake.IntakeSubsytem.IntakeState;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 
 public class IntakeInOut extends Command {
-  private IntakeSubsytem intakeSubsystem;
+  private IntakeSubsystem intakeSubsystem;
 
   private int m_intakeInput;
 
-  public IntakeInOut(int intakeInput, IntakeSubsytem intake) {
+  public IntakeInOut(int intakeInput, IntakeSubsystem intake) {
     intakeSubsystem = intake;
     m_intakeInput = intakeInput;
 
@@ -48,10 +47,5 @@ public class IntakeInOut extends Command {
   @Override
   public void end(boolean interrupted) {
     intakeSubsystem.setIntakeState(IntakeState.OFF);
-  }
-
-  @Override
-  public boolean isFinished() {
-    return false;
   }
 }

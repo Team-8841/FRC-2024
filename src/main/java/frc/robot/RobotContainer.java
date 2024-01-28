@@ -4,26 +4,33 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.commands.FollowPathHolonomic;
+
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.IntakeInOut;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TestCommand;
 import frc.robot.constants.Constants;
-import frc.robot.constants.swerve.MixedMotorConstants;
+import frc.robot.constants.PathingConstants;
+import frc.robot.constants.swerve.PureTalonFXConstants;
 import frc.robot.sensors.imu.DummyIMU;
 import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.NavX2;
+import frc.robot.sensors.imu.Pigeon2IO;
 import frc.robot.sensors.imu.SimIMU;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
 import frc.robot.subsystems.drive.DummySwerveModuleIO;
-import frc.robot.subsystems.drive.MixedSwerveModuleIO;
 import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
+import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
+import frc.robot.subsystems.intake.RealIntakeIO;
+import frc.robot.subsystems.intake.DummyIntakeIO;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 
 public class RobotContainer {
   // Sensors
@@ -31,6 +38,7 @@ public class RobotContainer {
 
   // Subsystems
   private DriveTrainSubsystem driveTrain;
+  private IntakeSubsystem intake;
 
   // Controllers
   private CommandXboxController driveController;
@@ -40,35 +48,39 @@ public class RobotContainer {
 
     if (RobotBase.isReal()) {
       // Real robot
-      swerveModules =
-          new SwerveModuleIO[] {
-            new MixedSwerveModuleIO(MixedMotorConstants.Mod0.constants),
-            new MixedSwerveModuleIO(MixedMotorConstants.Mod1.constants),
-            new MixedSwerveModuleIO(MixedMotorConstants.Mod2.constants),
-            new MixedSwerveModuleIO(MixedMotorConstants.Mod3.constants),
-          };
+      swerveModules = new SwerveModuleIO[] {
+          //new DummySwerveModuleIO(),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod0.constants, false),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod1.constants, false),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod2.constants, false),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants, false),
+          //new DummySwerveModuleIO(),
+          //new DummySwerveModuleIO(),
+      };
 
+      //this.imu = new Pigeon2IO(Constants.pigeonId);
       this.imu = new NavX2();
+      this.intake = new IntakeSubsystem(new RealIntakeIO());
     } else if (Constants.simReplay) {
       // Replay
-      swerveModules =
-          new SwerveModuleIO[] {
-            new DummySwerveModuleIO(),
-            new DummySwerveModuleIO(),
-            new DummySwerveModuleIO(),
-            new DummySwerveModuleIO(),
-          };
+      swerveModules = new SwerveModuleIO[] {
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+      };
 
       this.imu = new DummyIMU();
-    } else {
+      this.intake = new IntakeSubsystem(new DummyIntakeIO());
+    }
+    else {
       // Physics sim
-      swerveModules =
-          new SwerveModuleIO[] {
-            new SimSwerveModuleIO(),
-            new SimSwerveModuleIO(),
-            new SimSwerveModuleIO(),
-            new SimSwerveModuleIO(),
-          };
+      swerveModules = new SwerveModuleIO[] {
+          new SimSwerveModuleIO(),
+          new SimSwerveModuleIO(),
+          new SimSwerveModuleIO(),
+          new SimSwerveModuleIO(),
+      };
 
       this.imu = new SimIMU();
     }
@@ -82,21 +94,34 @@ public class RobotContainer {
     this.configureBindings(this.driveController);
   }
 
-  private void configureBindings(CommandXboxController controller) {}
+  private void configureBindings(CommandXboxController controller) {
+    //if (this.intake != null) {
+    //  Command aCommand = new IntakeInOut(false, true, this.intake);
+    //  Command bCommand = new IntakeInOut(true, false, this.intake);
+    //  controller.a().whileTrue(aCommand);
+    //  controller.b().whileTrue(bCommand);
+    //}
+  }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return new FollowPathHolonomic(
+      PathingConstants.basicPath, 
+      this.driveTrain::getPose,
+      this.driveTrain::getSpeed,
+      this.driveTrain::drive,
+      PathingConstants.pathFollowerConfig, 
+      () -> true,
+      this.driveTrain
+    );
   }
 
   public Command getTeleopCommand() {
-    return new TeleopSwerve(
-        driveTrain,
-        () -> -this.driveController.getLeftY(),
+    return new TeleopSwerve(driveTrain, () -> -this.driveController.getLeftY(),
         () -> -this.driveController.getLeftX(),
         () -> -this.driveController.getRightX());
   }
 
   public Command getTestCommand() {
-    return new TestCommand(driveTrain);
+    return new TestCommand(this.driveTrain);
   }
 }

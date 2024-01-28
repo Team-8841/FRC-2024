@@ -4,13 +4,13 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Intake.IntakeConstants;
 
-public class IntakeSubsytem extends SubsystemBase {
+public class IntakeSubsystem extends SubsystemBase {
   /*-------------------------------- Private Instance Variables --------------------------------*/
   // Subsystem State
   private IntakeState curState;
   private IntakeIO hardwImpl;
 
-  public IntakeSubsytem(IntakeIO hardwImpl) {
+  public IntakeSubsystem(IntakeIO hardwImpl) {
     this.hardwImpl = hardwImpl;
     this.initializeShuffleboardWidgets();
   
@@ -39,7 +39,7 @@ public class IntakeSubsytem extends SubsystemBase {
   /*-------------------------------- Custom Public Functions --------------------------------*/
 
   // Set intake state
-  public void intake(IntakeState state) {
+  public void setIntakeState(IntakeState state) {
     curState = state;
     this.setIntakeSpeed(state.intakeSpeed);
     this.setIndexSpeed(state.indexSpeed);
