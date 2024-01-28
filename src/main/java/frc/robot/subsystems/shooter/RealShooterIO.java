@@ -1,5 +1,7 @@
 package frc.robot.subsystems.shooter;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -27,7 +29,10 @@ public class RealShooterIO implements ShooterIO {
     // Sensors
     private final RelativeEncoder m_endEffectorEncoder = this.m_endEffectorROT.getEncoder(),
             m_endEffectorRollerEncoder = this.m_endEffectorRoller.getEncoder();
-    private final StatusSignal<Double> shooterVel = this.m_shooter.getVelocity();
+    private final StatusSignal<Double> shooterVel = this.m_shooter.getVelocity(),
+            shooterSupCur = this.m_shooter.getSupplyCurrent(),
+            shooterStaCur = this.m_shooter.getStatorCurrent(), followerSupCur = this.m_follower.getSupplyCurrent(),
+            followerStaCur = this.m_follower.getStatorCurrent();
 
     private double shooterSP;
     private Rotation2d endEffectorSP = new Rotation2d();
@@ -86,5 +91,17 @@ public class RealShooterIO implements ShooterIO {
         // Roller
         inputs.setRollerDCycle = this.m_endEffectorRoller.get();
         inputs.rollerSpeedRPS = this.m_endEffectorRollerEncoder.getVelocity() / 60;
+
+        // Current readings
+        Logger.recordOutput("/Shooter/shooterSupCur", this.shooterSupCur.refresh().getValue());
+        Logger.recordOutput("/Shooter/shooterStaCur", this.shooterStaCur.refresh().getValue());
+        Logger.recordOutput("/Shooter/shooterFollowerSupCur", this.followerSupCur.refresh().getValue());
+        Logger.recordOutput("/Shooter/shooterFollowerStaCur", this.followerStaCur.refresh().getValue());
+        double endEffectorOutCur = this.m_endEffectorROT.getOutputCurrent();
+        Logger.recordOutput("/Shooter/endEffectorOutCur", endEffectorOutCur);
+        double rollerOutCur = this.m_endEffectorRoller.getOutputCurrent();
+        Logger.recordOutput("/Shooter/rollerOutCur", rollerOutCur);
+        Logger.recordOutput("/Shooter/totalCur", this.shooterSupCur.getValue() + this.followerSupCur.getValue() +
+                endEffectorOutCur + rollerOutCur);
     }
 }

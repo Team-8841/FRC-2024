@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -38,5 +40,7 @@ public class RealIntakeIO implements IntakeIO {
         inputs.actualIndexRPS = this.indexEncoder.getVelocity();
         inputs.setIntakeDCycle = this.intakeMotor.get();
         inputs.setIndexDCycle = this.indexMotor.get();
+
+        Logger.recordOutput("/Intake/intakeMotorOutCur", this.intakeMotor.getOutputCurrent());
     }
 }

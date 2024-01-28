@@ -84,4 +84,13 @@ public interface SwerveModuleIO {
   public default double getSpeed() {
     return this.getState().speedMetersPerSecond;
   }
+
+  /**
+   * Gets the total output/supply current of the module.
+   *
+   * @return The current state.
+   */
+  public default double getCurrent() {
+    return 0;
+  }
 }
