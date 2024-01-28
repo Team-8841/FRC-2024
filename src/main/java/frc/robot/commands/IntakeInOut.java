@@ -1,8 +1,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Intake.IntakeSubsytem;
-import frc.robot.subsystems.Intake.IntakeSubsytem.IntakeState;
+import frc.robot.subsystems.intake.IntakeSubsytem;
+import frc.robot.subsystems.intake.IntakeSubsytem.IntakeState;
 
 public class IntakeInOut extends Command {
   private IntakeSubsytem intakeSubsystem;
@@ -24,30 +24,30 @@ public class IntakeInOut extends Command {
     switch (m_intakeInput) {
 
       case -1:
-        intakeSubsystem.intake(IntakeState.OUTAKE);
+        intakeSubsystem.setIntakeState(IntakeState.OUTAKE);
         break;
 
       case 0:
-        intakeSubsystem.intake(IntakeState.OFF);
+        intakeSubsystem.setIntakeState(IntakeState.OFF);
         break;
       
       case 1:
 
         if(intakeSubsystem.getIndexSensor()) {
-          intakeSubsystem.intake(IntakeState.INTAKEANDHOLD);
+          intakeSubsystem.setIntakeState(IntakeState.INTAKEANDHOLD);
         } else {
-          intakeSubsystem.intake(IntakeState.INTAKE);
+          intakeSubsystem.setIntakeState(IntakeState.INTAKE);
         }
         break;
       default:
-        intakeSubsystem.intake(IntakeState.OFF);
+        intakeSubsystem.setIntakeState(IntakeState.OFF);
         break;
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    intakeSubsystem.intake(IntakeState.OFF);
+    intakeSubsystem.setIntakeState(IntakeState.OFF);
   }
 
   @Override

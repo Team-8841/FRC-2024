@@ -132,7 +132,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
       SwerveModuleIO swerveModule = this.swerveModules[i];
       swerveModule.periodic();
       swerveModule.updateInputs(this.autologgedInputs[i]);
-      Logger.processInputs("/SwerveDriveInputs/Module" + i, this.autologgedInputs[i]);
+      Logger.processInputs("/SwerveDrive/Module" + i, this.autologgedInputs[i]);
     }
 
     this.poseEstimator.update(this.imu.getHeading(), this.getModulePositions());

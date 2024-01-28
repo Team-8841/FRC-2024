@@ -1,31 +1,19 @@
-package frc.robot.subsystems.Intake;
+package frc.robot.subsystems.intake;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Intake.IntakeConstants;
 
 public class IntakeSubsytem extends SubsystemBase {
-
-
-
   /*-------------------------------- Private Instance Variables --------------------------------*/
-
-  // Motors
-  private final CANSparkMax intakeMotor =
-      new CANSparkMax(IntakeConstants.intakeMotor, MotorType.kBrushed);
-  private final CANSparkMax indexMotor =
-      new CANSparkMax(IntakeConstants.indexMotor, MotorType.kBrushed);
-
-  // Sensors
-  private DigitalInput indexSenor = new DigitalInput(IntakeConstants.indexSensor);
-
   // Subsystem State
   private IntakeState curState;
+  private IntakeIO hardwImpl;
 
-  public IntakeSubsytem() {}
+  public IntakeSubsytem(IntakeIO hardwImpl) {
+    this.hardwImpl = hardwImpl;
+    this.initializeShuffleboardWidgets();
+  }
 
   /*-------------------------------- Public Instance Variables --------------------------------*/
 
@@ -46,40 +34,36 @@ public class IntakeSubsytem extends SubsystemBase {
 
   /*-------------------------------- Generic Subsystem Functions --------------------------------*/
 
-  @Override
-  public void periodic() {
-    updateStatus();
-  }
-
   /*-------------------------------- Custom Public Functions --------------------------------*/
 
   // Set intake state
   public void intake(IntakeState state) {
     curState = state;
-    setIntakeSpeed(state.intakeSpeed);
-    setIndexSpeed(state.indexSpeed);
+    this.setIntakeSpeed(state.intakeSpeed);
+    this.setIndexSpeed(state.indexSpeed);
   }
 
   // Set intake motor speed
   public void setIntakeSpeed(double speed) {
-    intakeMotor.set(speed);
+    this.hardwImpl.setIntakeSpeed(speed);
   }
 
   // set index motor speed
-  public void setIndexSpeed(double speed){
-    indexMotor.set(speed);
+  public void setIndexSpeed(double speed) {
+    this.hardwImpl.setIndexSpeed(speed);
   }
 
   // Get the index sensor
   public boolean getIndexSensor() {
-    return indexSenor.get();
-  }
-
-  // Show subsystem status on the dashboard
-  private void updateStatus() {
-    SmartDashboard.putString("[Intake]: Current State ", curState.name());
-    SmartDashboard.putBoolean("[Intake] Feed Sensor", getIndexSensor());
+    return this.hardwImpl.getIndexSensor();
   }
 
   /*-------------------------------- Custom Private Functions --------------------------------*/
+
+  // Show subsystem status on the dashboard
+  private void initializeShuffleboardWidgets() {
+    var tab = Shuffleboard.getTab("Robot").getLayout("Intake");
+    tab.addString("State", curState::name);
+    tab.addBoolean("Feed Sensor", this::getIndexSensor);
+  }
 }

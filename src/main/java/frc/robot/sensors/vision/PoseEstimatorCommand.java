@@ -39,7 +39,7 @@ public class PoseEstimatorCommand extends Command {
         this.estimatorModule.getPoseEstimation(this.poseEstimator.getEstimatedPosition());
 
     if (this.estimatorModule.updateInputs(this.loggedInputs)) {
-      Logger.processInputs(String.format("/Vision/%s/inputs", this.camera.name), this.loggedInputs);
+      Logger.processInputs(String.format("/Vision/%s", this.camera.name), this.loggedInputs);
     }
 
     poseEstimateOpt.ifPresent(
