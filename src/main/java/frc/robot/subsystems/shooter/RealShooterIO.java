@@ -14,7 +14,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.constants.Shooter.ShooterConstants;
+import frc.robot.constants.ShooterConstants;
 
 public class RealShooterIO implements ShooterIO {
     // Motors
