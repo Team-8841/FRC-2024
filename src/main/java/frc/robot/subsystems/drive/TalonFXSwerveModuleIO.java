@@ -183,7 +183,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
 
     @Override
     public void periodic() {
-        var prefix = String.format("/Swerve/Module%d/", this.constants.moduleNum);
+        var prefix = String.format("Swerve/Module%d/", this.constants.moduleNum);
         Logger.recordOutput(prefix + "driveSupCur", this.driveSupCur.refresh().getValue());
         Logger.recordOutput(prefix + "driveStaCur", this.driveStaCur.refresh().getValue());
         Logger.recordOutput(prefix + "steeringSupCur", this.steeringSupCur.refresh().getValue());

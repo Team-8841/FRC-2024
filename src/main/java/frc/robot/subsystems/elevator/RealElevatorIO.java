@@ -27,9 +27,9 @@ public class RealElevatorIO implements ElevatorIO {
         inputs.actualElevatorRPS = this.elevatorEncoder.getVelocity() / 60;
 
         double elevatorOutCur = this.m_elevator.getOutputCurrent();
-        Logger.recordOutput("/Elevator/elevatorMotorOutCur", elevatorOutCur);
+        Logger.recordOutput("Elevator/elevatorMotorOutCur", elevatorOutCur);
         double followerOutCur = this.m_elevatorFollower.getOutputCurrent();
-        Logger.recordOutput("/Elevator/elevatorFollowerMotorOutCur", followerOutCur);
-        Logger.recordOutput("/Elevator/totalCur", elevatorOutCur + followerOutCur);
+        Logger.recordOutput("Elevator/elevatorFollowerMotorOutCur", followerOutCur);
+        Logger.recordOutput("Elevator/totalCur", elevatorOutCur + followerOutCur);
     }
 }

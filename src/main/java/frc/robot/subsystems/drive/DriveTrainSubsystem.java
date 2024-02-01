@@ -77,21 +77,13 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
         for (int i = 0; i < this.swerveModules.length; i++) {
             swerveModuleStates[i] = SwerveModuleState.optimize(swerveModuleStates[i], this.swerveModules[i].getAngle());
-            Logger.recordOutput("/SwerveDrive/moduleState" + i, swerveModuleStates[i]);
+            Logger.recordOutput("Swerve/Module" + i + "/state", swerveModuleStates[i]);
 
             this.swerveModules[i].setDesiredState(swerveModuleStates[i]);
             this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
             this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
         }
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
-
-        for (int i = 0; i < this.swerveModules.length; i++) {
-            Logger.recordOutput("/SwerveDrive/moduleState" + i, swerveModuleStates[i]);
-
-            this.swerveModules[i].setDesiredState(swerveModuleStates[i]);
-            this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
-            this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
-        }
 
     }
 
@@ -165,12 +157,12 @@ public class DriveTrainSubsystem extends SubsystemBase {
             SwerveModuleIO swerveModule = this.swerveModules[i];
             swerveModule.periodic();
             swerveModule.updateInputs(this.autologgedInputs[i]);
-            Logger.processInputs("/SwerveDriveInputs/Module" + i, this.autologgedInputs[i]);
+            Logger.processInputs("Swerve/Module" + i, this.autologgedInputs[i]);
             totalCur += swerveModule.getCurrent();
         }
 
-        Logger.recordOutput("/Swerve/totalCur", totalCur);
+        Logger.recordOutput("Swerve/totalCur", totalCur);
         this.poseEstimator.update(this.imu.getHeading(), this.getModulePositions());
-        Logger.recordOutput("/SwerveDrive/poseOdometry", this.poseEstimator.getEstimatedPosition());
+        Logger.recordOutput("Swerve/poseOdometry", this.poseEstimator.getEstimatedPosition());
     }
 }

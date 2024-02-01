@@ -81,11 +81,11 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
 
     var canStatus = RobotController.getCANStatus();
-    Logger.recordOutput("/CANStatus/busOffCount", canStatus.busOffCount);
-    Logger.recordOutput("/CANStatus/percentBusUtilization", canStatus.percentBusUtilization);
-    Logger.recordOutput("/CANStatus/receiveErrorCount", canStatus.receiveErrorCount);
-    Logger.recordOutput("/CANStatus/transmitErrorCount", canStatus.transmitErrorCount);
-    Logger.recordOutput("/CANStatus/txFullCount", canStatus.txFullCount);
+    Logger.recordOutput("CANStatus/busOffCount", canStatus.busOffCount);
+    Logger.recordOutput("CANStatus/percentBusUtilization", canStatus.percentBusUtilization);
+    Logger.recordOutput("CANStatus/receiveErrorCount", canStatus.receiveErrorCount);
+    Logger.recordOutput("CANStatus/transmitErrorCount", canStatus.transmitErrorCount);
+    Logger.recordOutput("CANStatus/txFullCount", canStatus.txFullCount);
 
     if (isSimulation()) {
       SimManager.getInstance().periodic();

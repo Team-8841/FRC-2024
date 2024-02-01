@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ShooterConstants;
@@ -95,7 +96,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /*-------------------------------- Custom Private Functions --------------------------------*/
     private void initializeShuffleboardWidgets() {
-        var layout = Shuffleboard.getTab("Robot").getLayout("Shooter");
+        var layout = Shuffleboard.getTab("Robot").getLayout("Shooter", BuiltInLayouts.kList);
         layout.addDouble("Velocity", this.hwImpl::getShooterRPS);
         layout.addBoolean("At Speed", this::shooterAtTarget);
         layout.addDouble("Angle", () -> this.hwImpl.getEndEffector().getDegrees());

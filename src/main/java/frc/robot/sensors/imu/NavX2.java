@@ -24,15 +24,15 @@ public class NavX2 extends IMU {
     public void periodic() {
         super.periodic();
 
-        Logger.recordOutput("/IMU/Displacement/x", this.ahrs.getDisplacementX());
-        Logger.recordOutput("/IMU/Displacement/y", this.ahrs.getDisplacementY());
-        Logger.recordOutput("/IMU/Displacement/z", this.ahrs.getDisplacementZ());
+        Logger.recordOutput("IMU/Displacement/x", this.ahrs.getDisplacementX());
+        Logger.recordOutput("IMU/Displacement/y", this.ahrs.getDisplacementY());
+        Logger.recordOutput("IMU/Displacement/z", this.ahrs.getDisplacementZ());
 
-        Logger.recordOutput("/IMU/Velocity/x", this.ahrs.getVelocityX());
-        Logger.recordOutput("/IMU/Velocity/y", this.ahrs.getVelocityY());
-        Logger.recordOutput("/IMU/Velocity/z", this.ahrs.getVelocityZ());
+        Logger.recordOutput("IMU/Velocity/x", this.ahrs.getVelocityX());
+        Logger.recordOutput("IMU/Velocity/y", this.ahrs.getVelocityY());
+        Logger.recordOutput("IMU/Velocity/z", this.ahrs.getVelocityZ());
 
-        Logger.recordOutput("/IMU/Calibrating", this.ahrs.isCalibrating());
+        Logger.recordOutput("IMU/Calibrating", this.ahrs.isCalibrating());
     }
 
     @Override
@@ -43,7 +43,7 @@ public class NavX2 extends IMU {
 
     @Override
     public Rotation2d getHeading() {
-        return Rotation2d.fromDegrees(this.ahrs.getFusedHeading());
+        return Rotation2d.fromDegrees(360-this.ahrs.getFusedHeading());
     }
 
     @Override

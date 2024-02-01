@@ -93,15 +93,15 @@ public class RealShooterIO implements ShooterIO {
         inputs.rollerSpeedRPS = this.m_endEffectorRollerEncoder.getVelocity() / 60;
 
         // Current readings
-        Logger.recordOutput("/Shooter/shooterSupCur", this.shooterSupCur.refresh().getValue());
-        Logger.recordOutput("/Shooter/shooterStaCur", this.shooterStaCur.refresh().getValue());
-        Logger.recordOutput("/Shooter/shooterFollowerSupCur", this.followerSupCur.refresh().getValue());
-        Logger.recordOutput("/Shooter/shooterFollowerStaCur", this.followerStaCur.refresh().getValue());
+        Logger.recordOutput("Shooter/shooterSupCur", this.shooterSupCur.refresh().getValue());
+        Logger.recordOutput("Shooter/shooterStaCur", this.shooterStaCur.refresh().getValue());
+        Logger.recordOutput("Shooter/shooterFollowerSupCur", this.followerSupCur.refresh().getValue());
+        Logger.recordOutput("Shooter/shooterFollowerStaCur", this.followerStaCur.refresh().getValue());
         double endEffectorOutCur = this.m_endEffectorROT.getOutputCurrent();
-        Logger.recordOutput("/Shooter/endEffectorOutCur", endEffectorOutCur);
+        Logger.recordOutput("Shooter/endEffectorOutCur", endEffectorOutCur);
         double rollerOutCur = this.m_endEffectorRoller.getOutputCurrent();
-        Logger.recordOutput("/Shooter/rollerOutCur", rollerOutCur);
-        Logger.recordOutput("/Shooter/totalCur", this.shooterSupCur.getValue() + this.followerSupCur.getValue() +
+        Logger.recordOutput("Shooter/rollerOutCur", rollerOutCur);
+        Logger.recordOutput("Shooter/totalCur", this.shooterSupCur.getValue() + this.followerSupCur.getValue() +
                 endEffectorOutCur + rollerOutCur);
     }
 }
