@@ -1,5 +1,8 @@
 package frc.robot.subsystems.drive;
 
+import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
@@ -33,6 +36,8 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
     private VelocityVoltage driveVelVoltage = new VelocityVoltage(0).withSlot(0);
     private PositionVoltage steeringPosVoltage = new PositionVoltage(0).withSlot(0);
 
+    private StatusSignal<Double> driveSupCur, driveStaCur, driveVel, steeringSupCur, steeringStaCur, steeringPos;
+
     private SwerveModuleConstants constants;
 
     /**
@@ -54,6 +59,13 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
         this.configSteeringEncoder();
         this.configDriveMotor();
         this.configSteeringMotor();
+
+        this.steeringPos = this.steeringEncoder.getAbsolutePosition();
+        this.steeringSupCur = this.steeringMotor.getSupplyCurrent();
+        this.steeringStaCur = this.steeringMotor.getStatorCurrent();
+        this.driveVel = this.driveMotor.getVelocity();
+        this.driveSupCur = this.driveMotor.getSupplyCurrent();
+        this.driveStaCur = this.driveMotor.getStatorCurrent();
     }
 
     /**
@@ -148,8 +160,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
 
     @Override
     public SwerveModuleState getState() {
-        double angle = this.steeringEncoder.getAbsolutePosition().getValue();
-
+        double angle = this.steeringPos.refresh().getValue();
         return new SwerveModuleState(
                 Conversions.rotsToMeters(this.driveMotor.getVelocity().getValue(),
                         SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio),
@@ -158,8 +169,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
 
     @Override
     public SwerveModulePosition getPosition() {
-        double angle = this.steeringEncoder.getAbsolutePosition().getValue();
-
+        double angle = this.steeringPos.refresh().getValue();
         return new SwerveModulePosition(
                 Conversions.rotsToMeters(this.driveMotor.getPosition().getValue(),
                         SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio),
@@ -167,13 +177,24 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
     }
 
     @Override
+    public double getCurrent() {
+        return this.driveSupCur.getValue() + this.steeringSupCur.getValue();
+    }
+
+    @Override
+    public void periodic() {
+        var prefix = String.format("Swerve/Module%d/", this.constants.moduleNum);
+        Logger.recordOutput(prefix + "driveSupCur", this.driveSupCur.refresh().getValue());
+        Logger.recordOutput(prefix + "driveStaCur", this.driveStaCur.refresh().getValue());
+        Logger.recordOutput(prefix + "steeringSupCur", this.steeringSupCur.refresh().getValue());
+        Logger.recordOutput(prefix + "steeringStaCur", this.steeringStaCur.refresh().getValue());
+        Logger.recordOutput(prefix + "totalCur", this.driveSupCur.getValue() + steeringSupCur.getValue());
+    }
+
+    @Override
     public void initializeShuffleBoardLayout(ShuffleboardLayout layout) {
         layout.addDouble("Angle", () -> this.getAngle().getDegrees());
         layout.addDouble("Speed", this::getSpeed);
         layout.addDouble("Position", () -> this.getPosition().distanceMeters);
-        layout.addDouble("Drive Motor Stator Current", () -> this.driveMotor.getStatorCurrent().getValue());
-        layout.addDouble("Drive Motor Supply Current", () -> this.driveMotor.getSupplyCurrent().getValue());
-        layout.addDouble("Steering Motor Stator Current", () -> this.steeringMotor.getStatorCurrent().getValue());
-        layout.addDouble("Steering Motor Supply Current", () -> this.steeringMotor.getSupplyCurrent().getValue());
     }
 }
