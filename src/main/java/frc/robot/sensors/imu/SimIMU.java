@@ -40,6 +40,11 @@ public class SimIMU extends IMU {
     }
 
     @Override
+    public Rotation2d getAngle() {
+        return Rotation2d.fromRadians(this.accumulatedYaw);
+    }
+
+    @Override
     public Rotation3d getOrientation() {
         return new Rotation3d(0, 0, this.accumulatedYaw);
     }

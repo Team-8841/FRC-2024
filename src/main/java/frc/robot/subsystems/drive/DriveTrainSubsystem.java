@@ -77,12 +77,14 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
         for (int i = 0; i < this.swerveModules.length; i++) {
             swerveModuleStates[i] = SwerveModuleState.optimize(swerveModuleStates[i], this.swerveModules[i].getAngle());
-            Logger.recordOutput("Swerve/Module" + i + "/state", swerveModuleStates[i]);
+            // Logger.recordOutput("Swerve/Module" + i + "/state", swerveModuleStates[i]);
 
             this.swerveModules[i].setDesiredState(swerveModuleStates[i]);
             this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
             this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
         }
+
+        Logger.recordOutput("Swerve/ModuleStates", swerveModuleStates);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
 
     }
@@ -138,9 +140,21 @@ public class DriveTrainSubsystem extends SubsystemBase {
         }
     }
 
+    public void resetDrivePIDs() {
+        for (var module : this.swerveModules) {
+            module.resetDrivePID();
+        }
+    }
+
     public void setDrivePIDs(double kS, double kV, double kA, double kP, double kI, double kD) {
         for (var module : this.swerveModules) {
             module.setDrivePID(kS, kV, kA, kP, kI, kD);
+        }
+    }
+
+    public void resetSteeringPIDs() {
+        for (var module : this.swerveModules) {
+            module.resetSteeringPID();
         }
     }
 

@@ -22,7 +22,7 @@ public class ElevatorSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         this.hwImpl.updateInputs(this.inputs);
-        Logger.processInputs("/Elevator", this.inputs);
+        Logger.processInputs("Elevator", this.inputs);
     }
 
 

@@ -48,8 +48,15 @@ public interface SwerveModuleIO {
     }
 
     /**
-     * Sets the PID constants of the swerve module. The implementor is not required
-     * to implement this.
+     * Resets the steering PID constants of the swerve module. The implementor is
+     * not required to implement this.
+     */
+    public default void resetSteeringPID() {
+    }
+
+    /**
+     * Sets the steering PID constants of the swerve module. The implementor is not
+     * required to implement this.
      * 
      * @param kS
      * @param kV
@@ -62,8 +69,15 @@ public interface SwerveModuleIO {
     }
 
     /**
-     * Sets the PID constants of the swerve module. The implementor is not required
-     * to implement this.
+     * Resets the drive PID constants of the swerve module. The implementor is not
+     * required to implement this.
+     */
+    public default void resetDrivePID() {
+    }
+
+    /**
+     * Sets the drive PID constants of the swerve module. The implementor is not
+     * required to implement this.
      * 
      * @param kS
      * @param kV
@@ -122,7 +136,8 @@ public interface SwerveModuleIO {
     }
 
     /**
-     * Gets the total supplied current to the swerve module. Not required to be implemented.
+     * Gets the total supplied current to the swerve module. Not required to be
+     * implemented.
      * 
      * @return The total supplied current (amps).
      */

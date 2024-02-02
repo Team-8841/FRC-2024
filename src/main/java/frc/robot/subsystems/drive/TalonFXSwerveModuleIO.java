@@ -107,6 +107,12 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
     }
 
     @Override
+    public void resetDrivePID() {
+        var configurator = this.driveMotor.getConfigurator();
+        configurator.apply(PureTalonFXConstants.driveMotorConfigs.Slot0);
+    }
+
+    @Override
     public void setDrivePID(double kS, double kV, double kA, double kP, double kI, double kD) {
         var configurator = this.driveMotor.getConfigurator();
         var pidConfigs = new Slot0Configs();
@@ -117,6 +123,12 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
         pidConfigs.kI = kI;
         pidConfigs.kD = kD;
         configurator.apply(pidConfigs);
+    }
+
+    @Override
+    public void resetSteeringPID() {
+        var configurator = this.driveMotor.getConfigurator();
+        configurator.apply(PureTalonFXConstants.angleMotorConfigs.Slot0);
     }
 
     @Override

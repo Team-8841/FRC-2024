@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.commands.TestCommand;
+import frc.robot.commands.FFTestCommand;
 import frc.robot.constants.Constants;
 import frc.robot.constants.PathingConstants;
 import frc.robot.constants.swerve.PureTalonFXConstants;
@@ -27,6 +27,7 @@ import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
 import frc.robot.subsystems.intake.RealIntakeIO;
+import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.DummyIntakeIO;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 
@@ -93,6 +94,10 @@ public class RobotContainer {
   }
 
   private void configureBindings(CommandXboxController controller) {
+    controller.x().whileTrue(this.intake.setStateCommand(IntakeState.INTAKE));
+    controller.y().whileTrue(this.intake.setStateCommand(IntakeState.INTAKEANDHOLD));
+    controller.x().whileTrue(this.intake.setStateCommand(IntakeState.FEED));
+    controller.x().whileTrue(this.intake.setStateCommand(IntakeState.OUTAKE));
   }
 
   public Command getAutonomousCommand() {
@@ -114,6 +119,6 @@ public class RobotContainer {
   }
 
   public Command getTestCommand() {
-    return new TestCommand(this.driveTrain);
+    return new FFTestCommand(this.driveTrain, this.imu);
   }
 }
