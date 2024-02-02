@@ -13,6 +13,11 @@ public class DummyIMU extends IMU {
     }
 
     @Override
+    public Rotation2d getAngle() {
+        return Rotation2d.fromDegrees(this.inputs.angle);
+    }
+
+    @Override
     public Rotation3d getOrientation() {
         return new Rotation3d(
                 new Quaternion(

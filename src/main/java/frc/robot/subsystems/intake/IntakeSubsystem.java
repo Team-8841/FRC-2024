@@ -46,7 +46,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    Logger.processInputs("/Intake", inputs);
+    Logger.processInputs("Intake", inputs);
     this.hardwImpl.updateInputs(inputs);
   }
 
@@ -103,7 +103,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Show subsystem status on the dashboard
   private void initializeShuffleboardWidgets() {
-    var layout = Shuffleboard.getTab("Robot").getLayout("Shooter", BuiltInLayouts.kList);
+    var robotTab = Shuffleboard.getTab("Robot");
+    var layout = robotTab.getLayout("Shooter", BuiltInLayouts.kList);
     layout.addString("State", curState::name);
     layout.addBoolean("Feed Sensor", this::getIndexSensor);
   }

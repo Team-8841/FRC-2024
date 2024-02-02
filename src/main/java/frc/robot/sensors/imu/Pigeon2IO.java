@@ -13,6 +13,11 @@ public class Pigeon2IO extends IMU {
     }
 
     @Override
+    public Rotation2d getAngle() {
+        return Rotation2d.fromDegrees(this.pigeon.getAngle());
+    }
+
+    @Override
     public Rotation3d getOrientation() {
         return this.pigeon.getRotation3d();
     }

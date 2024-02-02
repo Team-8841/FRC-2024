@@ -53,7 +53,7 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         this.hwImpl.updateInputs(this.inputs);
-        Logger.processInputs("/Shooter", this.inputs);
+        Logger.processInputs("Shooter", this.inputs);
     }
 
     /*-------------------------------- Custom Public Functions --------------------------------*/

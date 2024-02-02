@@ -16,10 +16,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public abstract class IMU extends SubsystemBase {
     private IMUInputsAutoLogged inputs = new IMUInputsAutoLogged();
-    
+
     @AutoLog
     public static class IMUInputs {
-        double heading, pitch, yaw, roll;
+        double angle, heading, pitch, yaw, roll;
         double qX, qY, qZ, qW;
         boolean isInitialized, isSensorPresent;
     }
@@ -27,11 +27,12 @@ public abstract class IMU extends SubsystemBase {
     @Override
     public void periodic() {
         this.updateInputs(this.inputs);
-        Logger.processInputs("/IMU/Inputs", this.inputs);
+        Logger.processInputs("IMU/Inputs", this.inputs);
     }
 
     protected void updateInputs(IMUInputsAutoLogged inputs) {
         inputs.heading = this.getHeading().getDegrees();
+        inputs.angle = this.getAngle().getDegrees();
 
         Rotation3d orientation = this.getOrientation();
         inputs.pitch = orientation.getY();
@@ -50,12 +51,18 @@ public abstract class IMU extends SubsystemBase {
 
     public void initializeShuffleBoardLayout(ShuffleboardLayout layout) {
         layout.addDouble("Heading", () -> this.getHeading().getDegrees()).withWidget(BuiltInWidgets.kGyro);
-        layout.addDouble("Yaw", () -> this.getYaw().getDegrees());
-        layout.addDouble("Pitch", () -> this.getPitch().getDegrees());
-        layout.addDouble("Roll", () -> this.getRoll().getDegrees());
+        //layout.addDouble("Yaw", () -> this.getYaw().getDegrees());
         layout.addBoolean("Is Initialized", this::isInitialized);
         layout.addBoolean("Is Sensor Present", this::isSensorPresent);
     }
+
+    /**
+     * Get's the IMU's angle around the z-axis. This is continuous unlike the
+     * heading and yaw.
+     * 
+     * @return The total angle rotated around the z-axis.
+     */
+    public abstract Rotation2d getAngle();
 
     /**
      * Get's the IMU's current orientation.

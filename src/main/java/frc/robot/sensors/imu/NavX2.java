@@ -1,5 +1,6 @@
 package frc.robot.sensors.imu;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.littletonrobotics.junction.Logger;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -59,6 +60,11 @@ public class NavX2 extends IMU {
     public Rotation3d getOrientation() {
         return new Rotation3d(new Quaternion(this.ahrs.getQuaternionW(), this.ahrs.getQuaternionX(),
                 this.ahrs.getQuaternionY(), this.ahrs.getQuaternionZ()));
+    }
+
+    @Override
+    public Rotation2d getAngle() {
+        return Rotation2d.fromDegrees(this.ahrs.getAngle());
     }
 
     @Override

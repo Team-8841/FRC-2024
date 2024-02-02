@@ -16,6 +16,11 @@ public class BNO055 extends IMU {
     }
 
     @Override
+    public Rotation2d getAngle() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Rotation3d getOrientation() {
         double[] vector = this.internalBNO055.getVector();
 
