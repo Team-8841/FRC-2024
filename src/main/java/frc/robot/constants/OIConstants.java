@@ -1,4 +1,4 @@
-package frc.robot.constants.OperatorInput;
+package frc.robot.constants;
 
 public class OIConstants {
 

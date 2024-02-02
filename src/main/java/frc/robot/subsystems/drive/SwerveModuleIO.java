@@ -120,4 +120,13 @@ public interface SwerveModuleIO {
     public default double getSpeed() {
         return this.getState().speedMetersPerSecond;
     }
+
+    /**
+     * Gets the total supplied current to the swerve module. Not required to be implemented.
+     * 
+     * @return The total supplied current (amps).
+     */
+    public default double getCurrent() {
+        return 0;
+    }
 }

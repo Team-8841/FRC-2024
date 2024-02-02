@@ -3,24 +3,15 @@ package frc.robot.subsystems.intake;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeIO {
-  @AutoLog
-  public static class IntakeInputs {
-    public double intakeSpeed, feedSpeed;
-    public boolean intakeSensor, feedSensor;
-  }
+    @AutoLog
+    public static class IntakeInputs {
+        double setIndexDCycle, actualIndexRPS, setIntakeDCycle, actualIntakeRPS;
+        boolean indexSensor, intakeSensor;
+    }
 
-  public default void updateInputs(IntakeInputsAutoLogged inputs) {
-    inputs.intakeSpeed = this.getIntakeSpeed();
-    inputs.feedSpeed = this.getIntakeSpeed();
-    inputs.intakeSensor = this.getIntakeSensor();
-    inputs.feedSensor = this.getFeedSensor();
-  }
-
-  public void setIntakeSpeed(double speed);
-  public void setFeedSpeed(double speed);
-  public double getIntakeSpeed();
-  public double getFeedSpeed();
-  // Conditions for sensor
-  public boolean getIntakeSensor();
-  public boolean getFeedSensor();
+    public void setIntakeSpeed(double dcycle);
+    public void setIndexSpeed(double dcycle);
+    public boolean getIntakeSensor();
+    public boolean getIndexSensor();
+    public void updateInputs(IntakeInputsAutoLogged inputs);
 }

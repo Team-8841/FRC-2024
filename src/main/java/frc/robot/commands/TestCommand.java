@@ -108,10 +108,10 @@ public class TestCommand extends Command {
                 voltages[this.curSample] = curVoltage;
                 measurements[this.curSample][1] = (curSpeed - lastSpeed) / 0.02;
 
-                Logger.recordOutput("/TestSuite/voltage", voltages[curSample]);
-                Logger.recordOutput("/TestSuite/omega", measurements[curSample][0]);
-                Logger.recordOutput("/TestSuite/omegaDot", measurements[curSample][1]);
-                Logger.recordOutput("/TestSuite/curSample", curSample);
+                Logger.recordOutput("TestSuite/voltage", voltages[curSample]);
+                Logger.recordOutput("TestSuite/omega", measurements[curSample][0]);
+                Logger.recordOutput("TestSuite/omegaDot", measurements[curSample][1]);
+                Logger.recordOutput("TestSuite/curSample", curSample);
 
                 curSample += 1;
             }

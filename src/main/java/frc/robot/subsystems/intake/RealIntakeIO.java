@@ -1,52 +1,53 @@
 package frc.robot.subsystems.intake;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.constants.Intake.IntakeConstants;
 
 public class RealIntakeIO implements IntakeIO {
-  private final CANSparkMax intakeMotor =
-      new CANSparkMax(IntakeConstants.intakeMotor, MotorType.kBrushed);
-  private final CANSparkMax feedMotor =
-      new CANSparkMax(IntakeConstants.feedMotor, MotorType.kBrushed);
+    // Motors
+    private final CANSparkMax intakeMotor = new CANSparkMax(IntakeConstants.intakeMotor, MotorType.kBrushless),
+            indexMotor = new CANSparkMax(IntakeConstants.indexMotor, MotorType.kBrushless);
+    private final RelativeEncoder intakeEncoder = this.intakeMotor.getEncoder(), indexEncoder = this.indexMotor.getEncoder();
 
-    // Sensor
-    private DigitalInput intakeSenor = new DigitalInput(IntakeConstants.intakeSensor);
-    private DigitalInput feedSenor = new DigitalInput(IntakeConstants.feedSensor);
+    // Sensors
+    private DigitalInput indexSenor = new DigitalInput(IntakeConstants.indexSensor), intakeSensor = new DigitalInput(IntakeConstants.intakeSensor);
 
-  public RealIntakeIO() {
-  }
+    public RealIntakeIO() {
+        this.intakeEncoder.setVelocityConversionFactor(1.0/60); // RPM to RPS
+        this.indexEncoder.setVelocityConversionFactor(1.0/60); // RPM to RPS
+    }
 
-  @Override
-  public void setIntakeSpeed(double speed) {
-    this.intakeMotor.set(speed);
-  }
+    public void setIntakeSpeed(double dcycle) {
+        this.intakeMotor.set(dcycle);
+    }
 
-  @Override
-  public void setFeedSpeed(double speed) {
-    this.feedMotor.set(speed);
-  }
+    public void setIndexSpeed(double dcycle) {
+        this.indexMotor.set(dcycle);
+    }
 
-  @Override
-  public double getIntakeSpeed() {
-    return this.intakeMotor.get();
-  }
+    public boolean getIntakeSensor() {
+        return this.intakeSensor.get();
+    }
 
-  @Override
-  public double getFeedSpeed() {
-    return this.feedMotor.get();
-  }
+    public boolean getIndexSensor() {
+        return this.indexSenor.get();
+    }
 
-  // Conditions for sensor
-  @Override
-  public boolean getIntakeSensor() {
-    return this.intakeSenor.get();
-  }
+    public void updateInputs(IntakeInputsAutoLogged inputs) {
+        inputs.setIntakeDCycle = this.intakeMotor.get();
+        inputs.setIndexDCycle = this.indexMotor.get();
+        inputs.actualIntakeRPS = this.indexEncoder.getVelocity();
+        inputs.actualIndexRPS = this.indexEncoder.getVelocity();
 
-  @Override
-  public boolean getFeedSensor() {
-    return this.feedSenor.get();
-  }
+        inputs.indexSensor = this.getIndexSensor();
+        inputs.intakeSensor = this.getIntakeSensor();
+
+        Logger.recordOutput("Intake/intakeMotorOutCur", this.intakeMotor.getOutputCurrent());
+    }
 }
