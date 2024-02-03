@@ -1,12 +1,15 @@
 package frc.robot.sensors.vision.piecetracking;
 
 import java.util.Optional;
+import java.util.function.DoubleConsumer;
 
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.sensors.vision.Camera;
 
 public abstract class TrackerCommand extends Command {

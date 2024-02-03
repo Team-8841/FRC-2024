@@ -31,5 +31,10 @@ public final class VisionConstants {
         }
     }
 
-    public static final CameraConfig frontCameraEstimator = new CameraConfig(0, -1, new Transform3d(), Rotation2d.fromDegrees(29.8));
+    public static final CameraConfig intakeCam = new CameraConfig(0, -1, new Transform3d(),
+            Rotation2d.fromDegrees(29.8));
+
+    public static final double noteAlign_kP = 0;
+    public static final double noteAlign_kI = 0;
+    public static final double noteAlign_kD = 0;
 }

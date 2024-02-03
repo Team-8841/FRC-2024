@@ -47,4 +47,5 @@ public class LimelightTracker extends TrackerCommand {
         var rot = Rotation2d.fromDegrees(rotEntry.getDouble(0));
         return rotEntry.exists() ? Optional.of(rot) : Optional.empty();
     }
+
 }

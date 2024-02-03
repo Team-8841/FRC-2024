@@ -15,16 +15,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.NoteAlign;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TestCommand;
 import frc.robot.constants.Constants;
 import frc.robot.constants.OIConstants;
 import frc.robot.constants.PathingConstants;
+import frc.robot.constants.VisionConstants;
 import frc.robot.constants.swerve.PureTalonFXConstants;
 import frc.robot.sensors.imu.DummyIMU;
 import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.NavX2;
 import frc.robot.sensors.imu.SimIMU;
+import frc.robot.sensors.vision.Camera;
+import frc.robot.sensors.vision.piecetracking.LimelightTracker;
+import frc.robot.sensors.vision.poseestimation.LimelightEstimatorModuleIO;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
 import frc.robot.subsystems.drive.DummySwerveModuleIO;
 import frc.robot.subsystems.drive.SimSwerveModuleIO;
@@ -46,6 +51,12 @@ public class RobotContainer {
   // Controllers
   private CommandJoystick coolBoardThing;
   private CommandXboxController driveController;
+  private double noteStrafe = 0;
+
+  // Vision
+  private Camera camera = new Camera("Intake");
+  private LimelightTracker trackerCommand = new LimelightTracker(this.camera, VisionConstants.intakeCam);
+  private NoteAlign noteAlignCommand = new NoteAlign(trackerCommand, (strafe) -> this.noteStrafe = strafe);
 
   public RobotContainer() {
     SwerveModuleIO swerveModules[];
@@ -104,6 +115,8 @@ public class RobotContainer {
     var hid = coolBoardThing.getHID();
     new JoystickButton(hid, OIConstants.button2).whileTrue(this.intake.sensorFeedCommand());
     new JoystickButton(hid, OIConstants.button3).whileTrue(this.intake.setStateCommand(IntakeState.INTAKE));
+
+    xboxController.leftBumper().whileTrue(this.noteAlignCommand);
   }
 
   public Command getAutonomousCommand() {
@@ -120,7 +133,7 @@ public class RobotContainer {
 
   public Command getTeleopCommand() {
     return new TeleopSwerve(driveTrain, () -> -this.driveController.getLeftY(),
-        () -> -this.driveController.getLeftX(),
+        () -> this.noteStrafe - this.driveController.getLeftX(),
         () -> -this.driveController.getRightX());
   }
 
