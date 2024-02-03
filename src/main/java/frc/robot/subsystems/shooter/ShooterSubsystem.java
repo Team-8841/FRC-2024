@@ -66,8 +66,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /* ========= Shooter Functions ========= */
-    public void setShooterSetPoint(double targetRPS) {
-        this.hwImpl.setShooter(targetRPS);
+    public void setShooterSetPoint(double voltage) {
+        this.hwImpl.setShooter(voltage);
     }
 
     // Get the target setpoint from the current state and check if we are within a
