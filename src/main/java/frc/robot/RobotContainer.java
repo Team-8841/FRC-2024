@@ -6,15 +6,19 @@ package frc.robot;
 
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TestCommand;
 import frc.robot.constants.Constants;
+import frc.robot.constants.OIConstants;
 import frc.robot.constants.PathingConstants;
 import frc.robot.constants.swerve.PureTalonFXConstants;
 import frc.robot.sensors.imu.DummyIMU;
@@ -27,6 +31,7 @@ import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
 import frc.robot.subsystems.intake.RealIntakeIO;
+import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.DummyIntakeIO;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 
@@ -39,6 +44,7 @@ public class RobotContainer {
   private IntakeSubsystem intake;
 
   // Controllers
+  private CommandJoystick coolBoardThing;
   private CommandXboxController driveController;
 
   public RobotContainer() {
@@ -88,11 +94,16 @@ public class RobotContainer {
     ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
     this.imu.initializeShuffleBoardLayout(robotTab.getLayout("IMU", BuiltInLayouts.kList));
 
-    this.driveController = new CommandXboxController(0);
-    this.configureBindings(this.driveController);
+    this.driveController = new CommandXboxController(OIConstants.gamepadPort);
+    this.coolBoardThing = new CommandJoystick(OIConstants.copilotPort);
+    
+    this.configureBindings(this.driveController, this.coolBoardThing);
   }
 
-  private void configureBindings(CommandXboxController controller) {
+  private void configureBindings(CommandXboxController xboxController, CommandJoystick coolBoardThing) {
+    var hid = coolBoardThing.getHID();
+    new JoystickButton(hid, OIConstants.button2).whileTrue(this.intake.sensorFeedCommand());
+    new JoystickButton(hid, OIConstants.button3).whileTrue(this.intake.setStateCommand(IntakeState.INTAKE));
   }
 
   public Command getAutonomousCommand() {
