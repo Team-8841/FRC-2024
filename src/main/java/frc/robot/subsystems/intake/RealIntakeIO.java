@@ -49,5 +49,6 @@ public class RealIntakeIO implements IntakeIO {
         inputs.intakeSensor = this.getIntakeSensor();
 
         Logger.recordOutput("Intake/intakeMotorOutCur", this.intakeMotor.getOutputCurrent());
+        Logger.recordOutput("Intake/indexMotorOutCur", this.indexMotor.getOutputCurrent());
     }
 }

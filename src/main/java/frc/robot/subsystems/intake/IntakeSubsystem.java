@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -18,9 +19,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public IntakeSubsystem(IntakeIO hardwImpl) {
     this.hardwImpl = hardwImpl;
-    this.initializeShuffleboardWidgets();
-  
-
   }
 
   /*-------------------------------- Public Instance Variables --------------------------------*/
@@ -102,9 +100,7 @@ public class IntakeSubsystem extends SubsystemBase {
   /*-------------------------------- Custom Private Functions --------------------------------*/
 
   // Show subsystem status on the dashboard
-  private void initializeShuffleboardWidgets() {
-    var robotTab = Shuffleboard.getTab("Robot");
-    var layout = robotTab.getLayout("Shooter", BuiltInLayouts.kList);
+  public void initializeShuffleboardWidgets(ShuffleboardLayout layout) {
     layout.addString("State", curState::name);
     layout.addBoolean("Feed Sensor", this::getIndexSensor);
   }
