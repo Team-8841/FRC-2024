@@ -1,8 +1,12 @@
 package frc.robot.constants;
 
 import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -16,9 +20,13 @@ public class ShooterConstants {
     public static final int endEffectorROTID = 17;
     public static final int endEffectorRollerID = 18;
 
-    public static final int shooterCurrentLimit = 80; // May need to change
+    public static final int shooterCurrentLimit = 40; // Note: This is PER MOTOR
+    public static final NeutralModeValue shooterNeutralMode = NeutralModeValue.Coast;
+    public static final double shooterMaxDutyCycle = 1;
+    public static final double shooterMinDutyCycle = 0;
 
     public static final int shooterEncoderCPR = 2048; // CANCoder CPR
+
     public static final double shooter_kS = 0; // Tune
     public static final double shooter_kV = 0; // Tune
     public static final double shooter_kA = 0; // Tune
@@ -27,6 +35,7 @@ public class ShooterConstants {
     public static final double shooter_kD = 0; // Tune
     public static final double shooter_kIZone = 0; // Tune
     public static final double shooter_kFF = 0; // Tune
+    public static final double shooter_maxAccel = 3;
     public static final double shooter_maxOutput = 1; // Tune
     public static final double shooter_minOutput = 0; // Tune
     public static final double shooter_allowedError = 200; // Tune
@@ -68,5 +77,17 @@ public class ShooterConstants {
         shooterConfig.Slot0.kP = ShooterConstants.shooter_kP;
         shooterConfig.Slot0.kI = ShooterConstants.shooter_kI;
         shooterConfig.Slot0.kD = ShooterConstants.shooter_kD;
+
+        shooterConfig.MotionMagic = new MotionMagicConfigs();
+        shooterConfig.MotionMagic.MotionMagicAcceleration = ShooterConstants.shooter_maxAccel;
+
+        shooterConfig.MotorOutput = new MotorOutputConfigs();
+        shooterConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        shooterConfig.MotorOutput.PeakForwardDutyCycle = ShooterConstants.shooterMaxDutyCycle;
+        shooterConfig.MotorOutput.PeakReverseDutyCycle = ShooterConstants.shooterMinDutyCycle;
+
+        shooterConfig.CurrentLimits = new CurrentLimitsConfigs();
+        shooterConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.shooterCurrentLimit;
+        shooterConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     }
 }

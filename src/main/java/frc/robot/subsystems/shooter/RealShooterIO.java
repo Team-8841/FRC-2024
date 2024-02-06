@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
@@ -40,6 +41,7 @@ public class RealShooterIO implements ShooterIO {
     public RealShooterIO() {
         // Shooter and follower motor
         this.m_shooter.getConfigurator().apply(ShooterConstants.shooterConfig);
+        this.m_follower.getConfigurator().apply(ShooterConstants.shooterConfig);
         this.m_follower.setControl(new Follower(this.m_shooter.getDeviceID(), false));
 
         // End effector
@@ -53,7 +55,7 @@ public class RealShooterIO implements ShooterIO {
     @Override
     public void setShooter(double targetRPS) {
         this.shooterSP = targetRPS;
-        this.m_shooter.setControl(new VelocityVoltage(targetRPS));
+        this.m_shooter.setControl(new MotionMagicVelocityVoltage(targetRPS));
     }
 
     @Override
