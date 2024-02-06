@@ -7,10 +7,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public interface ShooterIO {
     @AutoLog
     public static class ShooterInputs {
-        double setShooterVoltage, shooterRPS, setEndEffectorDeg, actualEndEffectorDeg, setRollerDCycle, rollerRPS;
+        double setShooterRPS, actualShooterRPS, setEndEffectorDeg, actualEndEffectorDeg, setRollerDCycle, rollerSpeedRPS;
     }
 
-    public void setShooter(double voltage);
+    public void setShooter(double targetRPS);
 
     public void setEndEffector(Rotation2d targetAngle);
 

@@ -5,7 +5,6 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -35,7 +34,7 @@ public class RealShooterIO implements ShooterIO {
             shooterStaCur = this.m_shooter.getStatorCurrent(), followerSupCur = this.m_follower.getSupplyCurrent(),
             followerStaCur = this.m_follower.getStatorCurrent();
 
-    private double shooterVoltage;
+    private double shooterSP;
     private Rotation2d endEffectorSP = new Rotation2d();
 
     public RealShooterIO() {
@@ -52,9 +51,9 @@ public class RealShooterIO implements ShooterIO {
     }
 
     @Override
-    public void setShooter(double voltage) {
-        this.shooterVoltage = voltage;
-        this.m_shooter.setControl(new VoltageOut(voltage * 12));
+    public void setShooter(double targetRPS) {
+        this.shooterSP = targetRPS;
+        this.m_shooter.setControl(new VelocityVoltage(targetRPS));
     }
 
     @Override
@@ -82,8 +81,8 @@ public class RealShooterIO implements ShooterIO {
     @Override
     public void updateInputs(ShooterInputsAutoLogged inputs) {
         // Shooter
-        inputs.setShooterVoltage = this.shooterVoltage;
-        inputs.shooterRPS = this.shooterVel.refresh().getValue();
+        inputs.setShooterRPS = this.shooterSP;
+        inputs.actualShooterRPS = this.shooterVel.refresh().getValue();
 
         // End Effector
         inputs.setEndEffectorDeg = this.endEffectorSP.getDegrees();
@@ -91,7 +90,7 @@ public class RealShooterIO implements ShooterIO {
 
         // Roller
         inputs.setRollerDCycle = this.m_endEffectorRoller.get();
-        inputs.rollerRPS = this.m_endEffectorRollerEncoder.getVelocity() / 60;
+        inputs.rollerSpeedRPS = this.m_endEffectorRollerEncoder.getVelocity() / 60;
 
         // Current readings
         Logger.recordOutput("Shooter/shooterSupCur", this.shooterSupCur.refresh().getValue());

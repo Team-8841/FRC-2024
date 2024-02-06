@@ -18,7 +18,7 @@ public class DummyShooterIO implements ShooterIO {
     }
 
     public double getShooterRPS() {
-        return inputs.shooterRPS;
+        return inputs.actualShooterRPS;
     }
 
     public Rotation2d getEndEffector() {
