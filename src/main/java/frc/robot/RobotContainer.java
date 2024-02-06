@@ -88,7 +88,6 @@ public class RobotContainer {
 
     ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
     this.imu.initializeShuffleBoardLayout(robotTab.getLayout("IMU", BuiltInLayouts.kList));
-    this.intake.initializeShuffleboardWidgets(robotTab.getLayout("Intake", BuiltInLayouts.kList));
 
     this.driveController = new CommandXboxController(0);
     this.configureBindings(this.driveController);
