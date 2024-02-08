@@ -14,28 +14,28 @@ public class ShooterConstants {
 
     public static final boolean tuneMode = true; // Change when tuning the shooter to allow for on the fly tuning;
 
-    public static final int shooterMotorID = 15;
-    public static final int followerMotorID = 16;
+    public static final int shooterMotorID = 16;
+    public static final int followerMotorID = 17;
 
     public static final int endEffectorROTID = 17;
     public static final int endEffectorRollerID = 18;
 
     public static final int shooterCurrentLimit = 40; // Note: This is PER MOTOR
-    public static final NeutralModeValue shooterNeutralMode = NeutralModeValue.Coast;
+    public static final NeutralModeValue shooterNeutralMode = NeutralModeValue.Brake;
     public static final double shooterMaxDutyCycle = 1;
     public static final double shooterMinDutyCycle = 0;
 
     public static final int shooterEncoderCPR = 2048; // CANCoder CPR
 
-    public static final double shooter_kS = 0; // Tune
-    public static final double shooter_kV = 0; // Tune
+    public static final double shooter_kS = 0.3; // Tune
+    public static final double shooter_kV = 0.108; // Tune
     public static final double shooter_kA = 0; // Tune
-    public static final double shooter_kP = 0; // Tune
+    public static final double shooter_kP = 0.15; // Tune
     public static final double shooter_kI = 0; // Tune
     public static final double shooter_kD = 0; // Tune
     public static final double shooter_kIZone = 0; // Tune
     public static final double shooter_kFF = 0; // Tune
-    public static final double shooter_maxAccel = 3;
+    public static final double shooter_maxAccel = 30;
     public static final double shooter_maxOutput = 1; // Tune
     public static final double shooter_minOutput = 0; // Tune
     public static final double shooter_allowedError = 200; // Tune

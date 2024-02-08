@@ -35,9 +35,9 @@ public class PureTalonFXConstants {
      * Divide SYSID values by 12 to convert from volts to percent output for CTRE
      */
     // TODO: Check if these need to be converted. // NEEDS TO BE TUNED
-    public static final double driveKS = 0.32 / 10; // TODO: This must be tuned to specific robot
-    public static final double driveKV = 1.51 / 10;
-    public static final double driveKA = 0.27 / 10; // (unused)
+    public static final double driveKS = 0.32 / 12; // TODO: This must be tuned to specific robot
+    public static final double driveKV = 1.51 / 12;
+    public static final double driveKA = 0.27 / 12; // (unused)
 
     /* Neutral Modes */
     public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;

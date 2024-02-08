@@ -96,11 +96,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /*-------------------------------- Custom Private Functions --------------------------------*/
     private void initializeShuffleboardWidgets() {
-        var layout = Shuffleboard.getTab("Robot").getLayout("Shooter", BuiltInLayouts.kList);
-        layout.addDouble("Velocity", this.hwImpl::getShooterRPS);
-        layout.addBoolean("At Speed", this::shooterAtTarget);
-        layout.addDouble("Angle", () -> this.hwImpl.getEndEffector().getDegrees());
-        layout.addBoolean("At Target", this::endEffectorAtTarget);
+        //var layout = Shuffleboard.getTab("Robot").getLayout("Shooter", BuiltInLayouts.kList);
+        //layout.addDouble("Velocity", this.hwImpl::getShooterRPS);
+        //layout.addBoolean("At Speed", this::shooterAtTarget);
+        //layout.addDouble("Angle", () -> this.hwImpl.getEndEffector().getDegrees());
+        //layout.addBoolean("At Target", this::endEffectorAtTarget);
     }
 
 }

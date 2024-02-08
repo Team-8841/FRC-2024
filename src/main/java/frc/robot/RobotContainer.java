@@ -4,14 +4,21 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.sim.DeviceType;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.lib.math.Conversions;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TestCommand;
 import frc.robot.constants.Constants;
@@ -27,6 +34,9 @@ import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
 import frc.robot.subsystems.intake.RealIntakeIO;
+import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
+import frc.robot.subsystems.shooter.RealShooterIO;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.intake.DummyIntakeIO;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 
@@ -37,6 +47,7 @@ public class RobotContainer {
   // Subsystems
   private DriveTrainSubsystem driveTrain;
   private IntakeSubsystem intake;
+  private ShooterSubsystem shooter;
 
   // Controllers
   private CommandXboxController driveController;
@@ -59,6 +70,7 @@ public class RobotContainer {
       //this.imu = new Pigeon2IO(Constants.pigeonId);
       this.imu = new NavX2();
       this.intake = new IntakeSubsystem(new RealIntakeIO());
+      this.shooter = new ShooterSubsystem(new RealShooterIO());
     } else if (Constants.simReplay) {
       // Replay
       swerveModules = new SwerveModuleIO[] {
@@ -69,7 +81,7 @@ public class RobotContainer {
       };
 
       this.imu = new DummyIMU();
-      this.intake = new IntakeSubsystem(new DummyIntakeIO());
+      this.intake = new IntakeSubsystem(new RealIntakeIO());
     }
     else {
       // Physics sim
@@ -92,7 +104,21 @@ public class RobotContainer {
     this.configureBindings(this.driveController);
   }
 
+  //CANSparkMax feeder = new CANSparkMax(15, MotorType.kBrushless);
+  //CANSparkMax feeder = new CANSparkMax(15, MotorType.kBrushless);
+
   private void configureBindings(CommandXboxController controller) {
+    double rps = 4500 / 60;
+    controller.x()
+      .onTrue(new InstantCommand(() -> this.shooter.setShooterSetPoint(rps)))
+      .onFalse(new InstantCommand(() -> this.shooter.setShooterSetPoint(0)));
+    //controller.y()
+    //  .onTrue(new InstantCommand(() -> this.feeder.set(0.5)))
+    //  .onFalse(new InstantCommand(() -> this.feeder.set(0)));
+    controller.y()
+      .whileTrue(this.intake.setStateCommand(IntakeState.INTAKE));
+    controller.a()
+      .whileTrue(this.intake.setStateCommand(IntakeState.OUTAKE));
   }
 
   public Command getAutonomousCommand() {

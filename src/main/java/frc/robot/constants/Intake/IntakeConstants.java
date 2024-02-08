@@ -10,9 +10,9 @@ public class IntakeConstants {
   public static final int indexSensor = 1;
 
   // Intake and Feeder Motor Speed
-  public static final double kIntakeInSpeed = 0.5f;
-  public static final double kIntakeOutSpeed = 0.7f;
+  public static final double kIntakeInSpeed = 0.8f;
+  public static final double kIntakeOutSpeed = -0.8f;
 
-  public static final double kIndexInSpeed = 0.5f;
-  public static final double kIndexOutSpeed = 0.7f;
+  public static final double kIndexInSpeed = 0.8f;
+  public static final double kIndexOutSpeed = -0.8f;
 }
