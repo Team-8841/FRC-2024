@@ -2,6 +2,9 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -14,6 +17,7 @@ public class RealIntakeIO implements IntakeIO {
     private final CANSparkMax intakeMotor = new CANSparkMax(IntakeConstants.intakeMotor, MotorType.kBrushless),
             indexMotor = new CANSparkMax(IntakeConstants.indexMotor, MotorType.kBrushless);
     private final RelativeEncoder intakeEncoder = this.intakeMotor.getEncoder(), indexEncoder = this.indexMotor.getEncoder();
+    private final TalonFX shooter = new TalonFX(17);
 
     // Sensors
     private DigitalInput indexSenor = new DigitalInput(IntakeConstants.indexSensor), intakeSensor = new DigitalInput(IntakeConstants.intakeSensor);
@@ -25,6 +29,10 @@ public class RealIntakeIO implements IntakeIO {
 
     public void setIntakeSpeed(double dcycle) {
         this.intakeMotor.set(dcycle);
+        if (dcycle > 0.5)
+            this.shooter.setControl(new VoltageOut(-1));
+        else
+            this.shooter.setControl(new NeutralOut());
     }
 
     public void setIndexSpeed(double dcycle) {

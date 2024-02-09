@@ -35,6 +35,7 @@ import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
 import frc.robot.subsystems.intake.RealIntakeIO;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
+import frc.robot.subsystems.shooter.DummyShooterIO;
 import frc.robot.subsystems.shooter.RealShooterIO;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.intake.DummyIntakeIO;
@@ -70,7 +71,7 @@ public class RobotContainer {
       //this.imu = new Pigeon2IO(Constants.pigeonId);
       this.imu = new NavX2();
       this.intake = new IntakeSubsystem(new RealIntakeIO());
-      this.shooter = new ShooterSubsystem(new RealShooterIO());
+      this.shooter = new ShooterSubsystem(new DummyShooterIO());
     } else if (Constants.simReplay) {
       // Replay
       swerveModules = new SwerveModuleIO[] {
@@ -109,9 +110,9 @@ public class RobotContainer {
 
   private void configureBindings(CommandXboxController controller) {
     double rps = 3200 / 60;
-    controller.x()
-      .onTrue(new InstantCommand(() -> this.shooter.setShooterSetPoint(rps)))
-      .onFalse(new InstantCommand(() -> this.shooter.setShooterSetPoint(0)));
+    //controller.x()
+    //  .onTrue(new InstantCommand(() -> this.shooter.setShooterSetPoint(rps)))
+    //  .onFalse(new InstantCommand(() -> this.shooter.setShooterSetPoint(0)));
     //controller.y()
     //  .onTrue(new InstantCommand(() -> this.feeder.set(0.5)))
     //  .onFalse(new InstantCommand(() -> this.feeder.set(0)));
