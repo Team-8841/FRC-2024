@@ -108,17 +108,15 @@ public class RobotContainer {
   //CANSparkMax feeder = new CANSparkMax(15, MotorType.kBrushless);
 
   private void configureBindings(CommandXboxController controller) {
-    double rps = 4500 / 60;
+    double rps = 3200 / 60;
     controller.x()
       .onTrue(new InstantCommand(() -> this.shooter.setShooterSetPoint(rps)))
       .onFalse(new InstantCommand(() -> this.shooter.setShooterSetPoint(0)));
     //controller.y()
     //  .onTrue(new InstantCommand(() -> this.feeder.set(0.5)))
     //  .onFalse(new InstantCommand(() -> this.feeder.set(0)));
-    controller.y()
-      .whileTrue(this.intake.setStateCommand(IntakeState.INTAKE));
-    controller.a()
-      .whileTrue(this.intake.setStateCommand(IntakeState.OUTAKE));
+    controller.rightBumper().whileTrue(this.intake.setStateCommand(IntakeState.INTAKE));
+    controller.leftBumper().whileTrue(this.intake.setStateCommand(IntakeState.OUTFEED));
   }
 
   public Command getAutonomousCommand() {
@@ -136,7 +134,7 @@ public class RobotContainer {
   public Command getTeleopCommand() {
     return new TeleopSwerve(driveTrain, () -> -this.driveController.getLeftY(),
         () -> -this.driveController.getLeftX(),
-        () -> -this.driveController.getRightX());
+        () -> this.driveController.getRightX());
   }
 
   public Command getTestCommand() {

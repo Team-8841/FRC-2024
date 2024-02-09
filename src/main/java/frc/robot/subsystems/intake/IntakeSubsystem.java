@@ -29,6 +29,7 @@ public class IntakeSubsystem extends SubsystemBase {
     INTAKE(IntakeConstants.kIntakeInSpeed, IntakeConstants.kIndexInSpeed),   // Intake full in
     INTAKEANDHOLD(IntakeConstants.kIntakeOutSpeed, 0f),           // Intake out index stop
     FEED(0f, IntakeConstants.kIndexInSpeed),                     // Intake off index full in 
+    OUTFEED(0f, IntakeConstants.kIndexOutSpeed),
     OUTAKE(IntakeConstants.kIntakeOutSpeed, IntakeConstants.kIndexOutSpeed), // Intake full out
     OFF(0f, 0f);                                      // Intake full of
 

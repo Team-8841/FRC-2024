@@ -35,7 +35,7 @@ public class ShooterConstants {
     public static final double shooter_kD = 0; // Tune
     public static final double shooter_kIZone = 0; // Tune
     public static final double shooter_kFF = 0; // Tune
-    public static final double shooter_maxAccel = 30;
+    public static final double shooter_maxAccel = 25;
     public static final double shooter_maxOutput = 1; // Tune
     public static final double shooter_minOutput = 0; // Tune
     public static final double shooter_allowedError = 200; // Tune
@@ -82,7 +82,7 @@ public class ShooterConstants {
         shooterConfig.MotionMagic.MotionMagicAcceleration = ShooterConstants.shooter_maxAccel;
 
         shooterConfig.MotorOutput = new MotorOutputConfigs();
-        shooterConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        shooterConfig.MotorOutput.NeutralMode = ShooterConstants.shooterNeutralMode;
         shooterConfig.MotorOutput.PeakForwardDutyCycle = ShooterConstants.shooterMaxDutyCycle;
         shooterConfig.MotorOutput.PeakReverseDutyCycle = ShooterConstants.shooterMinDutyCycle;
 

@@ -53,12 +53,12 @@ public class SwerveConstants {
         * When using the NEO, only *PeakCurrentLimit and *ContinousCurrentLimit are
         * used
         */
-    public static final int angleContinuousCurrentLimit = 25;
+    public static final int angleContinuousCurrentLimit = 35;
     public static final int anglePeakCurrentLimit = 40;
     public static final double anglePeakCurrentDuration = 0.1;
     public static final boolean angleEnableCurrentLimit = true;
 
-    public static final int driveContinuousCurrentLimit = 35;
+    public static final int driveContinuousCurrentLimit = 45;
     public static final int drivePeakCurrentLimit = 60;
     public static final double drivePeakCurrentDuration = 0.1;
     public static final boolean driveEnableCurrentLimit = true;
@@ -72,9 +72,9 @@ public class SwerveConstants {
     public static final double closedLoopRamp = 0.0;
 
     /* Swerve Profiling Values */
-    public static final double maxSpeed = 3; // m/s
-    public static final double maxAcceleration = 3; // m/s^2
+    public static final double maxSpeed = 5; // m/s
+    public static final double maxAcceleration = 5; // m/s^2
     public static final double maxJerk = 30; // m/s^3
 
-    public static final double maxAngularVelocity = 3; // rad/s
+    public static final double maxAngularVelocity = 5; // rad/s
 }

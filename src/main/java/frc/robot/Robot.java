@@ -13,6 +13,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.constants.Constants;
@@ -52,7 +53,7 @@ public class Robot extends LoggedRobot {
       // Logs to NT4
       Logger.addDataReceiver(new NT4Publisher()); 
       // Enables logging of PDH data
-      //this.pdh = new PowerDistribution(22, ModuleType.kRev); 
+      this.pdh = new PowerDistribution(34, ModuleType.kRev); 
     } else if (Constants.simReplay) {
       // Run as fast as possible
       this.setUseTiming(false); 

@@ -188,7 +188,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
         Logger.recordOutput(prefix + "driveStaCur", this.driveStaCur.refresh().getValue());
         Logger.recordOutput(prefix + "steeringSupCur", this.steeringSupCur.refresh().getValue());
         Logger.recordOutput(prefix + "steeringStaCur", this.steeringStaCur.refresh().getValue());
-        Logger.recordOutput(prefix + "totalCur", this.driveSupCur.getValue() + steeringSupCur.getValue());
+        Logger.recordOutput(prefix + "totalCur", this.driveSupCur.getValue() + this.steeringSupCur.getValue());
     }
 
     @Override

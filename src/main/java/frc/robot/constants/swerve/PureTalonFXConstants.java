@@ -20,7 +20,7 @@ public class PureTalonFXConstants {
 
     /* Angle Motor PID Values */ // NEEDS TO BE TUNED
     //public static final double angleKP = SwerveConstants.chosenModule.angleKP;
-    public static final double angleKP = 10;
+    public static final double angleKP = 13;
     public static final double angleKI = SwerveConstants.chosenModule.angleKI;
     public static final double angleKD = SwerveConstants.chosenModule.angleKD;
     public static final double angleKF = SwerveConstants.chosenModule.angleKF;
@@ -100,8 +100,10 @@ public class PureTalonFXConstants {
         var driveCurrentLimit = new CurrentLimitsConfigs();
         driveCurrentLimit.SupplyCurrentLimitEnable = SwerveConstants.driveEnableCurrentLimit;
         driveCurrentLimit.SupplyCurrentLimit = SwerveConstants.driveContinuousCurrentLimit;
-        driveCurrentLimit.SupplyCurrentThreshold = SwerveConstants.drivePeakCurrentLimit;
-        driveCurrentLimit.SupplyTimeThreshold = SwerveConstants.drivePeakCurrentDuration;
+        //driveCurrentLimit.SupplyCurrentThreshold = SwerveConstants.drivePeakCurrentLimit;
+        // driveCurrentLimit.SupplyCurrentThreshold = 0;
+        //driveCurrentLimit.SupplyTimeThreshold = SwerveConstants.drivePeakCurrentDuration;
+        // driveCurrentLimit.SupplyTimeThreshold = 0;
         driveMotorConfigs.CurrentLimits = driveCurrentLimit;
 
         var driveOpenRampConfigs = new OpenLoopRampsConfigs();
@@ -136,8 +138,10 @@ public class PureTalonFXConstants {
         var angleCurrentConfigs = new CurrentLimitsConfigs();
         angleCurrentConfigs.SupplyCurrentLimitEnable = SwerveConstants.angleEnableCurrentLimit;
         angleCurrentConfigs.SupplyCurrentLimit = SwerveConstants.angleContinuousCurrentLimit;
-        angleCurrentConfigs.SupplyCurrentThreshold = SwerveConstants.anglePeakCurrentLimit;
-        angleCurrentConfigs.SupplyTimeThreshold = SwerveConstants.anglePeakCurrentDuration;
+        //angleCurrentConfigs.SupplyCurrentThreshold = SwerveConstants.anglePeakCurrentLimit;
+        //angleCurrentConfigs.SupplyCurrentThreshold = 0;
+        //angleCurrentConfigs.SupplyTimeThreshold = SwerveConstants.anglePeakCurrentDuration;
+        //angleCurrentConfigs.SupplyTimeThreshold = 0;
         angleMotorConfigs.CurrentLimits = angleCurrentConfigs;
 
         var angleClosedGeneralConfigs = new ClosedLoopGeneralConfigs();
