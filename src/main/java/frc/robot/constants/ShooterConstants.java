@@ -1,8 +1,12 @@
 package frc.robot.constants;
 
 import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.VoltageConfigs;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -13,8 +17,6 @@ public class ShooterConstants {
 
     public static final int endEffectorROTID = 17;
     public static final int endEffectorRollerID = 18;
-
-    public static final int shooterCurrentLimit = 80; // May need to change
 
     public static final int shooterEncoderCPR = 2048; // CANCoder CPR
     public static final double shooter_kS = 0; // Tune
@@ -68,5 +70,20 @@ public class ShooterConstants {
         shooterConfig.Slot0.kP = ShooterConstants.shooter_kP;
         shooterConfig.Slot0.kI = ShooterConstants.shooter_kI;
         shooterConfig.Slot0.kD = ShooterConstants.shooter_kD;
+        
+        shooterConfig.CurrentLimits = new CurrentLimitsConfigs();
+        shooterConfig.CurrentLimits.SupplyCurrentLimit = 30; // TODO: Maybe make this higher?
+        shooterConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        shooterConfig.CurrentLimits.StatorCurrentLimit = 30;
+        shooterConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
+        shooterConfig.Voltage = new VoltageConfigs();
+        shooterConfig.Voltage.PeakForwardVoltage = 0;
+        shooterConfig.Voltage.PeakReverseVoltage = -1; // TODO: Make this lower once tested
+
+        shooterConfig.MotorOutput = new MotorOutputConfigs();
+        shooterConfig.MotorOutput.PeakForwardDutyCycle = 0;
+        shooterConfig.MotorOutput.PeakReverseDutyCycle = shooterConfig.Voltage.PeakReverseVoltage / 12;
+        shooterConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     }
 }

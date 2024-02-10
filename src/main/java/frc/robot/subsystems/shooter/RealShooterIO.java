@@ -40,6 +40,7 @@ public class RealShooterIO implements ShooterIO {
     public RealShooterIO() {
         // Shooter and follower motor
         this.m_shooter.getConfigurator().apply(ShooterConstants.shooterConfig);
+        this.m_follower.getConfigurator().apply(ShooterConstants.shooterConfig);
         this.m_follower.setControl(new Follower(this.m_shooter.getDeviceID(), false));
 
         // End effector

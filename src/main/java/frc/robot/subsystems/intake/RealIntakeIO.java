@@ -4,10 +4,12 @@ import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.constants.Intake.IntakeConstants;
+import frc.robot.util.SparkConfigs;
 
 public class RealIntakeIO implements IntakeIO {
     // Motors
@@ -19,6 +21,8 @@ public class RealIntakeIO implements IntakeIO {
     private DigitalInput indexSenor = new DigitalInput(IntakeConstants.indexSensor), intakeSensor = new DigitalInput(IntakeConstants.intakeSensor);
 
     public RealIntakeIO() {
+        SparkConfigs.configureSparkMax(intakeMotor, 10, IdleMode.kBrake);
+        SparkConfigs.configureSparkMax(indexMotor, 10, IdleMode.kBrake);
         this.intakeEncoder.setVelocityConversionFactor(1.0/60); // RPM to RPS
         this.indexEncoder.setVelocityConversionFactor(1.0/60); // RPM to RPS
     }
