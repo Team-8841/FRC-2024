@@ -4,11 +4,14 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.AutoConstants;
 import frc.robot.constants.Constants;
 import frc.robot.constants.swerve.SwerveConstants;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class TeleopSwerve extends Command {
     private DoubleSupplier forwardSupplier, strafeSupplier, rotationSupplier;

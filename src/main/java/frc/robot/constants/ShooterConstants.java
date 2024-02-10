@@ -8,8 +8,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ShooterConstants {
 
-    public static final boolean tuneMode = true; // Change when tuning the shooter to allow for on the fly tuning;
-
     public static final int shooterMotorID = 15;
     public static final int followerMotorID = 16;
 
@@ -45,9 +43,11 @@ public class ShooterConstants {
     public static final Rotation2d endEffector_allowedError = Rotation2d.fromDegrees(5); // Tune
 
     public static final double shooterOffSpeed = 0; // Dont change this
-    public static final double subShotSpeed = 0; // Tune
-    public static final double farShotSpeed1 = 0; // Tune
-    public static final double farShotSpeed2 = 0; // Tune
+    public static final double subSubShotSpeed = 0.1; // Tune
+    public static final double subShotSpeed = 0.2; // Tune
+    public static final double farShotSpeed = 0.4; // Tune
+    public static final double farFarShotSpeed = 0.6; // Tune
+    public static final double fieldTossSpeed = 0; // Tune
     public static final double ampShotSpeed = 0; // Tune
 
     public static final Rotation2d endEffectorHome = Rotation2d.fromDegrees(0); // Setpoint of end effector at home position

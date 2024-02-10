@@ -6,15 +6,18 @@ package frc.robot;
 
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TestCommand;
 import frc.robot.constants.Constants;
+import frc.robot.constants.OIConstants;
 import frc.robot.constants.PathingConstants;
 import frc.robot.constants.swerve.PureTalonFXConstants;
 import frc.robot.sensors.imu.DummyIMU;
@@ -27,6 +30,11 @@ import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
 import frc.robot.subsystems.intake.RealIntakeIO;
+import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
+import frc.robot.subsystems.shooter.DummyShooterIO;
+import frc.robot.subsystems.shooter.RealShooterIO;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem.ShooterState;
 import frc.robot.subsystems.intake.DummyIntakeIO;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 
@@ -36,10 +44,12 @@ public class RobotContainer {
 
   // Subsystems
   private DriveTrainSubsystem driveTrain;
+  private ShooterSubsystem shooter;
   private IntakeSubsystem intake;
 
   // Controllers
-  private CommandXboxController driveController;
+  private CommandXboxController driveController = new CommandXboxController(0);
+  private CommandJoystick copilot = new CommandJoystick(1);
 
   public RobotContainer() {
     SwerveModuleIO swerveModules[];
@@ -59,6 +69,7 @@ public class RobotContainer {
       //this.imu = new Pigeon2IO(Constants.pigeonId);
       this.imu = new NavX2();
       this.intake = new IntakeSubsystem(new RealIntakeIO());
+      this.shooter = new ShooterSubsystem(new RealShooterIO());
     } else if (Constants.simReplay) {
       // Replay
       swerveModules = new SwerveModuleIO[] {
@@ -70,6 +81,7 @@ public class RobotContainer {
 
       this.imu = new DummyIMU();
       this.intake = new IntakeSubsystem(new DummyIntakeIO());
+      this.shooter = new ShooterSubsystem(new DummyShooterIO());
     }
     else {
       // Physics sim
@@ -81,6 +93,8 @@ public class RobotContainer {
       };
 
       this.imu = new SimIMU();
+      this.intake = new IntakeSubsystem(new DummyIntakeIO());
+      this.shooter = new ShooterSubsystem(new DummyShooterIO());
     }
 
     this.driveTrain = new DriveTrainSubsystem(swerveModules, this.imu);
@@ -88,11 +102,15 @@ public class RobotContainer {
     ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
     this.imu.initializeShuffleBoardLayout(robotTab.getLayout("IMU", BuiltInLayouts.kList));
 
-    this.driveController = new CommandXboxController(0);
-    this.configureBindings(this.driveController);
+    this.configureBindings(this.driveController, this.copilot);
   }
 
-  private void configureBindings(CommandXboxController controller) {
+  private void configureBindings(CommandXboxController controller, CommandJoystick copilot) {
+    copilot.button(OIConstants.button14).whileTrue(this.shooter.setStateCommand(ShooterState.SUBSHOT));
+    copilot.button(OIConstants.button12).whileTrue(this.shooter.setStateCommand(ShooterState.SUBSHOT));
+    copilot.button(OIConstants.button11).whileTrue(this.shooter.setStateCommand(ShooterState.FARSHOT));
+    copilot.button(OIConstants.button10).whileTrue(this.shooter.setStateCommand(ShooterState.FARFARSHOT));
+    copilot.button(OIConstants.button1).whileTrue(this.intake.setStateCommand(IntakeState.INTAKE));
   }
 
   public Command getAutonomousCommand() {
@@ -108,7 +126,7 @@ public class RobotContainer {
   }
 
   public Command getTeleopCommand() {
-    return new TeleopSwerve(driveTrain, () -> -this.driveController.getLeftY(),
+    return new TeleopSwerve(this.driveTrain, () -> -this.driveController.getLeftY(),
         () -> -this.driveController.getLeftX(),
         () -> -this.driveController.getRightX());
   }
