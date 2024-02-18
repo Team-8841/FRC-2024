@@ -34,13 +34,13 @@ public class ShooterSubsystem extends SubsystemBase {
         FIELDTOSS(ShooterConstants.farShotSpeed2, ShooterConstants.endEffectorHome, 0,
                 false);
 
-        private final double m_shooterDcycle, m_endEffectorRollerSpeed;
+        private final double m_shooterDcycle, m_endEffectorRollerDcycle;
         private final Rotation2d m_endEffectorSP;
 
         private ShooterState(double shooterSP, Rotation2d endEffectorSP, double eeRollerSpeed, boolean shooterAimedUP) {
             this.m_shooterDcycle = shooterSP;
             this.m_endEffectorSP = endEffectorSP;
-            this.m_endEffectorRollerSpeed = eeRollerSpeed;
+            this.m_endEffectorRollerDcycle = eeRollerSpeed;
         }
 
     }
@@ -59,28 +59,16 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("Shooter/filteredRPS", this.latestFilteredRPS);
     }
 
-    // Shooter
-
     public void setShooterState(ShooterState state) {
         this.hwImpl.feed();
-        this.setShooterPower(state.m_shooterDcycle);
-        this.setEndEffector(state.m_endEffectorSP);
-        this.setRollerSpeed(state.m_endEffectorRollerSpeed);
+        this.hwImpl.setShooter(state.m_shooterDcycle);
+        this.hwImpl.setEndEffector(state.m_endEffectorSP);
+        this.hwImpl.setRollerSpeed(state.m_endEffectorRollerDcycle);
         curState = state;
-    }
-
-    private void setShooterPower(double dcycle) {
-        this.hwImpl.setShooter(dcycle);
     }
 
     public double getShooterRPS() {
         return this.latestFilteredRPS;
-    }
-
-    // End effector hinge
-
-    private void setEndEffector(Rotation2d targetAngle) {
-        this.hwImpl.setEndEffector(targetAngle);
     }
 
     // Get the target setpoint from the current state and check if we are within a
@@ -90,12 +78,6 @@ public class ShooterSubsystem extends SubsystemBase {
         double spAngle = curState.m_endEffectorSP.getDegrees();
         double allowedError = ShooterConstants.endEffector_allowedError.getDegrees();
         return Math.abs(spAngle - angle) < allowedError;
-    }
-
-    // End effector roller
-
-    private void setRollerSpeed(double dcycle) {
-        this.hwImpl.setRollerSpeed(dcycle);
     }
 
     public void feed() {

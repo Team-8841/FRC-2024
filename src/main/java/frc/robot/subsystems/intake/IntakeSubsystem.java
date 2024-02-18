@@ -19,8 +19,6 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem(IntakeIO hardwImpl) {
     this.hardwImpl = hardwImpl;
     this.initializeShuffleboardWidgets();
-  
-
   }
 
   public static enum IntakeState {
@@ -48,26 +46,10 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void setIntakeState(IntakeState state) {
-    curState = state;
-    this.setIntakeSpeed(state.intakeSpeed);
-    this.setIndexSpeed(state.indexSpeed);
     this.hardwImpl.feed();
-  }
-
-  private void setIntakeSpeed(double speed) {
-    this.hardwImpl.setIntakeSpeed(speed);
-  }
-
-  private void setIndexSpeed(double speed) {
-    this.hardwImpl.setIndexSpeed(speed);
-  }
-
-  public boolean getIntakeSensor() {
-    return this.hardwImpl.getIntakeSensor();
-  }
-
-  public boolean getIndexSensor() {
-    return this.hardwImpl.getIndexSensor();
+    this.hardwImpl.setIntakeSpeed(state.intakeSpeed);
+    this.hardwImpl.setIndexSpeed(state.indexSpeed);
+    curState = state;
   }
 
   public Command setStateCommand(IntakeState state) {
@@ -93,6 +75,14 @@ public class IntakeSubsystem extends SubsystemBase {
         }
       }, this)
       .finallyDo(() -> this.setIntakeState(IntakeState.OFF));
+  }
+
+  public boolean getIntakeSensor() {
+    return this.hardwImpl.getIntakeSensor();
+  }
+
+  public boolean getIndexSensor() {
+    return this.hardwImpl.getIndexSensor();
   }
 
   public void feed() {
