@@ -22,7 +22,7 @@ public class ElevatorSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         this.hwImpl.updateInputs(this.inputs);
-        Logger.processInputs("/Elevator", this.inputs);
+        Logger.processInputs("Elevator", this.inputs);
     }
 
 
@@ -30,6 +30,11 @@ public class ElevatorSubsystem extends SubsystemBase{
 
     public void set(double dcycle) {
         this.hwImpl.set(dcycle);
+        this.hwImpl.feed();
+    }
+
+    public void feed() {
+        this.hwImpl.feed();
     }
 
     /*-------------------------------- Custom Private Functions --------------------------------*/

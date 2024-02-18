@@ -17,6 +17,10 @@ public class DummyShooterIO implements ShooterIO {
         // Do nothing
     }
 
+    public void feed() {
+        // Do nothing
+    }
+
     public double getShooterRPS() {
         return inputs.actualShooterRPS;
     }

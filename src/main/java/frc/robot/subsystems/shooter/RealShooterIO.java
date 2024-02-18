@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -14,14 +14,15 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.lib.util.SafeCANSparkMax;
 import frc.robot.constants.ShooterConstants;
 
 public class RealShooterIO implements ShooterIO {
     // Motors
     private final TalonFX m_shooter = new TalonFX(ShooterConstants.shooterMotorID),
             m_follower = new TalonFX(ShooterConstants.followerMotorID);
-    private final CANSparkMax m_endEffectorROT = new CANSparkMax(ShooterConstants.endEffectorROTID, MotorType.kBrushed),
-            m_endEffectorRoller = new CANSparkMax(ShooterConstants.endEffectorRollerID, MotorType.kBrushed);
+    private final SafeCANSparkMax m_endEffectorROT = new SafeCANSparkMax(ShooterConstants.endEffectorROTID, MotorType.kBrushed),
+            m_endEffectorRoller = new SafeCANSparkMax(ShooterConstants.endEffectorRollerID, MotorType.kBrushed);
     private final SparkPIDController m_endEffectorPID = this.m_endEffectorROT.getPIDController();
     private final ArmFeedforward endEffectorFeedforward = new ArmFeedforward(ShooterConstants.endEffector_kS,
             ShooterConstants.endEffector_kG, ShooterConstants.endEffector_kV, ShooterConstants.endEffector_kA);
@@ -40,7 +41,12 @@ public class RealShooterIO implements ShooterIO {
     public RealShooterIO() {
         // Shooter and follower motor
         this.m_shooter.getConfigurator().apply(ShooterConstants.shooterConfig);
+        this.m_shooter.setSafetyEnabled(true);
+
+        this.m_follower.getConfigurator().apply(ShooterConstants.shooterConfig);
+        this.m_follower.setSafetyEnabled(true);
         this.m_follower.setControl(new Follower(this.m_shooter.getDeviceID(), false));
+
 
         // End effector
         this.m_endEffectorPID.setP(ShooterConstants.endEffector_kP);
@@ -51,9 +57,9 @@ public class RealShooterIO implements ShooterIO {
     }
 
     @Override
-    public void setShooter(double targetRPS) {
-        this.shooterSP = targetRPS;
-        this.m_shooter.setControl(new VelocityVoltage(targetRPS));
+    public void setShooter(double dcycle) {
+        this.shooterSP = dcycle;
+        this.m_shooter.setControl(new VoltageOut(12 * dcycle));
     }
 
     @Override
@@ -69,8 +75,16 @@ public class RealShooterIO implements ShooterIO {
     }
 
     @Override
+    public void feed() {
+        this.m_shooter.feed();
+        this.m_follower.feed();
+        this.m_endEffectorROT.feed();
+        this.m_endEffectorRoller.feed();
+    }
+
+    @Override
     public double getShooterRPS() {
-        return this.shooterVel.refresh().getValue();
+        return this.shooterVel.getValue();
     }
 
     @Override
@@ -83,6 +97,7 @@ public class RealShooterIO implements ShooterIO {
         // Shooter
         inputs.setShooterRPS = this.shooterSP;
         inputs.actualShooterRPS = this.shooterVel.refresh().getValue();
+
 
         // End Effector
         inputs.setEndEffectorDeg = this.endEffectorSP.getDegrees();
@@ -103,5 +118,11 @@ public class RealShooterIO implements ShooterIO {
         Logger.recordOutput("Shooter/rollerOutCur", rollerOutCur);
         Logger.recordOutput("Shooter/totalCur", this.shooterSupCur.getValue() + this.followerSupCur.getValue() +
                 endEffectorOutCur + rollerOutCur);
+
+        // Safety
+        inputs.shooterAlive = this.m_shooter.isAlive();
+        inputs.followerAlive = this.m_follower.isAlive();
+        inputs.endEffectorHingeAlive = this.m_endEffectorROT.isAlive();
+        inputs.endEffectorRollerAlive = this.m_endEffectorRoller.isAlive();
     }
 }

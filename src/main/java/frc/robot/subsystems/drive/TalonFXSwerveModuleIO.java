@@ -24,6 +24,8 @@ import frc.lib.util.SwerveModuleConstants;
 import frc.robot.constants.swerve.PureTalonFXConstants;
 import frc.robot.constants.swerve.SwerveConstants;
 
+// TODO: Make this use motorsafety
+
 public class TalonFXSwerveModuleIO implements SwerveModuleIO {
     private boolean driveMotionMagic;
 

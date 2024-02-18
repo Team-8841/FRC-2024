@@ -10,5 +10,7 @@ public interface ElevatorIO {
 
     public void set(double dcycle);
 
+    public void feed();
+
     public void updateInputs(ElevatorInputsAutoLogged inputs);
 }

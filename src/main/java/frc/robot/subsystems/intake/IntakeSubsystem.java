@@ -23,8 +23,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
   }
 
-  /*-------------------------------- Public Instance Variables --------------------------------*/
-
   public static enum IntakeState {
     INTAKE(IntakeConstants.kIntakeInSpeed, IntakeConstants.kIndexInSpeed),   // Intake full in
     INTAKEANDHOLD(IntakeConstants.kIntakeOutSpeed, 0f),           // Intake out index stop
@@ -40,29 +38,27 @@ public class IntakeSubsystem extends SubsystemBase {
     }
   }
 
-  /*-------------------------------- Generic Subsystem Functions --------------------------------*/
-
   IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
 
   @Override
   public void periodic() {
-    Logger.processInputs("/Intake", inputs);
+    Logger.processInputs("Intake", inputs);
     this.hardwImpl.updateInputs(inputs);
-  }
 
-  /*-------------------------------- Custom Public Functions --------------------------------*/
+  }
 
   public void setIntakeState(IntakeState state) {
     curState = state;
     this.setIntakeSpeed(state.intakeSpeed);
     this.setIndexSpeed(state.indexSpeed);
+    this.hardwImpl.feed();
   }
 
-  public void setIntakeSpeed(double speed) {
+  private void setIntakeSpeed(double speed) {
     this.hardwImpl.setIntakeSpeed(speed);
   }
 
-  public void setIndexSpeed(double speed) {
+  private void setIndexSpeed(double speed) {
     this.hardwImpl.setIndexSpeed(speed);
   }
 
@@ -99,7 +95,9 @@ public class IntakeSubsystem extends SubsystemBase {
       .finallyDo(() -> this.setIntakeState(IntakeState.OFF));
   }
 
-  /*-------------------------------- Custom Private Functions --------------------------------*/
+  public void feed() {
+    this.hardwImpl.feed();
+  }
 
   // Show subsystem status on the dashboard
   private void initializeShuffleboardWidgets() {

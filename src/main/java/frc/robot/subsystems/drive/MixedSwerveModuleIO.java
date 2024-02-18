@@ -25,6 +25,8 @@ import frc.lib.util.SwerveModuleConstants;
 import frc.robot.constants.swerve.MixedMotorConstants;
 import frc.robot.constants.swerve.SwerveConstants;
 
+// TODO: Make this use motorsafety
+
 public final class MixedSwerveModuleIO implements SwerveModuleIO {
     private CANSparkMax driveMotor;
     private TalonFX steeringMotor;
@@ -89,7 +91,7 @@ public final class MixedSwerveModuleIO implements SwerveModuleIO {
     private void configDriveMotor() {
         this.driveMotor.restoreFactoryDefaults();
         this.driveMotor.setInverted(SwerveConstants.driveMotorInvert == InvertedValue.Clockwise_Positive);
-        this.driveMotor.setSmartCurrentLimit(SwerveConstants.drivePeakCurrentLimit,
+        this.driveMotor.setSmartCurrentLimit(SwerveConstants.driveInfCurrentThreshold,
                 SwerveConstants.driveContinuousCurrentLimit);
         this.driveMotor.setIdleMode(MixedMotorConstants.driveNeutralMode);
 

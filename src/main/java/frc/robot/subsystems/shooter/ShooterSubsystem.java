@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -13,10 +14,10 @@ public class ShooterSubsystem extends SubsystemBase {
     /*-------------------------------- Private Instance Variables --------------------------------*/
 
     private ShooterIO hwImpl;
-
     private ShooterState curState;
-
     private ShooterInputsAutoLogged inputs = new ShooterInputsAutoLogged();
+    private LinearFilter rpsFilter = LinearFilter.movingAverage(5);
+    private double latestFilteredRPS;
 
     /*-------------------------------- Public Instance Variables --------------------------------*/
 
@@ -25,19 +26,19 @@ public class ShooterSubsystem extends SubsystemBase {
          * ENUM(shooter Setpoint, End effector setpoint, End effector roller speed
          * ,Shooter Aimed Up)
          */
-        OFF(ShooterConstants.shooterOffSpeed, ShooterConstants.endEffectorHome, ShooterConstants.rollerOffSpeed, true),
-        SUBSHOT(ShooterConstants.subShotSpeed, ShooterConstants.endEffectorHome, ShooterConstants.rollerOffSpeed, true),
-        FARSHOT(ShooterConstants.farShotSpeed1, ShooterConstants.endEffectorHome, ShooterConstants.rollerOffSpeed,
+        OFF(0, ShooterConstants.endEffectorHome, 0, true),
+        SUBSHOT(ShooterConstants.subShotSpeed, ShooterConstants.endEffectorHome, 0, true),
+        FARSHOT(ShooterConstants.farShotSpeed1, ShooterConstants.endEffectorHome, 0,
                 false),
         AMP(ShooterConstants.ampShotSpeed, ShooterConstants.endEffectorDeployed, ShooterConstants.rollerOutSpeed, true),
-        FIELDTOSS(ShooterConstants.farShotSpeed2, ShooterConstants.endEffectorHome, ShooterConstants.rollerOffSpeed,
+        FIELDTOSS(ShooterConstants.farShotSpeed2, ShooterConstants.endEffectorHome, 0,
                 false);
 
-        private final double m_shooterSP, m_endEffectorRollerSpeed;
+        private final double m_shooterDcycle, m_endEffectorRollerSpeed;
         private final Rotation2d m_endEffectorSP;
 
         private ShooterState(double shooterSP, Rotation2d endEffectorSP, double eeRollerSpeed, boolean shooterAimedUP) {
-            this.m_shooterSP = shooterSP;
+            this.m_shooterDcycle = shooterSP;
             this.m_endEffectorSP = endEffectorSP;
             this.m_endEffectorRollerSpeed = eeRollerSpeed;
         }
@@ -48,36 +49,37 @@ public class ShooterSubsystem extends SubsystemBase {
         this.hwImpl = hwImpl;
         this.initializeShuffleboardWidgets();
     }
-    /*-------------------------------- Generic Subsystem Functions --------------------------------*/
 
     @Override
     public void periodic() {
         this.hwImpl.updateInputs(this.inputs);
-        Logger.processInputs("/Shooter", this.inputs);
+        Logger.processInputs("Shooter", this.inputs);
+
+        this.latestFilteredRPS = this.rpsFilter.calculate(this.hwImpl.getShooterRPS());
+        Logger.recordOutput("Shooter/filteredRPS", this.latestFilteredRPS);
     }
 
-    /*-------------------------------- Custom Public Functions --------------------------------*/
+    // Shooter
 
-    public void shooter(ShooterState state) {
-        this.setShooterSetPoint(state.m_shooterSP);
+    public void setShooterState(ShooterState state) {
+        this.hwImpl.feed();
+        this.setShooterPower(state.m_shooterDcycle);
         this.setEndEffector(state.m_endEffectorSP);
         this.setRollerSpeed(state.m_endEffectorRollerSpeed);
         curState = state;
     }
 
-    /* ========= Shooter Functions ========= */
-    public void setShooterSetPoint(double targetRPS) {
-        this.hwImpl.setShooter(targetRPS);
+    private void setShooterPower(double dcycle) {
+        this.hwImpl.setShooter(dcycle);
     }
 
-    // Get the target setpoint from the current state and check if we are within a
-    // tolerance of that value
-    public boolean shooterAtTarget() {
-        return this.hwImpl.getShooterRPS() > curState.m_shooterSP - ShooterConstants.shooter_allowedError;
+    public double getShooterRPS() {
+        return this.latestFilteredRPS;
     }
 
-    /* ========= End Effector Functions ========= */
-    public void setEndEffector(Rotation2d targetAngle) {
+    // End effector hinge
+
+    private void setEndEffector(Rotation2d targetAngle) {
         this.hwImpl.setEndEffector(targetAngle);
     }
 
@@ -90,15 +92,19 @@ public class ShooterSubsystem extends SubsystemBase {
         return Math.abs(spAngle - angle) < allowedError;
     }
 
-    public void setRollerSpeed(double dcycle) {
+    // End effector roller
+
+    private void setRollerSpeed(double dcycle) {
         this.hwImpl.setRollerSpeed(dcycle);
     }
 
-    /*-------------------------------- Custom Private Functions --------------------------------*/
+    public void feed() {
+        this.hwImpl.feed();
+    }
+
     private void initializeShuffleboardWidgets() {
         var layout = Shuffleboard.getTab("Robot").getLayout("Shooter", BuiltInLayouts.kList);
-        layout.addDouble("Velocity", this.hwImpl::getShooterRPS);
-        layout.addBoolean("At Speed", this::shooterAtTarget);
+        layout.addDouble("Velocity", this::getShooterRPS);
         layout.addDouble("Angle", () -> this.hwImpl.getEndEffector().getDegrees());
         layout.addBoolean("At Target", this::endEffectorAtTarget);
     }

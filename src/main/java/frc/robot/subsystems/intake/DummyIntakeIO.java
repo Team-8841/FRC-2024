@@ -11,6 +11,10 @@ public class DummyIntakeIO implements IntakeIO {
         // Do nothing
     }
 
+    public void feed() {
+        // Do nothing
+    }
+
     public boolean getIntakeSensor() {
         return inputs.intakeSensor;
     }
