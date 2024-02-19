@@ -2,17 +2,17 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.lib.util.SafeCANSparkMax;
 import frc.robot.constants.Intake.IntakeConstants;
 
 public class RealIntakeIO implements IntakeIO {
     // Motors
-    private final SafeCANSparkMax intakeMotor = new SafeCANSparkMax(IntakeConstants.intakeMotor, MotorType.kBrushless),
-            indexMotor = new SafeCANSparkMax(IntakeConstants.indexMotor, MotorType.kBrushless);
+    private final CANSparkMax intakeMotor = new CANSparkMax(IntakeConstants.intakeMotor, MotorType.kBrushless),
+            indexMotor = new CANSparkMax(IntakeConstants.indexMotor, MotorType.kBrushless);
     private final RelativeEncoder intakeEncoder = this.intakeMotor.getEncoder(), indexEncoder = this.indexMotor.getEncoder();
 
     // Sensors
@@ -31,11 +31,6 @@ public class RealIntakeIO implements IntakeIO {
         this.indexMotor.set(dcycle);
     }
 
-    public void feed() {
-        this.intakeMotor.feed();
-        this.indexMotor.feed();
-    }
-
     public boolean getIntakeSensor() {
         return this.intakeSensor.get();
     }
@@ -52,9 +47,6 @@ public class RealIntakeIO implements IntakeIO {
 
         inputs.intakeSensor = this.getIntakeSensor();
         inputs.indexSensor = this.getIndexSensor();
-
-        inputs.intakeAlive = this.intakeMotor.isAlive();
-        inputs.indexAlive = this.indexMotor.isAlive();
 
         Logger.recordOutput("Intake/intakeMotorOutCur", this.intakeMotor.getOutputCurrent());
         Logger.recordOutput("Intake/indexMotorOutCur", this.indexMotor.getOutputCurrent());

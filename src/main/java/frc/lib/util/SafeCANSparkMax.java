@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.Notifier;
 
 /**
  * `CANSparkMax` with motor saftey capabilities.
- * Should be prefered over just `CANSparkMax` in this codebase.
  */
 public class SafeCANSparkMax extends CANSparkMax {
     private static class MotorSafetyImpl extends MotorSafety {

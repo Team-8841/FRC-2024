@@ -5,30 +5,32 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class DummyShooterIO implements ShooterIO {
     private ShooterInputsAutoLogged inputs;
 
+    @Override
     public void setShooter(double targetRPS) {
         // Do nothing
     }
 
+    @Override
     public void setEndEffector(Rotation2d targetAngle) {
         // Do nothing
     }
 
+    @Override
     public void setRollerSpeed(double dcycle) {
         // Do nothing
     }
 
-    public void feed() {
-        // Do nothing
-    }
-
+    @Override
     public double getShooterRPS() {
         return inputs.actualShooterRPS;
     }
 
+    @Override
     public Rotation2d getEndEffector() {
         return Rotation2d.fromDegrees(inputs.actualEndEffectorDeg);
     }
 
+    @Override
     public void updateInputs(ShooterInputsAutoLogged inputs) {
         this.inputs = inputs;
     }

@@ -8,7 +8,6 @@ public interface ShooterIO {
     @AutoLog
     public static class ShooterInputs {
         double setShooterRPS, actualShooterRPS, setEndEffectorDeg, actualEndEffectorDeg, setRollerDCycle, rollerSpeedRPS;
-        boolean shooterAlive, followerAlive, endEffectorHingeAlive, endEffectorRollerAlive;
     }
 
     public void setShooter(double targetRPS);
@@ -16,8 +15,6 @@ public interface ShooterIO {
     public void setEndEffector(Rotation2d targetAngle);
 
     public void setRollerSpeed(double dcycle);
-
-    public void feed();
 
     public double getShooterRPS();
 

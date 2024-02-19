@@ -4,9 +4,11 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.MotorSafety;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.RunnableMotorSafety;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -18,6 +20,10 @@ public class ShooterSubsystem extends SubsystemBase {
     private ShooterInputsAutoLogged inputs = new ShooterInputsAutoLogged();
     private LinearFilter rpsFilter = LinearFilter.movingAverage(5);
     private double latestFilteredRPS;
+    private MotorSafety systemMotorSafety = new RunnableMotorSafety(
+        () -> this.setShooterState(ShooterState.OFF), 
+        "Shooter"
+    );
 
     /*-------------------------------- Public Instance Variables --------------------------------*/
 
@@ -60,7 +66,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setShooterState(ShooterState state) {
-        this.hwImpl.feed();
+        this.systemMotorSafety.feed();
         this.hwImpl.setShooter(state.m_shooterDcycle);
         this.hwImpl.setEndEffector(state.m_endEffectorSP);
         this.hwImpl.setRollerSpeed(state.m_endEffectorRollerDcycle);
@@ -81,7 +87,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void feed() {
-        this.hwImpl.feed();
+        this.systemMotorSafety.feed();
     }
 
     private void initializeShuffleboardWidgets() {

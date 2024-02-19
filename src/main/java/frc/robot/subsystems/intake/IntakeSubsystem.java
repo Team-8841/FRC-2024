@@ -2,12 +2,14 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.MotorSafety;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.RunnableMotorSafety;
 import frc.robot.constants.Intake.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -15,6 +17,9 @@ public class IntakeSubsystem extends SubsystemBase {
   // Subsystem State
   private IntakeState curState;
   private IntakeIO hardwImpl;
+  private MotorSafety systemMotorSafety = new RunnableMotorSafety(
+    () -> this.setIntakeState(IntakeState.OFF), 
+    "Intake");
 
   public IntakeSubsystem(IntakeIO hardwImpl) {
     this.hardwImpl = hardwImpl;
@@ -46,7 +51,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void setIntakeState(IntakeState state) {
-    this.hardwImpl.feed();
+    this.systemMotorSafety.feed();
     this.hardwImpl.setIntakeSpeed(state.intakeSpeed);
     this.hardwImpl.setIndexSpeed(state.indexSpeed);
     curState = state;
@@ -86,7 +91,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void feed() {
-    this.hardwImpl.feed();
+    this.systemMotorSafety.feed();
   }
 
   // Show subsystem status on the dashboard

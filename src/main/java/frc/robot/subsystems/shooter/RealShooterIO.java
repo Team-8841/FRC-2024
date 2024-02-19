@@ -21,8 +21,8 @@ public class RealShooterIO implements ShooterIO {
     // Motors
     private final TalonFX m_shooter = new TalonFX(ShooterConstants.shooterMotorID),
             m_follower = new TalonFX(ShooterConstants.followerMotorID);
-    private final SafeCANSparkMax m_endEffectorROT = new SafeCANSparkMax(ShooterConstants.endEffectorROTID, MotorType.kBrushed),
-            m_endEffectorRoller = new SafeCANSparkMax(ShooterConstants.endEffectorRollerID, MotorType.kBrushed);
+    private final CANSparkMax m_endEffectorROT = new CANSparkMax(ShooterConstants.endEffectorROTID, MotorType.kBrushed),
+            m_endEffectorRoller = new CANSparkMax(ShooterConstants.endEffectorRollerID, MotorType.kBrushed);
     private final SparkPIDController m_endEffectorPID = this.m_endEffectorROT.getPIDController();
     private final ArmFeedforward endEffectorFeedforward = new ArmFeedforward(ShooterConstants.endEffector_kS,
             ShooterConstants.endEffector_kG, ShooterConstants.endEffector_kV, ShooterConstants.endEffector_kA);
@@ -75,14 +75,6 @@ public class RealShooterIO implements ShooterIO {
     }
 
     @Override
-    public void feed() {
-        this.m_shooter.feed();
-        this.m_follower.feed();
-        this.m_endEffectorROT.feed();
-        this.m_endEffectorRoller.feed();
-    }
-
-    @Override
     public double getShooterRPS() {
         return this.shooterVel.getValue();
     }
@@ -118,11 +110,5 @@ public class RealShooterIO implements ShooterIO {
         Logger.recordOutput("Shooter/rollerOutCur", rollerOutCur);
         Logger.recordOutput("Shooter/totalCur", this.shooterSupCur.getValue() + this.followerSupCur.getValue() +
                 endEffectorOutCur + rollerOutCur);
-
-        // Safety
-        inputs.shooterAlive = this.m_shooter.isAlive();
-        inputs.followerAlive = this.m_follower.isAlive();
-        inputs.endEffectorHingeAlive = this.m_endEffectorROT.isAlive();
-        inputs.endEffectorRollerAlive = this.m_endEffectorRoller.isAlive();
     }
 }
