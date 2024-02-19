@@ -103,8 +103,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Show subsystem status on the dashboard
   private void initializeShuffleboardWidgets() {
-    var layout = Shuffleboard.getTab("Robot").getLayout("Shooter", BuiltInLayouts.kList);
-    layout.addString("State", curState::name);
-    layout.addBoolean("Feed Sensor", this::getIndexSensor);
+    //var layout = Shuffleboard.getTab("Robot").getLayout("Shooter", BuiltInLayouts.kList);
+    //layout.addString("State", curState::name);
+    //layout.addBoolean("Feed Sensor", this::getIndexSensor);
   }
 }

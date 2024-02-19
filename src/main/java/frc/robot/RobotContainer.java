@@ -58,7 +58,7 @@ public class RobotContainer {
 
       //this.imu = new Pigeon2IO(Constants.pigeonId);
       this.imu = new NavX2();
-      this.intake = new IntakeSubsystem(new RealIntakeIO());
+      this.intake = new IntakeSubsystem(new DummyIntakeIO());
     } else if (Constants.simReplay) {
       // Replay
       swerveModules = new SwerveModuleIO[] {
@@ -108,8 +108,11 @@ public class RobotContainer {
   }
 
   public Command getTeleopCommand() {
-    return new TeleopSwerve(driveTrain, () -> -this.driveController.getLeftY(),
-        () -> -this.driveController.getLeftX(),
+    // return new TeleopSwerve(driveTrain, () -> -this.driveController.getLeftY(),
+    //     () -> -this.driveController.getLeftX(),
+    //     () -> -this.driveController.getRightX());
+    return new TeleopSwerve(driveTrain, () -> this.driveController.getLeftY(),
+        () -> this.driveController.getLeftX(),
         () -> -this.driveController.getRightX());
   }
 
