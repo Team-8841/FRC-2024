@@ -11,7 +11,10 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.SensorFeedCommand;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TestCommand;
 import frc.robot.constants.Constants;
@@ -27,6 +30,10 @@ import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
 import frc.robot.subsystems.intake.RealIntakeIO;
+import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
+import frc.robot.subsystems.shooter.RealShooterIO;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem.ShooterState;
 import frc.robot.subsystems.intake.DummyIntakeIO;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 
@@ -37,9 +44,11 @@ public class RobotContainer {
   // Subsystems
   private DriveTrainSubsystem driveTrain;
   private IntakeSubsystem intake;
+  private ShooterSubsystem shooter;
 
   // Controllers
   private CommandXboxController driveController;
+  private CommandJoystick copilotController;
 
   public RobotContainer() {
     SwerveModuleIO swerveModules[];
@@ -59,6 +68,7 @@ public class RobotContainer {
       //this.imu = new Pigeon2IO(Constants.pigeonId);
       this.imu = new NavX2();
       this.intake = new IntakeSubsystem(new RealIntakeIO());
+      this.shooter = new ShooterSubsystem(new RealShooterIO());
     } else if (Constants.simReplay) {
       // Replay
       swerveModules = new SwerveModuleIO[] {
@@ -88,11 +98,23 @@ public class RobotContainer {
     ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
     this.imu.initializeShuffleBoardLayout(robotTab.getLayout("IMU", BuiltInLayouts.kList));
 
-    this.driveController = new CommandXboxController(0);
-    this.configureBindings(this.driveController);
+    this.driveController = new CommandXboxController(1);
+    this.copilotController = new CommandJoystick(0);
+    this.configureBindings(this.driveController, this.copilotController);
   }
 
-  private void configureBindings(CommandXboxController controller) {
+  private void configureBindings(CommandXboxController controller, CommandJoystick copilot) {
+    controller.rightTrigger(0.5).whileTrue(this.intake.setStateCommand(IntakeState.INTAKE));
+    copilot.button(4).whileTrue(new SensorFeedCommand(this.intake));
+    //copilot.button(4).whileTrue(this.intake.setStateCommand(Intakes));
+    copilot.button(5).whileTrue(this.intake.setStateCommand(IntakeState.EJECT));
+
+    //this.intake.setDefaultCommand(new ConditionalCommand(
+    //  new SensorFeedCommand(this.intake), 
+    //  this.intake.setStateCommand(IntakeState.OFF), 
+    //  () -> copilot.getHID().getRawButton(4)));
+    
+    // copilot.axisLessThan(3, 0.9).whileTrue(this.shooter.setStateCommand(ShooterState.COOLSHOT));
   }
 
   public Command getAutonomousCommand() {
@@ -107,10 +129,29 @@ public class RobotContainer {
     );
   }
 
+  private ShooterState copilotGetState() {
+    double potVals[] = {1, 0.55, 0.06, -0.44, -0.96};
+    ShooterState potStates[] = {ShooterState.OFF, ShooterState.COOLSHOT, ShooterState.COOLSHOT,ShooterState.COOLSHOT, ShooterState.COOLSHOT};
+    double epsilon = 0.1;
+    double pot = this.copilotController.getRawAxis(3);
+
+    for (int i = 0; i < potVals.length; i++) {
+      if (potVals[i] - epsilon <= pot && potVals[i] + epsilon >= pot) {
+        return potStates[i];
+      }
+    }
+
+    return ShooterState.OFF;
+  }
+
   public Command getTeleopCommand() {
-    return new TeleopSwerve(driveTrain, () -> -this.driveController.getLeftY(),
-        () -> -this.driveController.getLeftX(),
-        () -> -this.driveController.getRightX());
+    // return new TeleopSwerve(driveTrain, () -> -this.driveController.getLeftY(),
+    //     () -> -this.driveController.getLeftX(),
+    //     () -> -this.driveController.getRightX());
+    return new TeleopSwerve(driveTrain, shooter, () -> this.driveController.getLeftY(),
+        () -> this.driveController.getLeftX(),
+        () -> this.driveController.getRightX(),
+        this::copilotGetState);
   }
 
   public Command getTestCommand() {

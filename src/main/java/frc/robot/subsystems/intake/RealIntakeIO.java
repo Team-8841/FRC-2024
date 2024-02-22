@@ -16,36 +16,36 @@ public class RealIntakeIO implements IntakeIO {
     private final RelativeEncoder intakeEncoder = this.intakeMotor.getEncoder(), indexEncoder = this.indexMotor.getEncoder();
 
     // Sensors
-    private DigitalInput indexSenor = new DigitalInput(IntakeConstants.indexSensor), intakeSensor = new DigitalInput(IntakeConstants.intakeSensor);
+    private DigitalInput indexSenor = new DigitalInput(IntakeConstants.indexSensor);
 
     public RealIntakeIO() {
         this.intakeEncoder.setVelocityConversionFactor(1.0/60); // RPM to RPS
         this.indexEncoder.setVelocityConversionFactor(1.0/60); // RPM to RPS
     }
 
+    @Override
     public void setIntakeSpeed(double dcycle) {
         this.intakeMotor.set(dcycle);
     }
 
+    @Override
     public void setIndexSpeed(double dcycle) {
         this.indexMotor.set(dcycle);
     }
 
-    public boolean getIntakeSensor() {
-        return this.intakeSensor.get();
-    }
-
+    @Override
     public boolean getIndexSensor() {
-        return this.indexSenor.get();
+        // The sensor returns true when it detects something, and false otherwise
+        return !this.indexSenor.get();
     }
 
+    @Override
     public void updateInputs(IntakeInputsAutoLogged inputs) {
         inputs.setIntakeDCycle = this.intakeMotor.get();
         inputs.setIndexDCycle = this.indexMotor.get();
         inputs.actualIntakeRPS = this.indexEncoder.getVelocity();
         inputs.actualIndexRPS = this.indexEncoder.getVelocity();
 
-        inputs.intakeSensor = this.getIntakeSensor();
         inputs.indexSensor = this.getIndexSensor();
 
         Logger.recordOutput("Intake/intakeMotorOutCur", this.intakeMotor.getOutputCurrent());

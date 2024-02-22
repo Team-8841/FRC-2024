@@ -14,16 +14,6 @@ public class DummyIntakeIO implements IntakeIO {
     }
 
     @Override
-    public void feed() {
-        // Do nothing
-    }
-
-    @Override
-    public boolean getIntakeSensor() {
-        return inputs.intakeSensor;
-    }
-
-    @Override
     public boolean getIndexSensor() {
         return inputs.indexSensor;
     }

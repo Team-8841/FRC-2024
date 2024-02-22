@@ -14,8 +14,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class ShooterConstants {
     // Shooter
 
-    public static final int shooterMotorID = 15;
-    public static final int followerMotorID = 16;
+    public static final int shooterMotorID = 16;
+    public static final int followerMotorID = 17;
 
     public static final int shooterCurrentLimit = 80; // May need to change
 

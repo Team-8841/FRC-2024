@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.MotorSafety;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -15,11 +16,11 @@ import frc.robot.constants.Intake.IntakeConstants;
 public class IntakeSubsystem extends SubsystemBase {
   /*-------------------------------- Private Instance Variables --------------------------------*/
   // Subsystem State
-  private IntakeState curState;
+  private IntakeState curState = IntakeState.OFF;
   private IntakeIO hardwImpl;
-  private MotorSafety systemMotorSafety = new RunnableMotorSafety(
-    () -> this.setIntakeState(IntakeState.OFF), 
-    "Intake");
+  private RunnableMotorSafety systemMotorSafety = new RunnableMotorSafety(
+      () -> this.setIntakeState(IntakeState.OFF),
+      "Intake");
 
   public IntakeSubsystem(IntakeIO hardwImpl) {
     this.hardwImpl = hardwImpl;
@@ -27,11 +28,12 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public static enum IntakeState {
-    INTAKE(IntakeConstants.kIntakeInSpeed, IntakeConstants.kIndexInSpeed),   // Intake full in
-    INTAKEANDHOLD(IntakeConstants.kIntakeOutSpeed, 0f),           // Intake out index stop
-    FEED(0f, IntakeConstants.kIndexInSpeed),                     // Intake off index full in 
-    OUTAKE(IntakeConstants.kIntakeOutSpeed, IntakeConstants.kIndexOutSpeed), // Intake full out
-    OFF(0f, 0f);                                      // Intake full of
+    INTAKE(IntakeConstants.kIntakeInSpeed, IntakeConstants.kIndexInSpeed), // Intake full in
+    INTAKEANDHOLD(IntakeConstants.kIntakeOutSpeed, 0f), // Intake out index stop
+    FEED(0f, IntakeConstants.kIndexInSpeed), // Intake off index full in
+    OUTAKEANDHOLD(IntakeConstants.kIntakeOutSpeed, 0f), // Intake full out
+    EJECT(IntakeConstants.kIntakeOutSpeed, IntakeConstants.kIndexOutSpeed), // Intake full out
+    OFF(0f, 0f); // Intake full of
 
     public final double intakeSpeed, indexSpeed;
 
@@ -47,7 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     Logger.processInputs("Intake", inputs);
     this.hardwImpl.updateInputs(inputs);
-
+    Logger.recordOutput("Intake/curState", this.curState.name());
   }
 
   public void setIntakeState(IntakeState state) {
@@ -59,31 +61,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public Command setStateCommand(IntakeState state) {
     return new FunctionalCommand(
-      () -> this.setIntakeState(state),
-      () -> {},
-      (interrupted) -> this.setIntakeState(IntakeState.OFF),
-      () -> false,
-      this
-    );
-  }
-
-  public Command sensorFeedCommand() {
-    return new RunCommand(() -> {
-        if (this.getIndexSensor()) {
-          this.setIntakeState(IntakeState.INTAKEANDHOLD);
-        }
-        else if (this.getIntakeSensor()) {
-          this.setIntakeState(IntakeState.INTAKE);
-        }
-        else {
-          this.setIntakeState(IntakeState.OFF);
-        }
-      }, this)
-      .finallyDo(() -> this.setIntakeState(IntakeState.OFF));
-  }
-
-  public boolean getIntakeSensor() {
-    return this.hardwImpl.getIntakeSensor();
+        () -> {},
+        () -> this.setIntakeState(state),
+        (interrupted) -> this.setIntakeState(IntakeState.OFF),
+        () -> false,
+        this);
   }
 
   public boolean getIndexSensor() {
@@ -96,8 +78,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Show subsystem status on the dashboard
   private void initializeShuffleboardWidgets() {
-    var layout = Shuffleboard.getTab("Robot").getLayout("Shooter", BuiltInLayouts.kList);
-    layout.addString("State", curState::name);
-    layout.addBoolean("Feed Sensor", this::getIndexSensor);
+    // var layout = Shuffleboard.getTab("Robot").getLayout("Shooter",
+    // BuiltInLayouts.kList);
+    // layout.addString("State", curState::name);
+    // layout.addBoolean("Feed Sensor", this::getIndexSensor);
   }
 }

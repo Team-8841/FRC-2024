@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.MotorSafety;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.RunnableMotorSafety;
 import frc.robot.constants.ShooterConstants;
@@ -16,11 +18,11 @@ public class ShooterSubsystem extends SubsystemBase {
     /*-------------------------------- Private Instance Variables --------------------------------*/
 
     private ShooterIO hwImpl;
-    private ShooterState curState;
+    private ShooterState curState = ShooterState.OFF;
     private ShooterInputsAutoLogged inputs = new ShooterInputsAutoLogged();
     private LinearFilter rpsFilter = LinearFilter.movingAverage(5);
     private double latestFilteredRPS;
-    private MotorSafety systemMotorSafety = new RunnableMotorSafety(
+    private RunnableMotorSafety systemMotorSafety = new RunnableMotorSafety(
         () -> this.setShooterState(ShooterState.OFF), 
         "Shooter"
     );
@@ -38,7 +40,8 @@ public class ShooterSubsystem extends SubsystemBase {
                 false),
         AMP(ShooterConstants.ampShotSpeed, ShooterConstants.endEffectorDeployed, ShooterConstants.rollerOutSpeed, true),
         FIELDTOSS(ShooterConstants.farShotSpeed2, ShooterConstants.endEffectorHome, 0,
-                false);
+                false),
+        COOLSHOT(0.5, Rotation2d.fromDegrees(0), 0, true);
 
         private final double m_shooterDcycle, m_endEffectorRollerDcycle;
         private final Rotation2d m_endEffectorSP;
@@ -54,6 +57,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterSubsystem(ShooterIO hwImpl) {
         this.hwImpl = hwImpl;
         this.initializeShuffleboardWidgets();
+
+        this.setShooterState(ShooterState.OFF);
     }
 
     @Override
@@ -62,7 +67,9 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.processInputs("Shooter", this.inputs);
 
         this.latestFilteredRPS = this.rpsFilter.calculate(this.hwImpl.getShooterRPS());
-        Logger.recordOutput("Shooter/filteredRPS", this.latestFilteredRPS);
+        Logger.recordOutput("Shooter/filteredRPS", -this.latestFilteredRPS);
+
+        Logger.recordOutput("Shooter/curState", this.curState.name());
     }
 
     public void setShooterState(ShooterState state) {
@@ -71,6 +78,15 @@ public class ShooterSubsystem extends SubsystemBase {
         this.hwImpl.setEndEffector(state.m_endEffectorSP);
         this.hwImpl.setRollerSpeed(state.m_endEffectorRollerDcycle);
         curState = state;
+    }
+
+    public Command setStateCommand(ShooterState state) {
+        return new FunctionalCommand(
+            () -> {},
+            () -> this.setShooterState(state),
+            (interrupted) -> this.setShooterState(ShooterState.OFF),
+            () -> false,
+            this);
     }
 
     public double getShooterRPS() {
@@ -91,10 +107,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     private void initializeShuffleboardWidgets() {
-        var layout = Shuffleboard.getTab("Robot").getLayout("Shooter", BuiltInLayouts.kList);
-        layout.addDouble("Velocity", this::getShooterRPS);
-        layout.addDouble("Angle", () -> this.hwImpl.getEndEffector().getDegrees());
-        layout.addBoolean("At Target", this::endEffectorAtTarget);
+        //var layout = Shuffleboard.getTab("Robot").getLayout("Shooter", BuiltInLayouts.kList);
+        //layout.addDouble("Velocity", this.hwImpl::getShooterRPS);
+        //layout.addBoolean("At Speed", this::shooterAtTarget);
+        //layout.addDouble("Angle", () -> this.hwImpl.getEndEffector().getDegrees());
+        //layout.addBoolean("At Target", this::endEffectorAtTarget);
     }
 
 }

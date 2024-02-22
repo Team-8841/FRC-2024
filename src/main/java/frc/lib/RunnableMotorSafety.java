@@ -2,7 +2,8 @@ package frc.lib;
 
 import edu.wpi.first.wpilibj.MotorSafety;
 
-public class RunnableMotorSafety extends MotorSafety {
+//public class RunnableMotorSafety extends MotorSafety {
+public class RunnableMotorSafety {
     private Runnable stopMotorRunnable;
     private String description;
 
@@ -11,12 +12,14 @@ public class RunnableMotorSafety extends MotorSafety {
         this.description = description;
     }
 
-    @Override
+    public void feed() {}
+
+    // @Override
     public String getDescription() {
         return this.description;
     }
 
-    @Override
+    // @Override
     public void stopMotor() {
         this.stopMotorRunnable.run();
     }
