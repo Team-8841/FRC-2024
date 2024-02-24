@@ -30,7 +30,7 @@ public class ShooterConstants {
 
     // End Effector Hinge
 
-    public static final int endEffectorROTID = 17;
+    public static final int endEffectorROTID = 18;
 
     public static final int endEffectorEncoderCPR = 4096; // CANCoder CPR
     public static final double endEffector_kS = 0; // Tune
@@ -41,7 +41,7 @@ public class ShooterConstants {
     public static final double endEffector_kI = 0; // Tune
     public static final double endEffector_kD = 0; // Tune
     public static final double endEffector_kIZone = 0; // Tune
-    public static final double endEffector_maxOutput = 0.4; // Tune
+    public static final double endEffector_maxOutput = 0; // Tune
     public static final double endEffector_minOutput = 0; // Tune
     public static final Rotation2d endEffector_allowedError = Rotation2d.fromDegrees(5); // Tune
 
@@ -50,7 +50,7 @@ public class ShooterConstants {
 
     // End Effector Roller
 
-    public static final int endEffectorRollerID = 18;
+    public static final int endEffectorRollerID = 19;
 
     public static final double rollerOutSpeed = 0.6; // Tune
     public static final double rollerInSpeed = 0.0; // Tune

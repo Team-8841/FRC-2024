@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.lib.util.SafeCANSparkMax;
 import frc.robot.constants.ShooterConstants;
 
@@ -21,19 +22,20 @@ public class RealShooterIO implements ShooterIO {
     // Motors
     private final TalonFX m_shooter = new TalonFX(ShooterConstants.shooterMotorID),
             m_follower = new TalonFX(ShooterConstants.followerMotorID);
-    //private final CANSparkMax m_endEffectorROT = new CANSparkMax(ShooterConstants.endEffectorROTID, MotorType.kBrushed),
-    //        m_endEffectorRoller = new CANSparkMax(ShooterConstants.endEffectorRollerID, MotorType.kBrushed);
-    // private final SparkPIDController m_endEffectorPID = this.m_endEffectorROT.getPIDController();
-    // private final ArmFeedforward endEffectorFeedforward = new ArmFeedforward(ShooterConstants.endEffector_kS,
-    //         ShooterConstants.endEffector_kG, ShooterConstants.endEffector_kV, ShooterConstants.endEffector_kA);
+    private final CANSparkMax m_endEffectorROT = new CANSparkMax(ShooterConstants.endEffectorROTID, MotorType.kBrushless),
+            m_endEffectorRoller = new CANSparkMax(ShooterConstants.endEffectorRollerID, MotorType.kBrushless);
+    private final SparkPIDController m_endEffectorPID = this.m_endEffectorROT.getPIDController();
+    private final ArmFeedforward endEffectorFeedforward = new ArmFeedforward(ShooterConstants.endEffector_kS,
+            ShooterConstants.endEffector_kG, ShooterConstants.endEffector_kV, ShooterConstants.endEffector_kA);
 
     // Sensors
-    // private final RelativeEncoder m_endEffectorEncoder = this.m_endEffectorROT.getEncoder(),
-    //         m_endEffectorRollerEncoder = this.m_endEffectorRoller.getEncoder();
+    // 36/16
+    private final RelativeEncoder m_endEffectorEncoder = this.m_endEffectorROT.getEncoder();
     private final StatusSignal<Double> shooterVel = this.m_shooter.getVelocity(),
             shooterSupCur = this.m_shooter.getSupplyCurrent(),
             shooterStaCur = this.m_shooter.getStatorCurrent(), followerSupCur = this.m_follower.getSupplyCurrent(),
             followerStaCur = this.m_follower.getStatorCurrent();
+    private final DigitalInput limitSwitch = new DigitalInput(1);
 
     private double shooterSP;
     private Rotation2d endEffectorSP = new Rotation2d();
@@ -44,13 +46,14 @@ public class RealShooterIO implements ShooterIO {
 
         this.m_follower.getConfigurator().apply(ShooterConstants.shooterConfig);
 
-
         // End effector
-        // this.m_endEffectorPID.setP(ShooterConstants.endEffector_kP);
-        // this.m_endEffectorPID.setI(ShooterConstants.endEffector_kI);
-        // this.m_endEffectorPID.setD(ShooterConstants.endEffector_kD);
-        // this.m_endEffectorPID.setOutputRange(ShooterConstants.endEffector_minOutput,
-        //         ShooterConstants.endEffector_maxOutput);
+        this.m_endEffectorEncoder.setPositionConversionFactor(100 * 36.0/16.0);
+        this.m_endEffectorPID.setP(ShooterConstants.endEffector_kP);
+        this.m_endEffectorPID.setI(ShooterConstants.endEffector_kI);
+        this.m_endEffectorPID.setD(ShooterConstants.endEffector_kD);
+        this.m_endEffectorPID.setOutputRange(ShooterConstants.endEffector_minOutput,
+                ShooterConstants.endEffector_maxOutput);
+        this.m_endEffectorPID.setSmartMotionAllowedClosedLoopError(10, 0);
     }
 
     @Override
@@ -62,14 +65,22 @@ public class RealShooterIO implements ShooterIO {
 
     @Override
     public void setEndEffector(Rotation2d targetAngle) {
-        //this.endEffectorSP = targetAngle;
-        //double ff = this.endEffectorFeedforward.calculate(targetAngle.getRadians(), 0);
-        //m_endEffectorPID.setReference(targetAngle.getRotations(), ControlType.kPosition, 0, ff);
+        if (!this.getLimitSwitch()) {
+            this.endEffectorSP = targetAngle;
+            double ff = this.endEffectorFeedforward.calculate(targetAngle.getRadians(), 0);
+            m_endEffectorPID.setReference(targetAngle.getRotations(), ControlType.kPosition, 0, ff);
+        }
+    }
+
+    @Override
+    public void endEffectorLimit() {
+        this.m_endEffectorROT.stopMotor();
+        this.m_endEffectorEncoder.setPosition(0);
     }
 
     @Override
     public void setRollerSpeed(double dcycle) {
-        // this.m_endEffectorRoller.set(dcycle);
+        this.m_endEffectorRoller.set(dcycle);
     }
 
     @Override
@@ -79,8 +90,13 @@ public class RealShooterIO implements ShooterIO {
 
     @Override
     public Rotation2d getEndEffector() {
-        // return Rotation2d.fromRotations(this.m_endEffectorEncoder.getPosition());
-        return Rotation2d.fromDegrees(0);
+        return Rotation2d.fromRotations(this.m_endEffectorEncoder.getPosition());
+        //return Rotation2d.fromDegrees(0);
+    }
+
+    @Override
+    public boolean getLimitSwitch() {
+        return !this.limitSwitch.get();
     }
 
     @Override
@@ -95,7 +111,7 @@ public class RealShooterIO implements ShooterIO {
         inputs.actualEndEffectorDeg = this.getEndEffector().getDegrees();
 
         // Roller
-        // inputs.setRollerDCycle = this.m_endEffectorRoller.get();
+        inputs.setRollerDCycle = this.m_endEffectorRoller.get();
         // inputs.rollerSpeedRPS = this.m_endEffectorRollerEncoder.getVelocity() / 60;
 
         // Current readings
@@ -103,11 +119,16 @@ public class RealShooterIO implements ShooterIO {
         Logger.recordOutput("Shooter/shooterStaCur", this.shooterStaCur.refresh().getValue());
         Logger.recordOutput("Shooter/shooterFollowerSupCur", this.followerSupCur.refresh().getValue());
         Logger.recordOutput("Shooter/shooterFollowerStaCur", this.followerStaCur.refresh().getValue());
-        // double endEffectorOutCur = this.m_endEffectorROT.getOutputCurrent();
-        // Logger.recordOutput("Shooter/endEffectorOutCur", endEffectorOutCur);
-        // double rollerOutCur = this.m_endEffectorRoller.getOutputCurrent();
-        // Logger.recordOutput("Shooter/rollerOutCur", rollerOutCur);
-        // Logger.recordOutput("Shooter/totalCur", this.shooterSupCur.getValue() + this.followerSupCur.getValue() +
-        //         endEffectorOutCur + rollerOutCur);
+        double endEffectorOutCur = this.m_endEffectorROT.getOutputCurrent();
+        Logger.recordOutput("Shooter/endEffectorOutCur", endEffectorOutCur);
+        double rollerOutCur = this.m_endEffectorRoller.getOutputCurrent();
+        Logger.recordOutput("Shooter/rollerOutCur", rollerOutCur);
+        Logger.recordOutput("Shooter/totalCur", this.shooterSupCur.getValue() + this.followerSupCur.getValue() +
+                endEffectorOutCur + rollerOutCur);
+        Logger.recordOutput("Shooter/endEffectorLimit", this.limitSwitch.get());
+
+        Logger.recordOutput("Shooter/endEffectorSpeed", this.m_endEffectorROT.get());
+        Logger.recordOutput("Shooter/endEffectorAppliedOutput", this.m_endEffectorROT.getAppliedOutput());
+
     }
 }

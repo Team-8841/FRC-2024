@@ -26,6 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
         () -> this.setShooterState(ShooterState.OFF), 
         "Shooter"
     );
+    private boolean lastLimitSwitch;
 
     /*-------------------------------- Public Instance Variables --------------------------------*/
 
@@ -41,7 +42,9 @@ public class ShooterSubsystem extends SubsystemBase {
         AMP(ShooterConstants.ampShotSpeed, ShooterConstants.endEffectorDeployed, ShooterConstants.rollerOutSpeed, true),
         FIELDTOSS(ShooterConstants.farShotSpeed2, ShooterConstants.endEffectorHome, 0,
                 false),
-        COOLSHOT(0.5, Rotation2d.fromDegrees(0), 0, true);
+
+        COOLAMP(0, Rotation2d.fromDegrees(180), 0, false),
+        COOLSHOT(0.6, Rotation2d.fromDegrees(0), 0, true);
 
         private final double m_shooterDcycle, m_endEffectorRollerDcycle;
         private final Rotation2d m_endEffectorSP;
@@ -63,6 +66,19 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        boolean limitSwitch = this.hwImpl.getLimitSwitch();
+        if (!this.lastLimitSwitch && limitSwitch) {
+            System.out.println("End Effector Limit switch engaged");
+        }
+        else if (this.lastLimitSwitch && !limitSwitch) {
+            System.out.println("End Effector Limit switch disengaged");
+        }
+        this.lastLimitSwitch = limitSwitch;
+
+        if (limitSwitch) {
+            this.hwImpl.endEffectorLimit();
+        }
+
         this.hwImpl.updateInputs(this.inputs);
         Logger.processInputs("Shooter", this.inputs);
 
@@ -83,7 +99,10 @@ public class ShooterSubsystem extends SubsystemBase {
     public Command setStateCommand(ShooterState state) {
         return new FunctionalCommand(
             () -> {},
-            () -> this.setShooterState(state),
+            () -> {
+                // System.out.println(state.name());
+                this.setShooterState(state);
+            },
             (interrupted) -> this.setShooterState(ShooterState.OFF),
             () -> false,
             this);

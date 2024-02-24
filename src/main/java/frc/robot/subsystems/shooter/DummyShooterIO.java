@@ -16,6 +16,11 @@ public class DummyShooterIO implements ShooterIO {
     }
 
     @Override
+    public void endEffectorLimit() {
+        // Do nothing
+    }
+
+    @Override
     public void setRollerSpeed(double dcycle) {
         // Do nothing
     }
@@ -28,6 +33,11 @@ public class DummyShooterIO implements ShooterIO {
     @Override
     public Rotation2d getEndEffector() {
         return Rotation2d.fromDegrees(inputs.actualEndEffectorDeg);
+    }
+
+    @Override
+    public boolean getLimitSwitch() {
+        return inputs.limitSwitch;
     }
 
     @Override

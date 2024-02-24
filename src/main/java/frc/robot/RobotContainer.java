@@ -6,11 +6,13 @@ package frc.robot;
 
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -105,16 +107,11 @@ public class RobotContainer {
 
   private void configureBindings(CommandXboxController controller, CommandJoystick copilot) {
     controller.rightTrigger(0.5).whileTrue(this.intake.setStateCommand(IntakeState.INTAKE));
-    copilot.button(4).whileTrue(new SensorFeedCommand(this.intake));
+    // copilot.button(4).whileTrue(new SensorFeedCommand(this.intake));
     //copilot.button(4).whileTrue(this.intake.setStateCommand(Intakes));
     copilot.button(5).whileTrue(this.intake.setStateCommand(IntakeState.EJECT));
 
-    //this.intake.setDefaultCommand(new ConditionalCommand(
-    //  new SensorFeedCommand(this.intake), 
-    //  this.intake.setStateCommand(IntakeState.OFF), 
-    //  () -> copilot.getHID().getRawButton(4)));
-    
-    // copilot.axisLessThan(3, 0.9).whileTrue(this.shooter.setStateCommand(ShooterState.COOLSHOT));
+    this.intake.setDefaultCommand(new SensorFeedCommand(this.intake, () -> copilot.getHID().getRawButton(4)));
   }
 
   public Command getAutonomousCommand() {
@@ -131,7 +128,7 @@ public class RobotContainer {
 
   private ShooterState copilotGetState() {
     double potVals[] = {1, 0.55, 0.06, -0.44, -0.96};
-    ShooterState potStates[] = {ShooterState.OFF, ShooterState.COOLSHOT, ShooterState.COOLSHOT,ShooterState.COOLSHOT, ShooterState.COOLSHOT};
+    ShooterState potStates[] = {ShooterState.OFF, ShooterState.COOLAMP, ShooterState.COOLSHOT,ShooterState.COOLSHOT, ShooterState.COOLSHOT};
     double epsilon = 0.1;
     double pot = this.copilotController.getRawAxis(3);
 
