@@ -17,4 +17,12 @@ public final class Constants {
     public static final double testMaxDistance = 2;
     public static final String testMeasurementFName = "test_measurement.csv";
     public static final String testResidualsFName = "test_residuals.csv";
+
+    public static final int driveControllerPort = 1;
+    public static final int copilotControllerPort = 0;
+
+    public static final int pcmId = 40;
+
+    public static final int brakeSolenoidPort = 0;
+    public static final int shooterSolenoidPort = 3;
 }

@@ -11,12 +11,27 @@ public class DummyShooterIO implements ShooterIO {
     }
 
     @Override
+    public void setShooterAngle(ShooterAngle state) {
+        // Do nothing
+    }
+
+    @Override
     public void setEndEffector(Rotation2d targetAngle) {
         // Do nothing
     }
 
     @Override
-    public void endEffectorLimit() {
+    public void endEffectorUpLimit() {
+        // Do nothing
+    }
+
+    @Override
+    public void endEffectorDownLimit() {
+        // Do nothing
+    }
+
+    @Override
+    public void stopEndEffector() {
         // Do nothing
     }
 
@@ -36,8 +51,13 @@ public class DummyShooterIO implements ShooterIO {
     }
 
     @Override
-    public boolean getLimitSwitch() {
-        return inputs.limitSwitch;
+    public boolean getUpLimitSwitch() {
+        return inputs.upLimitSwitch;
+    }
+
+    @Override
+    public boolean getDownLimitSwitch() {
+        return inputs.downLimitSwitch;
     }
 
     @Override

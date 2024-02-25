@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.filter.LinearFilter;
@@ -22,11 +23,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private ShooterInputsAutoLogged inputs = new ShooterInputsAutoLogged();
     private LinearFilter rpsFilter = LinearFilter.movingAverage(5);
     private double latestFilteredRPS;
-    private RunnableMotorSafety systemMotorSafety = new RunnableMotorSafety(
-        () -> this.setShooterState(ShooterState.OFF), 
-        "Shooter"
-    );
-    private boolean lastLimitSwitch;
+    private boolean upLimitSwitchPrev, downLimitSwitchPrev;
 
     /*-------------------------------- Public Instance Variables --------------------------------*/
 
@@ -35,15 +32,9 @@ public class ShooterSubsystem extends SubsystemBase {
          * ENUM(shooter Setpoint, End effector setpoint, End effector roller speed
          * ,Shooter Aimed Up)
          */
-        OFF(0, ShooterConstants.endEffectorHome, 0, true),
-        SUBSHOT(ShooterConstants.subShotSpeed, ShooterConstants.endEffectorHome, 0, true),
-        FARSHOT(ShooterConstants.farShotSpeed1, ShooterConstants.endEffectorHome, 0,
-                false),
-        AMP(ShooterConstants.ampShotSpeed, ShooterConstants.endEffectorDeployed, ShooterConstants.rollerOutSpeed, true),
-        FIELDTOSS(ShooterConstants.farShotSpeed2, ShooterConstants.endEffectorHome, 0,
-                false),
-
-        COOLAMP(0, Rotation2d.fromDegrees(180), 0, false),
+        OFF(0, Rotation2d.fromDegrees(60), 0, true),
+        AMPRAISE(0, Rotation2d.fromDegrees(0), 0, false),
+        AMPSHOT(0.15, Rotation2d.fromDegrees(0), 0.7, true),
         COOLSHOT(0.6, Rotation2d.fromDegrees(0), 0, true);
 
         private final double m_shooterDcycle, m_endEffectorRollerDcycle;
@@ -61,23 +52,48 @@ public class ShooterSubsystem extends SubsystemBase {
         this.hwImpl = hwImpl;
         this.initializeShuffleboardWidgets();
 
-        this.setShooterState(ShooterState.OFF);
+        this.updateShooterState();
     }
 
     @Override
     public void periodic() {
-        boolean limitSwitch = this.hwImpl.getLimitSwitch();
-        if (!this.lastLimitSwitch && limitSwitch) {
-            System.out.println("End Effector Limit switch engaged");
+        // Upper limit switch
+        boolean upLimitSwitch = this.hwImpl.getUpLimitSwitch();
+        if (!this.upLimitSwitchPrev && upLimitSwitch) {
+            this.hwImpl.stopEndEffector();
+            this.hwImpl.endEffectorUpLimit();
+            System.out.println("End effector up limit switch engaged");
         }
-        else if (this.lastLimitSwitch && !limitSwitch) {
-            System.out.println("End Effector Limit switch disengaged");
+        else if (this.upLimitSwitchPrev && !upLimitSwitch) {
+            System.out.println("End effector up limit switch disengaged");
         }
-        this.lastLimitSwitch = limitSwitch;
+        this.upLimitSwitchPrev = upLimitSwitch;
+        // System.out.println("Up Prev: " + this.upLimitSwitchPrev);
+        // System.out.println("Up: " + upLimitSwitch);
 
-        if (limitSwitch) {
-            this.hwImpl.endEffectorLimit();
+        if (upLimitSwitch) {
+            //this.hwImpl.stopEndEffector();
         }
+
+        // Down limit switch
+        boolean downLimitSwitch = this.hwImpl.getDownLimitSwitch();
+        if (!this.downLimitSwitchPrev && downLimitSwitch) {
+            this.hwImpl.stopEndEffector();
+            this.hwImpl.endEffectorDownLimit();
+            System.out.println("End effector down limit switch engaged");
+        }
+        else if (this.downLimitSwitchPrev && !downLimitSwitch) {
+            System.out.println("End effector down limit switch disengaged");
+        }
+        this.downLimitSwitchPrev = downLimitSwitch;
+        // System.out.println("Down Prev: " + this.downLimitSwitchPrev);
+        // System.out.println("Down: " + downLimitSwitch);
+
+        if (downLimitSwitch) {
+            //this.hwImpl.stopEndEffector();
+        }
+
+        this.updateShooterState();
 
         this.hwImpl.updateInputs(this.inputs);
         Logger.processInputs("Shooter", this.inputs);
@@ -88,12 +104,14 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("Shooter/curState", this.curState.name());
     }
 
+    private void updateShooterState() {
+        this.hwImpl.setShooter(curState.m_shooterDcycle);
+        this.hwImpl.setEndEffector(curState.m_endEffectorSP);
+        this.hwImpl.setRollerSpeed(curState.m_endEffectorRollerDcycle);
+    }
+
     public void setShooterState(ShooterState state) {
-        this.systemMotorSafety.feed();
-        this.hwImpl.setShooter(state.m_shooterDcycle);
-        this.hwImpl.setEndEffector(state.m_endEffectorSP);
-        this.hwImpl.setRollerSpeed(state.m_endEffectorRollerDcycle);
-        curState = state;
+        this.curState = state;
     }
 
     public Command setStateCommand(ShooterState state) {
@@ -101,9 +119,9 @@ public class ShooterSubsystem extends SubsystemBase {
             () -> {},
             () -> {
                 // System.out.println(state.name());
-                this.setShooterState(state);
+                this.curState = state;
             },
-            (interrupted) -> this.setShooterState(ShooterState.OFF),
+            (interrupted) -> this.curState = ShooterState.OFF,
             () -> false,
             this);
     }
@@ -122,7 +140,6 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void feed() {
-        this.systemMotorSafety.feed();
     }
 
     private void initializeShuffleboardWidgets() {

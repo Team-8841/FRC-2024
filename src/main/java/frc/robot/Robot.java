@@ -11,15 +11,24 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.Constants;
 
 public class Robot extends LoggedRobot {
   private Command autonomousCommand, teleopCommand, testCommand;
   private RobotContainer robotContainer;
+
+  private CommandXboxController driveController = new CommandXboxController(Constants.driveControllerPort);
+  private CommandJoystick copilotController = new CommandJoystick(Constants.copilotControllerPort);
+
+  private Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
 
   @SuppressWarnings("unused")
   private PowerDistribution pdh;
@@ -73,7 +82,7 @@ public class Robot extends LoggedRobot {
     // Starts advantagekit's Logger
     Logger.start();
 
-    robotContainer = new RobotContainer();
+    robotContainer = new RobotContainer(driveController, copilotController);
   }
 
   @Override
@@ -89,6 +98,13 @@ public class Robot extends LoggedRobot {
 
     if (isSimulation()) {
       SimManager.getInstance().periodic();
+    }
+
+    if (this.copilotController.getHID().getRawButton(1)) {
+      this.compressor.disable();
+    }
+    else {
+      this.compressor.enableDigital();
     }
   }
 
@@ -125,6 +141,7 @@ public class Robot extends LoggedRobot {
     if (this.teleopCommand != null) {
       this.teleopCommand.schedule();
     }
+
   }
 
   @Override

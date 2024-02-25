@@ -8,14 +8,24 @@ public interface ShooterIO {
     @AutoLog
     public static class ShooterInputs {
         double setShooterRPS, actualShooterRPS, setEndEffectorDeg, actualEndEffectorDeg, setRollerDCycle, rollerSpeedRPS;
-        boolean limitSwitch;
+        boolean isShooterUp, upLimitSwitch, downLimitSwitch;
+    }
+
+    public static enum ShooterAngle {
+        UP, DOWN;
     }
 
     public void setShooter(double targetRPS);
 
+    public void setShooterAngle(ShooterAngle state);
+
     public void setEndEffector(Rotation2d targetAngle);
 
-    public void endEffectorLimit();
+    public void endEffectorUpLimit();
+
+    public void endEffectorDownLimit();
+
+    public void stopEndEffector();
 
     public void setRollerSpeed(double dcycle);
 
@@ -23,7 +33,9 @@ public interface ShooterIO {
 
     public Rotation2d getEndEffector();
 
-    public boolean getLimitSwitch();
+    public boolean getUpLimitSwitch();
+
+    public boolean getDownLimitSwitch();
 
     public void updateInputs(ShooterInputsAutoLogged inputs);
 }

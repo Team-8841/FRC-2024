@@ -37,7 +37,7 @@ public class ShooterConstants {
     public static final double endEffector_kG = 0; // Tune
     public static final double endEffector_kV = 0; // Tune
     public static final double endEffector_kA = 0; // Tune
-    public static final double endEffector_kP = 0; // Tune
+    public static final double endEffector_kP = 0.1; // Tune
     public static final double endEffector_kI = 0; // Tune
     public static final double endEffector_kD = 0; // Tune
     public static final double endEffector_kIZone = 0; // Tune

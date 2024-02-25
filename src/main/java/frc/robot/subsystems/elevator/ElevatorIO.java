@@ -6,11 +6,22 @@ public interface ElevatorIO {
     @AutoLog
     public static class ElevatorInputs {
         double setElevatorDCycle, actualElevatorRPS;
+        boolean lowerLimitSwitch, upperLimitSwitch, isBraking;
     }
 
-    public void set(double dcycle);
+    public static enum BrakeState { BRAKE_ENGAGE, BRAKE_DISENGAGE; }
 
-    public void feed();
+    public void set(double dcycle);
+    
+    public void setBrake(BrakeState state);
+    
+    public void stopMotors();
+
+    public boolean isBraking();
+
+    public boolean getUpperLimitSwitch();
+
+    public boolean getLowerLimitSwitch();
 
     public void updateInputs(ElevatorInputsAutoLogged inputs);
 }
