@@ -32,16 +32,13 @@ public class ElevatorSubsystem extends SubsystemBase{
         boolean upperLimitSwitch = this.hwImpl.getUpperLimitSwitch();
 
         if (this.hwImpl.isBraking()) {
-            this.hwImpl.set(0);
-        }
-
-        if (lowerLimitSwitch || upperLimitSwitch) {
-            //this.hwImpl.stopMotors();
-            //this.hwImpl.setBrake(BrakeState.BRAKE_ENGAGE);
+            //this.hwImpl.set(0);
         }
 
         if (lowerLimitSwitch && !this.lowerLimitSwitchPrev) {
             System.out.println("Lower elevator limit switch engaged");
+            //this.hwImpl.stopMotors();
+            this.hwImpl.setBrake(BrakeState.BRAKE_ENGAGE);
         }
         else if (!lowerLimitSwitch && this.lowerLimitSwitchPrev) {
             System.out.println("Lower elevator limit switch disengaged");
@@ -49,6 +46,8 @@ public class ElevatorSubsystem extends SubsystemBase{
 
         if (upperLimitSwitch && !this.upperLimitSwitchPrev) {
             System.out.println("Upper elevator limit switch engaged");
+            //this.hwImpl.stopMotors();
+            this.hwImpl.setBrake(BrakeState.BRAKE_ENGAGE);
         }
         else if (!upperLimitSwitch && this.upperLimitSwitchPrev) {
             System.out.println("Upper elevator limit switch disengaged");
@@ -56,15 +55,21 @@ public class ElevatorSubsystem extends SubsystemBase{
 
         this.lowerLimitSwitchPrev = lowerLimitSwitch;
         this.upperLimitSwitchPrev = upperLimitSwitch;
+
+        this.hwImpl.periodic();
     }
 
 
     /*-------------------------------- Custom Public Functions --------------------------------*/
 
     public void set(double dcycle) {
-        if (!this.hwImpl.isBraking()) {
+        //if ((dcycle > 0 && this.hwImpl.getLowerLimitSwitch()) || (dcycle < 0 && this.hwImpl.getUpperLimitSwitch())) {
+        //    this.hwImpl.setBrake(BrakeState.BRAKE_DISENGAGE);
+        //}
+
+        //if (!this.hwImpl.isBraking()) {
             this.hwImpl.set(dcycle);
-        }
+        //}
     }
 
     public void setBrake(BrakeState state) {

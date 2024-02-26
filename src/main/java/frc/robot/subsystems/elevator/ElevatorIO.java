@@ -11,6 +11,8 @@ public interface ElevatorIO {
 
     public static enum BrakeState { BRAKE_ENGAGE, BRAKE_DISENGAGE; }
 
+    public default void periodic() {}
+
     public void set(double dcycle);
     
     public void setBrake(BrakeState state);

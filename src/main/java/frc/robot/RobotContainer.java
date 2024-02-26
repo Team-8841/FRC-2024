@@ -115,16 +115,16 @@ public class RobotContainer {
     this.intake.setDefaultCommand(new SensorFeedCommand(this.intake, () -> copilot.getHID().getRawButton(4)));
 
     // Amp/shooter bindings
-    var ampraise = this.shooter.setStateCommand(ShooterState.AMPRAISE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-    var ampshot = this.shooter.setStateCommand(ShooterState.AMPSHOT).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    //var ampraise = this.shooter.setStateCommand(ShooterState.AMPRAISE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    //var ampshot = this.shooter.setStateCommand(ShooterState.AMPSHOT).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
     // Left bumper pressed, but not right bumper pressed
-    controller.leftBumper().and(() -> !controller.getHID().getRightBumperPressed())
-        .whileTrue(ampraise);
+    //controller.leftBumper().and(() -> !controller.getHID().getRightBumperPressed())
+    //    .whileTrue(ampraise);
     
     // Left and right bumper pressed simultaneously
-    controller.rightBumper().and(() -> controller.getHID().getLeftBumperPressed())
-        .whileTrue(ampshot);
+    //controller.rightBumper().and(() -> controller.getHID().getLeftBumperPressed())
+    //    .whileTrue(ampshot);
   }
 
   public Command getAutonomousCommand() {
@@ -139,6 +139,15 @@ public class RobotContainer {
   }
 
   private ShooterState copilotGetState() {
+    var driveControllerHID = this.driveController.getHID();
+
+    if (driveControllerHID.getLeftBumper()) {
+      if (driveControllerHID.getRightBumper()) {
+        return ShooterState.AMPSHOT;
+      }
+      return ShooterState.AMPRAISE;
+    }
+
     double potVals[] = { 1, 0.55, 0.06, -0.44, -0.96 };
     ShooterState potStates[] = { ShooterState.OFF, ShooterState.COOLSHOT, ShooterState.COOLSHOT, ShooterState.COOLSHOT,
         ShooterState.COOLSHOT };

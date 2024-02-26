@@ -26,7 +26,7 @@ public class RealShooterIO implements ShooterIO {
             m_follower = new TalonFX(ShooterConstants.followerMotorID);
     private final CANSparkMax m_endEffectorROT = new CANSparkMax(ShooterConstants.endEffectorROTID, MotorType.kBrushless);
             //m_endEffectorRoller = new CANSparkMax(ShooterConstants.endEffectorRollerID, MotorType.kBrushless);
-    private final SparkPIDController m_endEffectorPID = this.m_endEffectorROT.getPIDController();
+    //private final SparkPIDController m_endEffectorPID = this.m_endEffectorROT.getPIDController();
     private final ArmFeedforward endEffectorFeedforward = new ArmFeedforward(0.1,
             ShooterConstants.endEffector_kG, ShooterConstants.endEffector_kV, ShooterConstants.endEffector_kA);
 
@@ -55,12 +55,12 @@ public class RealShooterIO implements ShooterIO {
 
         // End effector
         this.m_endEffectorEncoder.setPositionConversionFactor(1.0 / (100 * 36.0/16.0));
-        this.m_endEffectorPID.setP(ShooterConstants.endEffector_kP);
-        this.m_endEffectorPID.setI(ShooterConstants.endEffector_kI);
-        this.m_endEffectorPID.setD(ShooterConstants.endEffector_kD);
-        this.m_endEffectorPID.setOutputRange(ShooterConstants.endEffector_minOutput,
-                ShooterConstants.endEffector_maxOutput);
-        this.m_endEffectorPID.setSmartMotionAllowedClosedLoopError(10, 0);
+        //this.m_endEffectorPID.setP(ShooterConstants.endEffector_kP);
+        //this.m_endEffectorPID.setI(ShooterConstants.endEffector_kI);
+        //this.m_endEffectorPID.setD(ShooterConstants.endEffector_kD);
+        //this.m_endEffectorPID.setOutputRange(ShooterConstants.endEffector_minOutput,
+        //        ShooterConstants.endEffector_maxOutput);
+        //this.m_endEffectorPID.setSmartMotionAllowedClosedLoopError(10, 0);
 
         this.shooterAngleSolenoid.set(SHOOTER_UP_VAL);
     }
@@ -79,6 +79,9 @@ public class RealShooterIO implements ShooterIO {
 
     @Override
     public void setEndEffector(Rotation2d targetAngle) {
+        // I hate this
+        // TODO: Move all of this logic into `ShooterSubsystem.java` and make it not bad
+
         // double ff = this.endEffectorFeedforward.calculate(targetAngle.getRadians(), 0);
 
         // if (this.getUpLimitSwitch() && targetAngle.getDegrees() > 20) {
