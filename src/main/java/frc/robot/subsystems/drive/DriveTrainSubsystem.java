@@ -203,8 +203,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
             // Speed logging
             var actualSpeed = this.getSpeed();
 
-            Logger.recordOutput("Swerve/setSpeeds", this.setSpeed);
-            Logger.recordOutput("Swerve/actualSpeeds", actualSpeed);
+            Logger.recordOutput("Swerve/Speeds/set", this.setSpeed);
+            Logger.recordOutput("Swerve/Speeds/actual", actualSpeed);
+            Logger.recordOutput("Swerve/Speeds/error", this.setSpeed.minus(actualSpeed));
 
             // Omega PID
             double newOmega = this.setSpeed.omegaRadiansPerSecond * 1.0;
