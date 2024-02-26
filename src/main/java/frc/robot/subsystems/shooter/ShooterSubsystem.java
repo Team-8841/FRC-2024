@@ -52,65 +52,83 @@ public class ShooterSubsystem extends SubsystemBase {
         this.hwImpl = hwImpl;
         this.initializeShuffleboardWidgets();
 
-        this.updateShooterState();
+        this.setShooterState(ShooterState.OFF);
     }
 
     @Override
     public void periodic() {
-        // Upper limit switch
-        boolean upLimitSwitch = this.hwImpl.getUpLimitSwitch();
-        if (!this.upLimitSwitchPrev && upLimitSwitch) {
-            this.hwImpl.stopEndEffector();
-            this.hwImpl.endEffectorUpLimit();
-            System.out.println("End effector up limit switch engaged");
+        // End Effector
+
+        {
+            // Upper limit switch
+            boolean upLimitSwitch = this.hwImpl.getUpLimitSwitch();
+            if (!this.upLimitSwitchPrev && upLimitSwitch) {
+                this.hwImpl.setEndEffector(0);
+                System.out.println("End effector up limit switch engaged");
+            }
+            else if (this.upLimitSwitchPrev && !upLimitSwitch) {
+                System.out.println("End effector up limit switch disengaged");
+            }
+            this.upLimitSwitchPrev = upLimitSwitch;
+
+            // Down limit switch
+            boolean downLimitSwitch = this.hwImpl.getDownLimitSwitch();
+            if (!this.downLimitSwitchPrev && downLimitSwitch) {
+                this.hwImpl.setEndEffector(0);
+                System.out.println("End effector down limit switch engaged");
+            }
+            else if (this.downLimitSwitchPrev && !downLimitSwitch) {
+                System.out.println("End effector down limit switch disengaged");
+            }
+            this.downLimitSwitchPrev = downLimitSwitch;
+
+            // Move logic
+
+            double eeSP = this.curState.m_endEffectorSP.getDegrees();
+
+            if (this.hwImpl.getDownLimitSwitch() && eeSP >= 30) {
+                this.hwImpl.setEndEffector(0.4);
+            }
+
+            else if (this.hwImpl.getUpLimitSwitch() && eeSP < 30) {
+                this.hwImpl.setEndEffector(-0.4);
+            }
+            else if (!this.hwImpl.getDownLimitSwitch() && !this.hwImpl.getUpLimitSwitch()) {
+                if (eeSP >= 30) {
+                    this.hwImpl.setEndEffector(0.4);
+                }
+                else {
+                    this.hwImpl.setEndEffector(-0.4);;
+                }
+            }
+            else if (this.hwImpl.getDownLimitSwitch() || this.hwImpl.getUpLimitSwitch()) {
+                this.hwImpl.setEndEffector(0);
+            }
         }
-        else if (this.upLimitSwitchPrev && !upLimitSwitch) {
-            System.out.println("End effector up limit switch disengaged");
-        }
-        this.upLimitSwitchPrev = upLimitSwitch;
-        // System.out.println("Up Prev: " + this.upLimitSwitchPrev);
-        // System.out.println("Up: " + upLimitSwitch);
 
-        if (upLimitSwitch) {
-            //this.hwImpl.stopEndEffector();
-        }
+        // Shooter
 
-        // Down limit switch
-        boolean downLimitSwitch = this.hwImpl.getDownLimitSwitch();
-        if (!this.downLimitSwitchPrev && downLimitSwitch) {
-            this.hwImpl.stopEndEffector();
-            this.hwImpl.endEffectorDownLimit();
-            System.out.println("End effector down limit switch engaged");
-        }
-        else if (this.downLimitSwitchPrev && !downLimitSwitch) {
-            System.out.println("End effector down limit switch disengaged");
-        }
-        this.downLimitSwitchPrev = downLimitSwitch;
-        // System.out.println("Down Prev: " + this.downLimitSwitchPrev);
-        // System.out.println("Down: " + downLimitSwitch);
+        {
+            this.hwImpl.updateInputs(this.inputs);
+            Logger.processInputs("Shooter", this.inputs);
 
-        if (downLimitSwitch) {
-            //this.hwImpl.stopEndEffector();
+            this.latestFilteredRPS = this.rpsFilter.calculate(this.hwImpl.getShooterRPS());
+            Logger.recordOutput("Shooter/filteredRPS", -this.latestFilteredRPS);
+
+            Logger.recordOutput("Shooter/curState", this.curState.name());
         }
 
-        this.updateShooterState();
-
-        this.hwImpl.updateInputs(this.inputs);
-        Logger.processInputs("Shooter", this.inputs);
-
-        this.latestFilteredRPS = this.rpsFilter.calculate(this.hwImpl.getShooterRPS());
-        Logger.recordOutput("Shooter/filteredRPS", -this.latestFilteredRPS);
-
-        Logger.recordOutput("Shooter/curState", this.curState.name());
-    }
-
-    private void updateShooterState() {
-        this.hwImpl.setShooter(curState.m_shooterDcycle);
-        this.hwImpl.setEndEffector(curState.m_endEffectorSP);
-        this.hwImpl.setRollerSpeed(curState.m_endEffectorRollerDcycle);
+        this.hwImpl.periodic();
     }
 
     public void setShooterState(ShooterState state) {
+        Logger.recordOutput("Shooter/endEffectorSP", this.curState.m_endEffectorSP.getDegrees());
+
+        this.hwImpl.setShooter(curState.m_shooterDcycle);
+        this.hwImpl.setRollerSpeed(curState.m_endEffectorRollerDcycle);
+
+        // end effector is handled in `periodic`
+
         this.curState = state;
     }
 
@@ -119,9 +137,9 @@ public class ShooterSubsystem extends SubsystemBase {
             () -> {},
             () -> {
                 // System.out.println(state.name());
-                this.curState = state;
+                this.setShooterState(state);
             },
-            (interrupted) -> this.curState = ShooterState.OFF,
+            (interrupted) -> this.setShooterState(state),
             () -> false,
             this);
     }

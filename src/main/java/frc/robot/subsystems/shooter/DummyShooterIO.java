@@ -16,22 +16,7 @@ public class DummyShooterIO implements ShooterIO {
     }
 
     @Override
-    public void setEndEffector(Rotation2d targetAngle) {
-        // Do nothing
-    }
-
-    @Override
-    public void endEffectorUpLimit() {
-        // Do nothing
-    }
-
-    @Override
-    public void endEffectorDownLimit() {
-        // Do nothing
-    }
-
-    @Override
-    public void stopEndEffector() {
+    public void setEndEffector(double dcycle) {
         // Do nothing
     }
 

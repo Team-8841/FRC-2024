@@ -15,17 +15,13 @@ public interface ShooterIO {
         UP, DOWN;
     }
 
+    public default void periodic() {}
+
     public void setShooter(double targetRPS);
 
     public void setShooterAngle(ShooterAngle state);
 
-    public void setEndEffector(Rotation2d targetAngle);
-
-    public void endEffectorUpLimit();
-
-    public void endEffectorDownLimit();
-
-    public void stopEndEffector();
+    public void setEndEffector(double dcycle);
 
     public void setRollerSpeed(double dcycle);
 

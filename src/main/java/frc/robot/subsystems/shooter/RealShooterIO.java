@@ -62,7 +62,15 @@ public class RealShooterIO implements ShooterIO {
         //        ShooterConstants.endEffector_maxOutput);
         //this.m_endEffectorPID.setSmartMotionAllowedClosedLoopError(10, 0);
 
+        this.m_endEffectorROT.setSmartCurrentLimit(10);
+        //this.m_endEffectorRoller.setSmartCurrentLimit(10);
+
         this.shooterAngleSolenoid.set(SHOOTER_UP_VAL);
+    }
+
+    @Override
+    public void periodic() {
+
     }
 
     @Override
@@ -78,9 +86,13 @@ public class RealShooterIO implements ShooterIO {
     }
 
     @Override
-    public void setEndEffector(Rotation2d targetAngle) {
-        // I hate this
-        // TODO: Move all of this logic into `ShooterSubsystem.java` and make it not bad
+    public void setEndEffector(double dcycle) {
+        this.m_endEffectorROT.set(dcycle);
+
+        // Ignore everything below this comment
+
+        // I inform the cop that "we're on a mission, sorry to burst your bubble"
+        // Then it's like yeah, pedal to the metal, yeah, whatever (Bling!)
 
         // double ff = this.endEffectorFeedforward.calculate(targetAngle.getRadians(), 0);
 
@@ -105,47 +117,30 @@ public class RealShooterIO implements ShooterIO {
         // }
         // m_endEffectorPID.setReference(targetAngle.getRotations(), ControlType.kPosition, 0, ff);
 
-        Logger.recordOutput("Shooter/setPoint", this.endEffectorSP.getDegrees());
+        // Logger.recordOutput("Shooter/setPoint", this.endEffectorSP.getDegrees());
 
-        if (this.getDownLimitSwitch() && targetAngle.getDegrees() >= 30) {
-            this.endEffectorSP = targetAngle;
-            this.m_endEffectorROT.set(0.4);
-        }
+        // if (this.getDownLimitSwitch() && targetAngle.getDegrees() >= 30) {
+        //     this.endEffectorSP = targetAngle;
+        //     this.m_endEffectorROT.set(0.4);
+        // }
 
-        else if (this.getUpLimitSwitch() && targetAngle.getDegrees() < 30) {
-            this.endEffectorSP = targetAngle;
-            this.m_endEffectorROT.set(-0.4);
-        }
-        else if (!this.getDownLimitSwitch() && !this.getUpLimitSwitch()) {
-            if (this.endEffectorSP.getDegrees() >= 30) {
-                this.m_endEffectorROT.set(0.4);
-            }
-            else {
-                this.m_endEffectorROT.set(-0.4);
-            }
-        }
-        else if (this.getDownLimitSwitch() || this.getUpLimitSwitch()) {
-            this.m_endEffectorROT.set(0);
-        }
+        // else if (this.getUpLimitSwitch() && targetAngle.getDegrees() < 30) {
+        //     this.endEffectorSP = targetAngle;
+        //     this.m_endEffectorROT.set(-0.4);
+        // }
+        // else if (!this.getDownLimitSwitch() && !this.getUpLimitSwitch()) {
+        //     if (this.endEffectorSP.getDegrees() >= 30) {
+        //         this.m_endEffectorROT.set(0.4);
+        //     }
+        //     else {
+        //         this.m_endEffectorROT.set(-0.4);
+        //     }
+        // }
+        // else if (this.getDownLimitSwitch() || this.getUpLimitSwitch()) {
+        //     this.m_endEffectorROT.set(0);
+        // }
 
         //this.m_endEffectorROT.set(0.2);
-    }
-
-    @Override
-    public void endEffectorUpLimit() {
-        this.m_endEffectorROT.set(0);
-        this.m_endEffectorEncoder.setPosition(Units.degreesToRotations(60));
-    }
-
-    @Override
-    public void endEffectorDownLimit() {
-        this.m_endEffectorROT.set(0);
-        this.m_endEffectorEncoder.setPosition(Units.degreesToRotations(0));
-    }
-
-    @Override
-    public void stopEndEffector() {
-        this.m_endEffectorROT.set(0);
     }
 
     @Override
@@ -205,7 +200,7 @@ public class RealShooterIO implements ShooterIO {
         // Logger.recordOutput("Shooter/totalCur", this.shooterSupCur.getValue() + this.followerSupCur.getValue() +
         //         endEffectorOutCur + rollerOutCur);
 
-        Logger.recordOutput("Shooter/endEffectorSpeed", this.m_endEffectorROT.get());
+        Logger.recordOutput("Shooter/endEffectorDCycle", this.m_endEffectorROT.get());
         Logger.recordOutput("Shooter/endEffectorAppliedOutput", this.m_endEffectorROT.getAppliedOutput());
 
     }
