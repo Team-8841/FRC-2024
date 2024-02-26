@@ -105,26 +105,14 @@ public class RobotContainer {
     ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
     this.imu.initializeShuffleBoardLayout(robotTab.getLayout("IMU", BuiltInLayouts.kList));
 
-    this.configureBindings(driveController, copilotController);
+    this.configureBindings();
   }
 
-  private void configureBindings(CommandXboxController controller, CommandJoystick copilot) {
+  private void configureBindings() {
     // Intake bindings
-    controller.rightTrigger(0.5).whileTrue(this.intake.setStateCommand(IntakeState.INTAKE));
-    copilot.button(5).whileTrue(this.intake.setStateCommand(IntakeState.EJECT));
-    this.intake.setDefaultCommand(new SensorFeedCommand(this.intake, () -> copilot.getHID().getRawButton(4)));
-
-    // Amp/shooter bindings
-    //var ampraise = this.shooter.setStateCommand(ShooterState.AMPRAISE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-    //var ampshot = this.shooter.setStateCommand(ShooterState.AMPSHOT).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-
-    // Left bumper pressed, but not right bumper pressed
-    //controller.leftBumper().and(() -> !controller.getHID().getRightBumperPressed())
-    //    .whileTrue(ampraise);
-    
-    // Left and right bumper pressed simultaneously
-    //controller.rightBumper().and(() -> controller.getHID().getLeftBumperPressed())
-    //    .whileTrue(ampshot);
+    this.driveController.rightTrigger(0.5).whileTrue(this.intake.setStateCommand(IntakeState.INTAKE));
+    this.copilotController.button(5).whileTrue(this.intake.setStateCommand(IntakeState.EJECT));
+    this.intake.setDefaultCommand(new SensorFeedCommand(this.intake, () -> this.copilotController.getHID().getRawButton(4)));
   }
 
   public Command getAutonomousCommand() {
@@ -138,42 +126,15 @@ public class RobotContainer {
         this.driveTrain);
   }
 
-  private ShooterState copilotGetState() {
-    var driveControllerHID = this.driveController.getHID();
-
-    if (driveControllerHID.getLeftBumper()) {
-      if (driveControllerHID.getRightBumper()) {
-        return ShooterState.AMPSHOT;
-      }
-      return ShooterState.AMPRAISE;
-    }
-
-    double potVals[] = { 1, 0.55, 0.06, -0.44, -0.96 };
-    ShooterState potStates[] = { ShooterState.OFF, ShooterState.COOLSHOT, ShooterState.COOLSHOT, ShooterState.COOLSHOT,
-        ShooterState.COOLSHOT };
-    double epsilon = 0.1;
-    double pot = this.copilotController.getRawAxis(3);
-
-    for (int i = 0; i < potVals.length; i++) {
-      if (potVals[i] - epsilon <= pot && potVals[i] + epsilon >= pot) {
-        return potStates[i];
-      }
-    }
-
-    return ShooterState.OFF;
-  }
-
   public Command getTeleopCommand() {
-    // return new TeleopSwerve(driveTrain, () -> -this.driveController.getLeftY(),
-    // () -> -this.driveController.getLeftX(),
-    // () -> -this.driveController.getRightX());
-    return new TeleopSwerve(driveTrain, shooter, elevator, () -> this.driveController.getLeftY(),
-        () -> this.driveController.getLeftX(),
-        () -> this.driveController.getRightX(),
-        this::copilotGetState,
-        () -> -this.copilotController.getX(),
-        () -> this.copilotController.getHID().getRawButton(7));
+    // return new TeleopSwerve(driveTrain, shooter, elevator, () -> this.driveController.getLeftY(),
+    //     () -> this.driveController.getLeftX(),
+    //     () -> this.driveController.getRightX(),
+    //     this::copilotGetState,
+    //     () -> -this.copilotController.getX(),
+    //     () -> this.copilotController.getHID().getRawButton(7));
 
+    return new TeleopSwerve(this.driveTrain, this.shooter, this.elevator, this.driveController.getHID(), this.copilotController.getHID());
   }
 
   public Command getTestCommand() {
