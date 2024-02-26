@@ -116,14 +116,15 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new FollowPathHolonomic(
-        PathingConstants.basicPath,
-        this.driveTrain::getPose,
-        this.driveTrain::getSpeed,
-        this.driveTrain::drive,
-        PathingConstants.pathFollowerConfig,
-        () -> true,
-        this.driveTrain);
+    // return new FollowPathHolonomic(
+        // PathingConstants.basicPath,
+        // this.driveTrain::getPose,
+        // this.driveTrain::getSpeed,
+        // this.driveTrain::drive,
+        // PathingConstants.pathFollowerConfig,
+        // () -> true,
+        // this.driveTrain);
+    throw new UnsupportedOperationException();
   }
 
   public Command getTeleopCommand() {

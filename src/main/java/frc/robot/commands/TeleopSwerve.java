@@ -100,7 +100,7 @@ public class TeleopSwerve extends Command {
                 MathUtil.applyDeadband(strafe, Constants.controllerDeadband) * SwerveConstants.maxSpeed);
         rotation = MathUtil.applyDeadband(rotation, Constants.controllerDeadband)
                 * AutoConstants.MaxAngularSpeedRadiansPerSecond;
-        this.driveTrain.drive(driveTranslation, rotation, true);
+        this.driveTrain.drive(driveTranslation, rotation, true, true);
 
         // Shooter
         this.shooter.setShooterState(this.getShooterState());

@@ -2,6 +2,8 @@ package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,7 +12,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -18,6 +22,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.CTREModuleState;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.SimManager;
 import frc.robot.constants.Constants;
 import frc.robot.constants.swerve.SwerveConstants;
@@ -33,6 +39,10 @@ public class DriveTrainSubsystem extends SubsystemBase {
     private SwerveModuleIO swerveModules[];
     private SwerveModuleIOInputsAutoLogged autologgedInputs[];
     private IMU imu;
+
+    private ChassisSpeeds setSpeed = new ChassisSpeeds();
+    private PIDController omegaPID = new PIDController(0, 0, 0);
+    private boolean useOmegaPID = false;
 
     @SuppressWarnings("all")
     public DriveTrainSubsystem(SwerveModuleIO[] swerveModules, IMU imu) {
@@ -54,9 +64,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
         Timer.delay(1);
         this.resetModules();
 
-        //this.swerveOdometry = new SwerveDriveOdometry(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions());
-        this.poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.
-            fromRadians(0)));
+        // this.swerveOdometry = new
+        // SwerveDriveOdometry(SwerveConstants.swerveKinematics, imu.getHeading(),
+        // this.getModulePositions());
+        this.poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.swerveKinematics, imu.getHeading(),
+                this.getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.fromRadians(0)));
 
         if (RobotBase.isSimulation() && !Constants.simReplay) {
             SimManager.getInstance().registerDriveTrain(this::getPose, this::getSpeed);
@@ -72,7 +84,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
         }
     }
 
-    public void drive(ChassisSpeeds speeds) {
+    private void driveInternal(ChassisSpeeds speeds) {
         var swerveModuleStates = SwerveConstants.swerveKinematics.toSwerveModuleStates(speeds);
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
@@ -86,10 +98,18 @@ public class DriveTrainSubsystem extends SubsystemBase {
             this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
         }
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
-
     }
 
-    public void drive(Translation2d translation, double rotation, boolean fieldRelative) {
+    public void drive(ChassisSpeeds speeds, boolean useOmegaPID) {
+        if (!this.useOmegaPID && useOmegaPID) {
+            this.omegaPID.reset();
+        }
+
+        this.setSpeed = speeds;
+        this.useOmegaPID = useOmegaPID;
+    }
+
+    public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean omegaPID) {
         this.drive(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
                         translation.getX(),
@@ -99,7 +119,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
                         : new ChassisSpeeds(
                                 translation.getX(),
                                 translation.getY(),
-                                rotation));
+                                rotation),
+                omegaPID);
     }
 
     public ChassisSpeeds getSpeed() {
@@ -154,17 +175,49 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double totalCur = 0;
-        for (int i = 0; i < this.swerveModules.length; i++) {
-            SwerveModuleIO swerveModule = this.swerveModules[i];
-            swerveModule.periodic();
-            swerveModule.updateInputs(this.autologgedInputs[i]);
-            Logger.processInputs("Swerve/Module" + i, this.autologgedInputs[i]);
-            totalCur += swerveModule.getCurrent();
+        // Logging module states
+        {
+            var states = new SwerveModuleState[4];
+
+            double totalCur = 0;
+            for (int i = 0; i < this.swerveModules.length; i++) {
+                SwerveModuleIO swerveModule = this.swerveModules[i];
+                swerveModule.periodic();
+                swerveModule.updateInputs(this.autologgedInputs[i]);
+                Logger.processInputs("Swerve/Module" + i, this.autologgedInputs[i]);
+                totalCur += swerveModule.getCurrent();
+                states[i] = this.swerveModules[i].getState();
+            }
+
+            Logger.recordOutput("Swerve/moduleStates");
+            Logger.recordOutput("Swerve/totalCur", totalCur);
+            this.poseEstimator.update(this.imu.getHeading(), this.getModulePositions());
+            Logger.recordOutput("Swerve/poseOdometry", this.poseEstimator.getEstimatedPosition());
         }
 
-        Logger.recordOutput("Swerve/totalCur", totalCur);
-        this.poseEstimator.update(this.imu.getHeading(), this.getModulePositions());
-        Logger.recordOutput("Swerve/poseOdometry", this.poseEstimator.getEstimatedPosition());
+        {
+            if (DriverStation.isDisabled()) {
+                this.setSpeed = new ChassisSpeeds();
+            }
+
+            // Speed logging
+            var actualSpeed = this.getSpeed();
+
+            Logger.recordOutput("Swerve/setSpeeds", this.setSpeed);
+            Logger.recordOutput("Swerve/actualSpeeds", actualSpeed);
+
+            // Omega PID
+            double newOmega = this.setSpeed.omegaRadiansPerSecond * 1.0;
+            if (this.useOmegaPID) {
+                newOmega += this.omegaPID.calculate(actualSpeed.omegaRadiansPerSecond,
+                        this.setSpeed.omegaRadiansPerSecond);
+            }
+            var newSpeed = new ChassisSpeeds(
+                    this.setSpeed.vxMetersPerSecond,
+                    this.setSpeed.vyMetersPerSecond,
+                    newOmega);
+
+            this.driveInternal(newSpeed);
+        }
     }
 }

@@ -100,7 +100,7 @@ public class TestCommand extends Command {
     @Override
     public void execute() {
         if (this.isMeasuring) {
-            this.driveTrain.drive(new Translation2d(curVoltage, 0), 0, false);
+            this.driveTrain.drive(new Translation2d(curVoltage, 0), 0, false, false);
             double curSpeed = this.getSpeed(this.driveTrain.getSpeed());
 
             if (this.lastSpeed > 0) {
@@ -120,7 +120,7 @@ public class TestCommand extends Command {
 
             if (this.getDistance() >= Constants.testMaxDistance) {
                 // We've finished testing for this voltage, drive back
-                this.driveTrain.drive(new Translation2d(), 0, false);
+                this.driveTrain.drive(new Translation2d(), 0, false, false);
                 this.isMeasuring = false;
                 System.out.println("[TestSuite] Stopping measuring, driving back...");
             }
@@ -129,11 +129,11 @@ public class TestCommand extends Command {
                     Math.min(this.returnPID.calculate(this.getDistance()),
                             Constants.testMaxVoltage),
                     -Constants.testMaxVoltage);
-            this.driveTrain.drive(new Translation2d(speed, 0), 0, false);
+            this.driveTrain.drive(new Translation2d(speed, 0), 0, false, false);
             Logger.recordOutput("/TestSuite/ReturnError", this.returnPID.getPositionError());
             if (Math.abs(this.returnPID.getPositionError()) < 0.15) {
                 // We're back at the start, start measuring with a new voltage
-                this.driveTrain.drive(new Translation2d(), 0, false);
+                this.driveTrain.drive(new Translation2d(), 0, false, false);
                 this.lastSpeed = -1;
                 this.curVoltage = this.curVoltage + this.stepSize <= Constants.testMaxVoltage
                         ? this.curVoltage + this.stepSize
@@ -147,7 +147,7 @@ public class TestCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        this.driveTrain.drive(new Translation2d(0, 0), 0, false);
+        this.driveTrain.drive(new Translation2d(0, 0), 0, false, false);
         System.out.println("[TestSuite] Done measuring, going to dump and process data...");
         this.dumpMeasurementsThread.get().start();
         this.calculationThread.get().start();
