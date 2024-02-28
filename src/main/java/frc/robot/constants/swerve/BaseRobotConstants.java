@@ -12,7 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.util.SwerveModuleConstants;
 
 
-public class MixedMotorConstants {
+public class BaseRobotConstants {
     public static final TalonFXConfiguration angleMotorConfigs = new TalonFXConfiguration();
 
     /* Angle Motor PID Values */

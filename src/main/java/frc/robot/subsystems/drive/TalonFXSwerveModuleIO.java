@@ -21,7 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.lib.math.Conversions;
 import frc.lib.util.SwerveModuleConstants;
-import frc.robot.constants.swerve.PureTalonFXConstants;
+import frc.robot.constants.swerve.CompRobotConstants;
 import frc.robot.constants.swerve.SwerveConstants;
 
 // TODO: Make this use motorsafety
@@ -38,7 +38,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
     private VelocityVoltage driveVelVoltage = new VelocityVoltage(0).withSlot(0);
     private PositionVoltage steeringPosVoltage = new PositionVoltage(0).withSlot(0);
 
-    private StatusSignal<Double> driveSupCur, driveStaCur, driveVel, steeringSupCur, steeringStaCur, steeringPos;
+    private StatusSignal<Double> driveSupCur, driveStaCur, driveVel, drivePos, steeringSupCur, steeringStaCur, steeringPos;
 
     private SwerveModuleConstants constants;
 
@@ -65,6 +65,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
         this.steeringPos = this.steeringEncoder.getAbsolutePosition();
         this.steeringSupCur = this.steeringMotor.getSupplyCurrent();
         this.steeringStaCur = this.steeringMotor.getStatorCurrent();
+        this.drivePos = this.driveMotor.getPosition();
         this.driveVel = this.driveMotor.getVelocity();
         this.driveSupCur = this.driveMotor.getSupplyCurrent();
         this.driveStaCur = this.driveMotor.getStatorCurrent();
@@ -94,12 +95,12 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
     }
 
     private void configDriveMotor() {
-        this.driveMotor.getConfigurator().apply(PureTalonFXConstants.driveMotorConfigs);
+        this.driveMotor.getConfigurator().apply(CompRobotConstants.driveMotorConfigs);
     }
 
     private void configSteeringMotor() {
         var configurator = this.steeringMotor.getConfigurator();
-        configurator.apply(PureTalonFXConstants.angleMotorConfigs);
+        configurator.apply(CompRobotConstants.angleMotorConfigs);
 
         var feedbackConfigs = new FeedbackConfigs();
         feedbackConfigs.FeedbackRemoteSensorID = this.steeringEncoder.getDeviceID();
@@ -164,7 +165,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
     public SwerveModuleState getState() {
         double angle = this.steeringPos.refresh().getValue();
         return new SwerveModuleState(
-                Conversions.rotsToMeters(this.driveMotor.getVelocity().getValue(),
+                Conversions.rotsToMeters(this.driveVel.refresh().getValue(),
                         SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio),
                 Rotation2d.fromRotations(angle));
     }
@@ -173,7 +174,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
     public SwerveModulePosition getPosition() {
         double angle = this.steeringPos.refresh().getValue();
         return new SwerveModulePosition(
-                Conversions.rotsToMeters(this.driveMotor.getPosition().getValue(),
+                Conversions.rotsToMeters(this.drivePos.refresh().getValue(),
                         SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio),
                 Rotation2d.fromRotations(angle));
     }

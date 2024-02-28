@@ -19,7 +19,7 @@ import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TestCommand;
 import frc.robot.constants.Constants;
 import frc.robot.constants.PathingConstants;
-import frc.robot.constants.swerve.PureTalonFXConstants;
+import frc.robot.constants.swerve.CompRobotConstants;
 import frc.robot.sensors.imu.DummyIMU;
 import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.NavX2;
@@ -62,10 +62,10 @@ public class RobotContainer {
     if (RobotBase.isReal()) {
       // Real robot
       swerveModules = new SwerveModuleIO[] {
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod0.constants, false),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod1.constants, false),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod2.constants, false),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants, false),
+          new TalonFXSwerveModuleIO(CompRobotConstants.Mod0.constants, false),
+          new TalonFXSwerveModuleIO(CompRobotConstants.Mod1.constants, false),
+          new TalonFXSwerveModuleIO(CompRobotConstants.Mod2.constants, false),
+          new TalonFXSwerveModuleIO(CompRobotConstants.Mod3.constants, false),
           // new DummySwerveModuleIO(),
           // new DummySwerveModuleIO(),
           // new DummySwerveModuleIO(),

@@ -14,7 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.math.Conversions;
 import frc.lib.util.SwerveModuleConstants;
 
-public class PureTalonFXConstants {
+public class CompRobotConstants {
     public static final TalonFXConfiguration angleMotorConfigs = new TalonFXConfiguration();
     public static final TalonFXConfiguration driveMotorConfigs = new TalonFXConfiguration();
 
