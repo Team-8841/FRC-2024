@@ -1,17 +1,12 @@
 package frc.robot.subsystems.shooter;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.MotorSafety;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.RunnableMotorSafety;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {

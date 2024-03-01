@@ -12,7 +12,9 @@ public class SimManager {
 
     private SimIMU imu;
 
+  @SuppressWarnings("unused")
     private Supplier<Pose2d> poseSupplier;
+  @SuppressWarnings("unused")
     private Supplier<ChassisSpeeds> speedSupplier;
 
     private SimManager() {

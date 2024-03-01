@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -11,14 +15,11 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -32,14 +33,14 @@ public class Robot extends LoggedRobot {
   private CommandXboxController driveController = new CommandXboxController(Constants.driveControllerPort);
   private CommandJoystick copilotController = new CommandJoystick(Constants.copilotControllerPort);
 
-  private Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
+  private Optional<Compressor> compressor = Optional.empty();
 
   @SuppressWarnings("unused")
   private PowerDistribution pdh;
 
   @Override
   public void robotInit() {
-    
+
     // Record metadata
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
@@ -60,27 +61,36 @@ public class Robot extends LoggedRobot {
     }
 
     if (isReal()) {
-      // Log to usb stick
-      Logger.addDataReceiver(new WPILOGWriter("/media/sda1/")); 
       // Logs to NT4
-      Logger.addDataReceiver(new NT4Publisher()); 
+      Logger.addDataReceiver(new NT4Publisher());
+
+      // Log to usb stick
+      if (Files.exists(Path.of("/media/sda1"))) {
+        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
+      } else {
+        System.out.println(
+          "/media/sda1 doesn't exist. SO THERE WILL BE NO LOGGING TO A USB DRIVE. I AM VERY ANGRYY!!!!"
+        );
+      }
       // Enables logging of PDH data
-      //this.pdh = new PowerDistribution(22, ModuleType.kRev); 
+      // this.pdh = new PowerDistribution(22, ModuleType.kRev);
+
+      this.compressor = Optional.of(new Compressor(PneumaticsModuleType.CTREPCM));
     } else if (Constants.simReplay) {
       // Run as fast as possible
-      this.setUseTiming(false); 
+      this.setUseTiming(false);
       // Get the replay log from AdvantageScope (or prompt the user)
       String logPath = LogFileUtil.findReplayLog();
       // Read replay log
-      Logger.setReplaySource(new WPILOGReader(logPath)); 
+      Logger.setReplaySource(new WPILOGReader(logPath));
       // Log to a file
       Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
     } else {
-      this.setUseTiming(true); 
+      this.setUseTiming(true);
       // Log to a file
       Logger.addDataReceiver(new WPILOGWriter("/tmp/sim.wpilog"));
       // Logs to NT4
-      Logger.addDataReceiver(new NT4Publisher()); 
+      Logger.addDataReceiver(new NT4Publisher());
     }
 
     // Starts advantagekit's Logger
@@ -104,22 +114,26 @@ public class Robot extends LoggedRobot {
       SimManager.getInstance().periodic();
     }
 
-    if (this.copilotController.getHID().getRawButton(1)) {
-      this.compressor.disable();
-    }
-    else {
-      this.compressor.enableDigital();
-    }
+    this.compressor.ifPresent(compressor -> {
+      if (this.copilotController.getHID().getRawButton(1)) {
+        compressor.disable();
+      } else {
+        compressor.enableDigital();
+      }
+    });
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
   @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+  }
 
   @Override
   public void autonomousInit() {
@@ -129,13 +143,16 @@ public class Robot extends LoggedRobot {
     if (this.autonomousCommand != null) {
       this.autonomousCommand.schedule();
     }
+
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+  }
 
   @Override
   public void teleopInit() {

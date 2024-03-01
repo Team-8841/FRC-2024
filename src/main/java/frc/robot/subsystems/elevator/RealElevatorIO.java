@@ -7,10 +7,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-import frc.lib.util.SafeCANSparkMax;
 import frc.robot.constants.Constants;
 import frc.robot.constants.elevator.ElevatorConstants;
 
