@@ -2,8 +2,22 @@ package frc.robot.subsystems.shooter;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -12,155 +26,159 @@ import frc.robot.constants.ShooterConstants;
 public class ShooterSubsystem extends SubsystemBase {
 
     /*-------------------------------- Private Instance Variables --------------------------------*/
+    // Motors
+    private TalonFX m_shooter = new TalonFX(ShooterConstants.shooterMotorID);
+    private TalonFX m_follower = new TalonFX(ShooterConstants.followerMotorID);
 
-    private ShooterIO hwImpl;
-    private ShooterState curState = ShooterState.OFF;
-    private ShooterInputsAutoLogged inputs = new ShooterInputsAutoLogged();
-    private LinearFilter rpsFilter = LinearFilter.movingAverage(5);
-    private double latestFilteredRPS;
-    private boolean upLimitSwitchPrev, downLimitSwitchPrev;
+    private CANSparkMax m_endEffector = new CANSparkMax(ShooterConstants.endEffectorRollerID, MotorType.kBrushless);
+    private CANSparkMax m_endEffectorRoller = new CANSparkMax(ShooterConstants.endEffectorRollerID, MotorType.kBrushless);
+
+    private Solenoid m_angle = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+
+    private DigitalInput m_EEInSensor = new DigitalInput(1);
+    private DigitalInput m_EEOutSensor = new DigitalInput(2);
+
+    private final VelocityVoltage m_velocityVoltage = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
+
+    private double m_shooterSetPoint, m_EESetPoint;
+
+    private PIDController m_EEPIDController = new PIDController(0.013, 0, 0);
 
     /*-------------------------------- Public Instance Variables --------------------------------*/
 
-    public static enum ShooterState {
-        /*
-         * ENUM(shooter Setpoint, End effector setpoint, End effector roller speed
-         * ,Shooter Aimed Up)
-         */
-        OFF(0, Rotation2d.fromDegrees(60), 0, true),
-        AMPRAISE(0, Rotation2d.fromDegrees(0), 0, false),
-        AMPSHOT(0.15, Rotation2d.fromDegrees(0), 0.7, true),
-        COOLSHOT(0.6, Rotation2d.fromDegrees(0), 0, true);
+    public ShooterSubsystem() {
+        /* Shooter */
+        TalonFXConfiguration configs = new TalonFXConfiguration();
 
-        private final double m_shooterDcycle, m_endEffectorRollerDcycle;
-        private final Rotation2d m_endEffectorSP;
+        configs.Slot0.kP = 0.011;
+        configs.Slot0.kI = 0.0;
+        configs.Slot0.kD = 0.0;
+        configs.Slot0.kV = 0.12;
 
-        private ShooterState(double shooterSP, Rotation2d endEffectorSP, double eeRollerSpeed, boolean shooterAimedUP) {
-            this.m_shooterDcycle = shooterSP;
-            this.m_endEffectorSP = endEffectorSP;
-            this.m_endEffectorRollerDcycle = eeRollerSpeed;
+        configs.Voltage.PeakForwardVoltage = 8;
+        configs.Voltage.PeakReverseVoltage = -8;
+
+        configs.CurrentLimits.StatorCurrentLimitEnable = true;
+        configs.CurrentLimits.StatorCurrentLimit = 40;
+        configs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        configs.CurrentLimits.SupplyCurrentLimit = 40;
+
+        StatusCode status = StatusCode.StatusCodeNotInitialized;
+        for (int i = 0; i < 5; i++) {
+            status = m_shooter.getConfigurator().apply(configs);
+            if(status.isOK()) break;
         }
 
-    }
+        if(!status.isOK()){
+            System.out.println("Could not apply configs, Error code: " + status.toString());
+        }
 
-    public ShooterSubsystem(ShooterIO hwImpl) {
-        this.hwImpl = hwImpl;
-        this.initializeShuffleboardWidgets();
+        m_shooter.setInverted(true);
+        m_follower.setControl(new Follower(m_shooter.getDeviceID(), false));
 
-        this.setShooterState(ShooterState.OFF);
+        m_shooterSetPoint = 0;
+
+        /* End Effector */
+        ConfigureSparkMax(m_endEffector, 30, IdleMode.kBrake);
+        ConfigureSparkMax(m_endEffectorRoller, 40, IdleMode.kBrake);
+
+        m_endEffector.setInverted(true);
+
+
+
     }
+    /*-------------------------------- Generic Subsystem Functions --------------------------------*/
 
     @Override
     public void periodic() {
-        // End Effector
+        updateStatus();
+    }
 
-        {
-            // Upper limit switch
-            boolean upLimitSwitch = this.hwImpl.getUpLimitSwitch();
-            if (!this.upLimitSwitchPrev && upLimitSwitch) {
-                this.hwImpl.setEndEffector(0);
-                System.out.println("End effector up limit switch engaged");
-            }
-            else if (this.upLimitSwitchPrev && !upLimitSwitch) {
-                System.out.println("End effector up limit switch disengaged");
-            }
-            this.upLimitSwitchPrev = upLimitSwitch;
+    /*-------------------------------- Custom Public Functions --------------------------------*/
+    
+    public void setShooterSpeed(double d) {
+        // velocity is set in RPS
+        m_shooterSetPoint = d / 60;
+        m_shooter.setControl(m_velocityVoltage.withVelocity(d / 60));
+        //m_follower.setControl(m_velocityVoltage.withVelocity(d / 60));
+    }
 
-            // Down limit switch
-            boolean downLimitSwitch = this.hwImpl.getDownLimitSwitch();
-            if (!this.downLimitSwitchPrev && downLimitSwitch) {
-                this.hwImpl.setEndEffector(0);
-                System.out.println("End effector down limit switch engaged");
-            }
-            else if (this.downLimitSwitchPrev && !downLimitSwitch) {
-                System.out.println("End effector down limit switch disengaged");
-            }
-            this.downLimitSwitchPrev = downLimitSwitch;
+    public double getShooterSpeed() {
+        return m_shooter.getVelocity().getValueAsDouble() * 60;
+    }
 
-            // Move logic
+    public boolean isShooterAtSpeed() {
+        double curVel = m_shooter.getVelocity().getValueAsDouble();
+        return curVel > m_shooterSetPoint - 100;
+    }
+    
+    public void setShooterAngle(boolean extended){
+        m_angle.set(extended);
+    }
 
-            double eeSP = this.curState.m_endEffectorSP.getDegrees();
+    public boolean getShooterAngle(){
+        return m_angle.get();
+    }
 
-            if (this.hwImpl.getDownLimitSwitch() && eeSP >= 30) {
-                this.hwImpl.setEndEffector(0.4);
-            }
+    public double getShooterSetpoint() {
+        return m_shooterSetPoint;
+    }
 
-            else if (this.hwImpl.getUpLimitSwitch() && eeSP < 30) {
-                this.hwImpl.setEndEffector(-0.4);
-            }
-            else if (!this.hwImpl.getDownLimitSwitch() && !this.hwImpl.getUpLimitSwitch()) {
-                if (eeSP >= 30) {
-                    this.hwImpl.setEndEffector(0.4);
-                }
-                else {
-                    this.hwImpl.setEndEffector(-0.4);;
-                }
-            }
-            else if (this.hwImpl.getDownLimitSwitch() || this.hwImpl.getUpLimitSwitch()) {
-                this.hwImpl.setEndEffector(0);
-            }
+    public void setEERoller(double speed) {
+        m_endEffectorRoller.set(speed);
+    }
+
+    public void setEEAngle(double angle) {
+        m_EESetPoint = angle;
+        double val = m_EEPIDController.calculate(getEEAngle() - angle);
+
+        SmartDashboard.putNumber("[EE]: PID output", val);
+        SmartDashboard.putNumber("[EE]: Angle Diff", getEEAngle() - angle);
+
+        if (getEEHomeLimit()) {
+            zeroEEAngle();
         }
 
-        // Shooter
-
-        {
-            this.hwImpl.updateInputs(this.inputs);
-            Logger.processInputs("Shooter", this.inputs);
-
-            this.latestFilteredRPS = this.rpsFilter.calculate(this.hwImpl.getShooterRPS());
-            Logger.recordOutput("Shooter/filteredRPS", -this.latestFilteredRPS);
-
-            Logger.recordOutput("Shooter/curState", this.curState.name());
+        if(getEEHomeLimit() && val < 0) {
+            setEESpeed(0);
+        } else if (getEEDeployedLimit() && val > 0){
+            setEESpeed(0);
+        } else {
+            setEESpeed(val);
         }
-
-        this.hwImpl.periodic();
+    }
+    
+    public void setEESpeed(double speed) {
+        m_endEffector.set(speed);
     }
 
-    public void setShooterState(ShooterState state) {
-        Logger.recordOutput("Shooter/endEffectorSP", this.curState.m_endEffectorSP.getDegrees());
-
-        this.hwImpl.setShooter(curState.m_shooterDcycle);
-        this.hwImpl.setRollerSpeed(curState.m_endEffectorRollerDcycle);
-
-        // end effector is handled in `periodic`
-
-        this.curState = state;
+    public double getEEAngle() {
+        return m_endEffector.getEncoder().getPosition();
     }
 
-    public Command setStateCommand(ShooterState state) {
-        return new FunctionalCommand(
-            () -> {},
-            () -> {
-                // System.out.println(state.name());
-                this.setShooterState(state);
-            },
-            (interrupted) -> this.setShooterState(state),
-            () -> false,
-            this);
+    public boolean getEEHomeLimit() {
+        return !m_EEInSensor.get();
     }
 
-    public double getShooterRPS() {
-        return this.latestFilteredRPS;
+    public boolean getEEDeployedLimit() {
+        return !m_EEOutSensor.get();
     }
 
-    // Get the target setpoint from the current state and check if we are within a
-    // tolerance of that value
-    public boolean endEffectorAtTarget() {
-        double angle = this.hwImpl.getEndEffector().getDegrees();
-        double spAngle = curState.m_endEffectorSP.getDegrees();
-        double allowedError = ShooterConstants.endEffector_allowedError.getDegrees();
-        return Math.abs(spAngle - angle) < allowedError;
+    public void zeroEEAngle() {
+        m_endEffector.getEncoder().setPosition(0);
+    }
+    /*-------------------------------- Custom Private Functions --------------------------------*/
+    private void updateStatus(){
+        SmartDashboard.putNumber("[EE]: Angle", getEEAngle());
+        SmartDashboard.putNumber("[Shooter]: Setpoint", getShooterSetpoint() * 60);
+        SmartDashboard.putNumber("[Shooter]: Velocity", getShooterSpeed());
+        SmartDashboard.putBoolean("[Shooter]: Angle", getShooterAngle());
+
     }
 
-    public void feed() {
+    private static void ConfigureSparkMax(CANSparkMax spark, int currentLimit, IdleMode idleMode) {
+        spark.restoreFactoryDefaults();
+        spark.setSmartCurrentLimit(currentLimit);
+        spark.setIdleMode(idleMode);
     }
-
-    private void initializeShuffleboardWidgets() {
-        //var layout = Shuffleboard.getTab("Robot").getLayout("Shooter", BuiltInLayouts.kList);
-        //layout.addDouble("Velocity", this.hwImpl::getShooterRPS);
-        //layout.addBoolean("At Speed", this::shooterAtTarget);
-        //layout.addDouble("Angle", () -> this.hwImpl.getEndEffector().getDegrees());
-        //layout.addBoolean("At Target", this::endEffectorAtTarget);
-    }
-
 }

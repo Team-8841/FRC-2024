@@ -14,7 +14,7 @@ public final class PathingConstants {
     public static final ReplanningConfig replanningConfig = new ReplanningConfig(false, false, 1, 1);
     public static final HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig(
         5, 
-        SwerveConstants.modulePositions[0].getNorm(), 
+        SwerveConstants.compModulePositions[0].getNorm(), 
         PathingConstants.replanningConfig
     );
 

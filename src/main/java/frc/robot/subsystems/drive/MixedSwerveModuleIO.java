@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -11,7 +12,10 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.fasterxml.jackson.databind.JsonSerializable.Base;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -96,20 +100,21 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
         CANcoderConfigurator configurator = this.steeringEncoder.getConfigurator();
         MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs();
         magnetSensorConfigs.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
-        magnetSensorConfigs.SensorDirection = SwerveConstants.canCoderDir;
+        magnetSensorConfigs.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         magnetSensorConfigs.MagnetOffset = this.constants.angleOffset.getRotations();
         configurator.apply(magnetSensorConfigs);
     }
 
     private void configDriveMotor() {
-        this.driveMotor.getConfigurator().apply(CompRobotConstants.driveMotorConfigs);
+        this.driveMotor.getConfigurator().apply(BaseRobotConstants.driveMotorConfigs);
     }
 
     private void configSteeringMotor() {
         this.angleMotor.restoreFactoryDefaults();
         this.angleMotor.setSmartCurrentLimit(SwerveConstants.angleContinuousCurrentLimit);
+        this.angleMotor.setIdleMode(BaseRobotConstants.angleNeutralMode);
+        this.angleMotor.setInverted(false);
     }
-
     @Override
     public void setDrivePID(double kS, double kV, double kA, double kP, double kI, double kD) {
         var configurator = this.driveMotor.getConfigurator();
@@ -182,7 +187,11 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
             double curAngle = this.angleAngle.refresh().getValueAsDouble();
             double setAngle = this.lastAngle.getRotations();
             double effort = this.anglePID.calculate(curAngle, setAngle);
-            this.angleMotor.set(effort);
+            this.angleMotor.set(this.anglePID.atSetpoint() ? 0 : effort);
+            Logger.recordOutput("atsp", this.anglePID.atSetpoint());
+            Logger.recordOutput("curangle", curAngle);
+            Logger.recordOutput("setangle", setAngle);
+            Logger.recordOutput("effort", effort);
         }
         
         // Logging

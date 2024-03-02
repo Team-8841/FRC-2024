@@ -8,8 +8,10 @@ public class DummyIMU extends IMU {
     IMUInputsAutoLogged inputs = new IMUInputsAutoLogged();
 
     @Override
-    public void updateInputs(IMUInputsAutoLogged inputsAutoLogged) {
-        this.inputs = inputsAutoLogged;
+    public void updateInputs(IMUInputsAutoLogged inputs) {
+        if (inputs != null) {
+            this.inputs = inputs;
+        }
     }
 
     @Override

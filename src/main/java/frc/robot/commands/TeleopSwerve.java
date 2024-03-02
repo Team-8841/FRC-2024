@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import java.util.Optional;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
@@ -11,10 +9,10 @@ import frc.robot.constants.AutoConstants;
 import frc.robot.constants.Constants;
 import frc.robot.constants.swerve.SwerveConstants;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
-import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.elevator.ElevatorIO.BrakeState;
+import frc.robot.subsystems.elevator.ElevatorSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.shooter.ShooterSubsystem.ShooterState;
 
 public class TeleopSwerve extends Command {
     // private DoubleSupplier forwardSupplier, strafeSupplier, rotationSupplier,
@@ -25,7 +23,6 @@ public class TeleopSwerve extends Command {
     private Joystick copilotController;
 
     private DriveTrainSubsystem driveTrain;
-    private ShooterSubsystem shooter;
     private ElevatorSubsystem elevator;
 
     // public TeleopSwerve(DriveTrainSubsystem driveTrain, ShooterSubsystem shooter,
@@ -50,43 +47,16 @@ public class TeleopSwerve extends Command {
     // this.addRequirements(elevator);
     // }
 
-    public TeleopSwerve(DriveTrainSubsystem driveTrain, ShooterSubsystem shooter, ElevatorSubsystem elevator,
+    public TeleopSwerve(DriveTrainSubsystem driveTrain, ElevatorSubsystem elevator,
             XboxController driveController, Joystick copilotController) {
         this.driveController = driveController;
         this.copilotController = copilotController;
 
         this.driveTrain = driveTrain;
-        this.shooter = shooter;
         this.elevator = elevator;
 
         this.addRequirements(driveTrain);
-
-        this.addRequirements(shooter);
         this.addRequirements(elevator);
-    }
-
-    private ShooterState getShooterState() {
-        if (this.driveController.getLeftBumper()) {
-            if (this.driveController.getRightBumper()) {
-                return ShooterState.AMPSHOT;
-            }
-            return ShooterState.AMPRAISE;
-        }
-
-        double potVals[] = { 1, 0.55, 0.06, -0.44, -0.96 };
-        ShooterState potStates[] = { ShooterState.OFF, ShooterState.COOLSHOT, ShooterState.COOLSHOT,
-                ShooterState.COOLSHOT,
-                ShooterState.COOLSHOT };
-        double epsilon = 0.1;
-        double pot = this.copilotController.getRawAxis(3);
-
-        for (int i = 0; i < potVals.length; i++) {
-            if (potVals[i] - epsilon <= pot && potVals[i] + epsilon >= pot) {
-                return potStates[i];
-            }
-        }
-
-        return ShooterState.OFF;
     }
 
     @Override
@@ -94,8 +64,6 @@ public class TeleopSwerve extends Command {
         double forward = -this.driveController.getLeftY();
         double strafe = this.driveController.getLeftX();
         double rotation = this.driveController.getRightX();
-        double elevatorPower = -this.copilotController.getX();
-        boolean elevatorBrake = this.copilotController.getRawButton(7);
 
         // Drivetrain
         Translation2d driveTranslation = new Translation2d(
@@ -103,14 +71,16 @@ public class TeleopSwerve extends Command {
                 MathUtil.applyDeadband(strafe, Constants.controllerDeadband) * SwerveConstants.maxSpeed);
         rotation = MathUtil.applyDeadband(rotation, Constants.controllerDeadband)
                 * AutoConstants.MaxAngularSpeedRadiansPerSecond;
-        this.driveTrain.drive(driveTranslation, rotation, true, true);
+        this.driveTrain.drive(driveTranslation, rotation, false, true);
 
-        // Shooter
-        this.shooter.setShooterState(this.getShooterState());
+        if (this.copilotController != null) {
+            double elevatorPower = -this.copilotController.getX();
+            boolean elevatorBrake = this.copilotController.getRawButton(7);
 
-        // Elevator
-        this.elevator.set(0.4 * MathUtil.applyDeadband(elevatorPower, 0.1));
-        this.elevator.setBrake(elevatorBrake ? BrakeState.BRAKE_ENGAGE : BrakeState.BRAKE_DISENGAGE);
+            // Elevator
+            this.elevator.set(0.4 * MathUtil.applyDeadband(elevatorPower, 0.1));
+            this.elevator.setBrake(elevatorBrake ? BrakeState.BRAKE_ENGAGE : BrakeState.BRAKE_DISENGAGE);
+        }
 
         // Intake is handled as a binding to a trigger in `RobotContainer.java`
     }

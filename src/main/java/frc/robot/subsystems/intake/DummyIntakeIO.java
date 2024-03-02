@@ -1,7 +1,7 @@
 package frc.robot.subsystems.intake;
 
 public class DummyIntakeIO implements IntakeIO {
-    private IntakeInputsAutoLogged inputs;
+    private IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
 
     @Override
     public void setIndexSpeed(double dcycle) {
@@ -15,11 +15,13 @@ public class DummyIntakeIO implements IntakeIO {
 
     @Override
     public boolean getIndexSensor() {
-        return inputs.indexSensor;
+        return this.inputs.indexSensor;
     }
 
     @Override
     public void updateInputs(IntakeInputsAutoLogged inputs) {
-        this.inputs = inputs;
+        if (inputs != null) {
+            this.inputs = inputs;
+        }
     }
 }

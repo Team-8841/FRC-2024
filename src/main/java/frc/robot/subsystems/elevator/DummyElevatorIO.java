@@ -1,7 +1,7 @@
 package frc.robot.subsystems.elevator;
 
 public class DummyElevatorIO implements ElevatorIO {
-    private ElevatorInputsAutoLogged inputs;
+    private ElevatorInputsAutoLogged inputs = new ElevatorInputsAutoLogged();
 
     public void set(double dcycle) { 
         // Do nothing
@@ -16,7 +16,7 @@ public class DummyElevatorIO implements ElevatorIO {
     }
 
     public boolean isBraking() {
-        return this.inputs.isBraking;
+        return this.inputs == null ? true : this.inputs.isBraking;
     }
 
     public boolean getUpperLimitSwitch() {
@@ -29,6 +29,8 @@ public class DummyElevatorIO implements ElevatorIO {
 
     @Override
     public void updateInputs(ElevatorInputsAutoLogged inputs) {
-        this.inputs = inputs;
+        if (inputs != null) {
+            this.inputs = inputs;
+        }
     }
 }

@@ -9,7 +9,9 @@ public class DummySwerveModuleIO implements SwerveModuleIO {
 
     @Override
     public void updateInputs(SwerveModuleIOInputsAutoLogged inputs) {
-        this.inputs = inputs;
+        if (inputs != null) {
+            this.inputs = inputs;
+        }
     }
 
     @Override

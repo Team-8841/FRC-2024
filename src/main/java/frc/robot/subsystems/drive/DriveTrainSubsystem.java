@@ -3,7 +3,6 @@ package frc.robot.subsystems.drive;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,16 +13,12 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.util.CTREModuleState;
-import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.SimManager;
 import frc.robot.constants.Constants;
 import frc.robot.constants.swerve.SwerveConstants;
@@ -35,6 +30,8 @@ import frc.robot.sensors.imu.IMU;
  * Main swerve drive class, interfaces with a hardware IO class.
  */
 public class DriveTrainSubsystem extends SubsystemBase {
+    private final SwerveDriveKinematics kinematics;
+
     private SwerveDrivePoseEstimator poseEstimator;
     private SwerveModuleIO swerveModules[];
     private SwerveModuleIOInputsAutoLogged autologgedInputs[];
@@ -46,6 +43,13 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
     @SuppressWarnings("all")
     public DriveTrainSubsystem(SwerveModuleIO[] swerveModules, IMU imu) {
+        if (Constants.isCompRobot) {
+            this.kinematics = SwerveConstants.compSwerveKinematics;
+        } 
+        else {
+            this.kinematics = SwerveConstants.driveBaseSwerveKinematics;
+        }
+
         this.swerveModules = swerveModules;
         this.imu = imu;
 
@@ -67,7 +71,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
         // this.swerveOdometry = new
         // SwerveDriveOdometry(SwerveConstants.swerveKinematics, imu.getHeading(),
         // this.getModulePositions());
-        this.poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.swerveKinematics, imu.getHeading(),
+        this.poseEstimator = new SwerveDrivePoseEstimator(this.kinematics, imu.getHeading(),
                 this.getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.fromRadians(0)));
 
         if (RobotBase.isSimulation() && !Constants.simReplay) {
@@ -85,7 +89,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     }
 
     private void driveInternal(ChassisSpeeds speeds) {
-        var swerveModuleStates = SwerveConstants.swerveKinematics.toSwerveModuleStates(speeds);
+        var swerveModuleStates = this.kinematics.toSwerveModuleStates(speeds);
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
 
@@ -97,6 +101,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
             this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
             this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
         }
+
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
     }
 
@@ -124,7 +129,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     }
 
     public ChassisSpeeds getSpeed() {
-        return SwerveConstants.swerveKinematics.toChassisSpeeds(this.getModuleStates());
+        return this.kinematics.toChassisSpeeds(this.getModuleStates());
     }
 
     public Pose2d getPose() {

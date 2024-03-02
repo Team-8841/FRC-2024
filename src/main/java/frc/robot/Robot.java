@@ -31,7 +31,7 @@ public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
 
   private CommandXboxController driveController = new CommandXboxController(Constants.driveControllerPort);
-  private CommandJoystick copilotController = new CommandJoystick(Constants.copilotControllerPort);
+  private CommandJoystick copilotController;
 
   private Optional<Compressor> compressor = Optional.empty();
 
@@ -75,7 +75,10 @@ public class Robot extends LoggedRobot {
       // Enables logging of PDH data
       // this.pdh = new PowerDistribution(22, ModuleType.kRev);
 
-      this.compressor = Optional.of(new Compressor(PneumaticsModuleType.CTREPCM));
+      if (Constants.isCompRobot) {
+        this.compressor = Optional.of(new Compressor(PneumaticsModuleType.CTREPCM));
+        this.copilotController = new CommandJoystick(Constants.copilotControllerPort);
+      }
     } else if (Constants.simReplay) {
       // Run as fast as possible
       this.setUseTiming(false);

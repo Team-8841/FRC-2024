@@ -16,10 +16,12 @@ public class SwerveConstants {
     /* Drivetrain Constants */
     //public static final double trackWidth = Units.inchesToMeters(22.75); // TODO: This must be tuned to specific
                                                                             // robot
-    public static final double trackWidth = Units.inchesToMeters(25);
+    public static final double compTrackWidth = Units.inchesToMeters(25);
     //public static final double wheelBase = Units.inchesToMeters(24.5); // TODO: This must be tuned to specific
                                                                         // robot
-    public static final double wheelBase = Units.inchesToMeters(23.25);
+    public static final double compWheelBase = Units.inchesToMeters(23.25);
+    public static final double driveBaseTrackWidth = Units.inchesToMeters(26.75);
+    public static final double driveBaseWheelBase = Units.inchesToMeters(18);
     public static final double wheelCircumference = chosenModule.wheelCircumference;
 
     /*
@@ -28,14 +30,22 @@ public class SwerveConstants {
         * rectangular/square 4 module swerve
         */
 
-    public static final Translation2d[] modulePositions = {
-        new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
-        new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
-        new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),    
-        new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0)
+    public static final Translation2d[] compModulePositions = {
+        new Translation2d(compWheelBase / 2.0, compTrackWidth / 2.0),
+        new Translation2d(compWheelBase / 2.0, -compTrackWidth / 2.0),
+        new Translation2d(-compWheelBase / 2.0, compTrackWidth / 2.0),    
+        new Translation2d(-compWheelBase / 2.0, -compTrackWidth / 2.0)
     };
-            
-    public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(modulePositions);
+
+    public static final Translation2d[] driveBaseModulePositions = {
+        new Translation2d(driveBaseWheelBase / 2.0, driveBaseTrackWidth / 2.0),
+        new Translation2d(driveBaseWheelBase / 2.0, -driveBaseTrackWidth / 2.0),
+        new Translation2d(-driveBaseWheelBase / 2.0, driveBaseTrackWidth / 2.0),    
+        new Translation2d(-driveBaseWheelBase / 2.0, -driveBaseTrackWidth / 2.0)
+    };
+
+    public static final SwerveDriveKinematics compSwerveKinematics = new SwerveDriveKinematics(compModulePositions);
+    public static final SwerveDriveKinematics driveBaseSwerveKinematics = new SwerveDriveKinematics(driveBaseModulePositions);
 
     /* Module Gear Ratios */
     public static final double driveGearRatio = chosenModule.driveGearRatio;

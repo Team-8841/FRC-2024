@@ -7,6 +7,7 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -58,18 +59,14 @@ public class ShooterConstants {
     static {
         // Shooter Motor Configs
 
-        shooterConfig.Slot0 = new Slot0Configs();
-        shooterConfig.Slot0.kS = 0;
-        shooterConfig.Slot0.kV = 0;
-        shooterConfig.Slot0.kA = 0;
-        shooterConfig.Slot0.kP = 0;
-        shooterConfig.Slot0.kI = 0;
-        shooterConfig.Slot0.kD = 0;
-
         shooterConfig.MotorOutput = new MotorOutputConfigs();
         shooterConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         shooterConfig.MotorOutput.PeakForwardDutyCycle = 0;
         shooterConfig.MotorOutput.PeakReverseDutyCycle = -1;
+
+        shooterConfig.Voltage = new VoltageConfigs();
+        shooterConfig.Voltage.PeakForwardVoltage = 0;
+        shooterConfig.Voltage.PeakReverseVoltage = -8;
 
         // Per motor current limit. Total max subsystem current input is 2x this
         shooterConfig.CurrentLimits = new CurrentLimitsConfigs();
@@ -80,6 +77,12 @@ public class ShooterConstants {
 
         shooterConfig.OpenLoopRamps = new OpenLoopRampsConfigs();
         shooterConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 1;
+
+        shooterConfig.Slot0 = new Slot0Configs();
+        shooterConfig.Slot0.kP = 0.011;
+        shooterConfig.Slot0.kI = 0.0;
+        shooterConfig.Slot0.kD = 0.0;
+        shooterConfig.Slot0.kV = 0.12;
 
         shooterConfig.ClosedLoopRamps = new ClosedLoopRampsConfigs();
         shooterConfig.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 1;
