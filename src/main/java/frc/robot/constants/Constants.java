@@ -85,4 +85,23 @@ public final class Constants {
 
         System.out.format("Detected robot as %s\n", isCompRobot ? "competition" : "drivebase");
     }
+
+    public static final class CandleConstants {
+        public static final int kCandleID = 22;
+
+        public static final int kLEDCount = 300;
+
+        public static final double kMaxBrightness = 0.7;
+    }
+
+    public static final class ElevatorConstants {
+        public static final int kElevatorMain = 20;
+        public static final int kElevatorFollower = 21;
+
+        public static final int kElevatorBottomSensor = 3;
+        public static final int kElevatorTopSensor = 4;
+
+        public static final int kBreaksPort = 2;
+    }
+
 }

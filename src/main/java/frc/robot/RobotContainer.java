@@ -4,17 +4,21 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.ElevatorCommand;
 import frc.robot.commands.SensorFeedCommand;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TestCommand;
@@ -32,13 +36,12 @@ import frc.robot.subsystems.drive.MixedSwerveModuleIO;
 import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
-import frc.robot.subsystems.elevator.DummyElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
-import frc.robot.subsystems.elevator.RealElevatorIO;
 import frc.robot.subsystems.intake.DummyIntakeIO;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.RealIntakeIO;
+import frc.robot.subsystems.leds.LEDSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class RobotContainer {
@@ -51,29 +54,33 @@ public class RobotContainer {
   private ShooterSubsystem shooter;
   private ElevatorSubsystem elevator;
 
+  private final LEDSubsystem led = new LEDSubsystem();
+
   // Controllers
   private CommandXboxController driveController;
   private CommandJoystick copilotController;
 
   /* Copilot Buttons */
-  private final JoystickButton compressorOverrideBtn;
-  private final JoystickButton hoodDeployBtn;
-  private final JoystickButton hoodOverrideBtn;
-  private final JoystickButton intakeInBtn;
-  private final JoystickButton intakeOutBtn;
-  private final JoystickButton shooterAngleBtn;
-  private final JoystickButton climberBreaksBtn;
+  private JoystickButton compressorOverrideBtn;
+  private JoystickButton hoodDeployBtn;
+  private JoystickButton hoodOverrideBtn;
+  private JoystickButton intakeInBtn;
+  private JoystickButton intakeOutBtn;
+  private JoystickButton shooterAngleBtn;
+  private JoystickButton climberBreaksBtn;
 
     /* Driver Buttons */
-    private final JoystickButton shootBtn;
-    private final JoystickButton visionAssistBtn;
-    private final JoystickButton zeroGyroBtn;
-    private final double hoodTrigger;
+    private JoystickButton shootBtn;
+    private JoystickButton visionAssistBtn;
+    private JoystickButton zeroGyroBtn;
+    private double hoodTrigger;
+
+    private double climberMovement;
 
     private double getShooterState() {
 
         double potVals[] = { 1, 0.55, 0.06, -0.44, -0.96 };
-        double potRPM[] = { 0, 100, 200, 300, 3000 };
+        double potRPM[] = { 0, 500, 1000, 2000, 3000 };
         double epsilon = 0.1;
         double pot = this.copilotController.getRawAxis(3);
 
@@ -99,15 +106,7 @@ public class RobotContainer {
       intakeOutBtn = new JoystickButton(         copilotController.getHID(), OIConstants.button5);
       shooterAngleBtn = new JoystickButton(      copilotController.getHID(), OIConstants.button6);    
       climberBreaksBtn = new JoystickButton(     copilotController.getHID(), OIConstants.button7);
-
-      compressorOverrideBtn = new JoystickButton(copilotController.getHID(), OIConstants.button1);
-      hoodDeployBtn = new JoystickButton(        copilotController.getHID(), OIConstants.button2);
-      hoodOverrideBtn = new JoystickButton(      copilotController.getHID(), OIConstants.button3);
-      intakeInBtn = new JoystickButton(          copilotController.getHID(), OIConstants.button4);
-      intakeOutBtn = new JoystickButton(         copilotController.getHID(), OIConstants.button5);
-      shooterAngleBtn = new JoystickButton(      copilotController.getHID(), OIConstants.button6);
-      climberBreaksBtn = new JoystickButton(     copilotController.getHID(), OIConstants.button7);
-
+      climberMovement = copilotController.getHID().getRawAxis(OIConstants.analog1);
 
       SwerveModuleIO swerveModules[];
         if (RobotBase.isReal()) {
@@ -142,7 +141,8 @@ public class RobotContainer {
 
       this.intake = new IntakeSubsystem(Constants.isCompRobot ? new RealIntakeIO() : new DummyIntakeIO());
       this.shooter = new ShooterSubsystem();
-      this.elevator = new ElevatorSubsystem(Constants.isCompRobot ? new RealElevatorIO() : new DummyElevatorIO());
+      //this.elevator = new ElevatorSubsystem(Constants.isCompRobot ? new RealElevatorIO() : new DummyElevatorIO());
+      this.elevator = new ElevatorSubsystem();
     } else if (Constants.simReplay) {
       // Replay
       swerveModules = new SwerveModuleIO[] {
@@ -178,7 +178,6 @@ public class RobotContainer {
         this.shooter.setShooterSpeed(getShooterState());
 
         if(hoodDeployBtn.getAsBoolean()) {
-            DriverStation.reportWarning("Hood should be working.", false);
             this.shooter.setEEAngle(64);
         } else {
             this.shooter.setEEAngle(0);
@@ -191,11 +190,25 @@ public class RobotContainer {
   private void configureBindings() {
     // Intake bindings
     if (this.copilotController != null) {
-      this.driveController.leftBumper().whileTrue(intake.setStateCommand(IntakeState.INTAKE));
+      //this.driveController.leftBumper().whileTrue(intake.setStateCommand(IntakeState.INTAKE));
       this.copilotController.button(5).whileTrue(intake.setStateCommand(IntakeState.EJECT));
       intake.setDefaultCommand(new SensorFeedCommand(intake, () -> this.copilotController.getHID().getRawButton(4)));
       shooterAngleBtn.onTrue(new InstantCommand(() -> shooter.setShooterAngle(true)))
                       .onFalse(new InstantCommand(() -> shooter.setShooterAngle(false)));
+      this.elevator.setDefaultCommand(new ElevatorCommand(() -> this.copilotController.getRawAxis(0), this.elevator));             
+        climberBreaksBtn.onTrue(new InstantCommand(() ->  this.elevator.setBreaks(true)))
+                        .onFalse(new InstantCommand(() -> this.elevator.setBreaks(false)));
+      this.driveController.leftBumper().whileTrue(new RunCommand(() -> {
+        //if (this.shooter.isShooterAtSpeed() && this.shooter.getShooterSpeed() < 400) {
+        //  this.shooter.setEERoller(0.1);
+        //  this.intake.setIntakeState(IntakeState.EJECT);
+        //} else {
+        //  this.shooter.setEERoller(0);
+        //  this.intake.setIntakeState(IntakeState.OFF);
+        //}
+        Logger.recordOutput("shooterRoller", Logger.getRealTimestamp());
+        this.shooter.setEERoller(0.1);
+    }).finallyDo(() -> this.shooter.setEERoller(0)));
     }
   }
 
@@ -220,7 +233,7 @@ public class RobotContainer {
     // () -> -this.copilotController.getX(),
     // () -> this.copilotController.getHID().getRawButton(7));
 
-    return new TeleopSwerve(this.driveTrain, this.elevator, this.driveController.getHID(),
+    return new TeleopSwerve(this.driveTrain, this.driveController.getHID(),
         this.copilotController == null ? null : this.copilotController.getHID());
   }
 

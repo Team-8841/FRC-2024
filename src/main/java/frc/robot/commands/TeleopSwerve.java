@@ -9,7 +9,6 @@ import frc.robot.constants.AutoConstants;
 import frc.robot.constants.Constants;
 import frc.robot.constants.swerve.SwerveConstants;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
-import frc.robot.subsystems.elevator.ElevatorIO.BrakeState;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -47,16 +46,13 @@ public class TeleopSwerve extends Command {
     // this.addRequirements(elevator);
     // }
 
-    public TeleopSwerve(DriveTrainSubsystem driveTrain, ElevatorSubsystem elevator,
-            XboxController driveController, Joystick copilotController) {
+    public TeleopSwerve(DriveTrainSubsystem driveTrain, XboxController driveController, Joystick copilotController) {
         this.driveController = driveController;
         this.copilotController = copilotController;
 
         this.driveTrain = driveTrain;
-        this.elevator = elevator;
 
         this.addRequirements(driveTrain);
-        this.addRequirements(elevator);
     }
 
     @Override
@@ -72,15 +68,6 @@ public class TeleopSwerve extends Command {
         rotation = MathUtil.applyDeadband(rotation, Constants.controllerDeadband)
                 * AutoConstants.MaxAngularSpeedRadiansPerSecond;
         this.driveTrain.drive(driveTranslation, rotation, false, true);
-
-        if (this.copilotController != null) {
-            double elevatorPower = -this.copilotController.getX();
-            boolean elevatorBrake = this.copilotController.getRawButton(7);
-
-            // Elevator
-            this.elevator.set(0.4 * MathUtil.applyDeadband(elevatorPower, 0.1));
-            this.elevator.setBrake(elevatorBrake ? BrakeState.BRAKE_ENGAGE : BrakeState.BRAKE_DISENGAGE);
-        }
 
         // Intake is handled as a binding to a trigger in `RobotContainer.java`
     }

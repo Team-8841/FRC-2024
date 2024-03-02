@@ -30,8 +30,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private TalonFX m_shooter = new TalonFX(ShooterConstants.shooterMotorID);
     private TalonFX m_follower = new TalonFX(ShooterConstants.followerMotorID);
 
-    private CANSparkMax m_endEffector = new CANSparkMax(ShooterConstants.endEffectorRollerID, MotorType.kBrushless);
-    private CANSparkMax m_endEffectorRoller = new CANSparkMax(ShooterConstants.endEffectorRollerID, MotorType.kBrushless);
+    private CANSparkMax m_endEffector = new CANSparkMax(ShooterConstants.endEffectorROTID, MotorType.kBrushless);
+    private CANSparkMax m_endEffectorRoller = new CANSparkMax(19, MotorType.kBrushless);
 
     private Solenoid m_angle = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
 
@@ -48,30 +48,19 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem() {
         /* Shooter */
-        TalonFXConfiguration configs = new TalonFXConfiguration();
 
-        configs.Slot0.kP = 0.011;
-        configs.Slot0.kI = 0.0;
-        configs.Slot0.kD = 0.0;
-        configs.Slot0.kV = 0.12;
+        this.m_shooter.getConfigurator().apply(ShooterConstants.shooterConfig);
+        this.m_follower.getConfigurator().apply(ShooterConstants.shooterConfig);
 
-        configs.Voltage.PeakForwardVoltage = 8;
-        configs.Voltage.PeakReverseVoltage = -8;
+        //StatusCode status = StatusCode.StatusCodeNotInitialized;
+        //for (int i = 0; i < 5; i++) {
+        //    status = m_shooter.getConfigurator().apply(configs);
+        //    if(status.isOK()) break;
+        //}
 
-        configs.CurrentLimits.StatorCurrentLimitEnable = true;
-        configs.CurrentLimits.StatorCurrentLimit = 40;
-        configs.CurrentLimits.SupplyCurrentLimitEnable = true;
-        configs.CurrentLimits.SupplyCurrentLimit = 40;
-
-        StatusCode status = StatusCode.StatusCodeNotInitialized;
-        for (int i = 0; i < 5; i++) {
-            status = m_shooter.getConfigurator().apply(configs);
-            if(status.isOK()) break;
-        }
-
-        if(!status.isOK()){
-            System.out.println("Could not apply configs, Error code: " + status.toString());
-        }
+        //if(!status.isOK()){
+        //    System.out.println("Could not apply configs, Error code: " + status.toString());
+        //}
 
         m_shooter.setInverted(true);
         m_follower.setControl(new Follower(m_shooter.getDeviceID(), false));
@@ -80,7 +69,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         /* End Effector */
         ConfigureSparkMax(m_endEffector, 30, IdleMode.kBrake);
-        ConfigureSparkMax(m_endEffectorRoller, 40, IdleMode.kBrake);
+        //ConfigureSparkMax(m_endEffectorRoller, 40, IdleMode.kBrake);
 
         m_endEffector.setInverted(true);
 
@@ -100,6 +89,7 @@ public class ShooterSubsystem extends SubsystemBase {
         // velocity is set in RPS
         m_shooterSetPoint = d / 60;
         m_shooter.setControl(m_velocityVoltage.withVelocity(d / 60));
+        Logger.recordOutput("shooterSP", m_shooterSetPoint);
         //m_follower.setControl(m_velocityVoltage.withVelocity(d / 60));
     }
 
