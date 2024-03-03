@@ -51,7 +51,9 @@ public class IntakeSubsystem extends SubsystemBase {
     this.systemMotorSafety.feed();
     this.hardwImpl.setIntakeSpeed(state.intakeSpeed);
     this.hardwImpl.setIndexSpeed(state.indexSpeed);
-    curState = state;
+    if(state != curState) {
+        curState = state;
+    }
   }
 
   public Command setStateCommand(IntakeState state) {
