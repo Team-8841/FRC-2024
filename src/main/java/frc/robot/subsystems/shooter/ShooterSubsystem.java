@@ -72,6 +72,7 @@ public class ShooterSubsystem extends SubsystemBase {
         //ConfigureSparkMax(m_endEffectorRoller, 40, IdleMode.kBrake);
 
         m_endEffector.setInverted(true);
+        m_endEffectorRoller.setInverted(true);
 
 
 

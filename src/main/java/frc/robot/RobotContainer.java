@@ -42,6 +42,7 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.RealIntakeIO;
 import frc.robot.subsystems.leds.LEDSubsystem;
+import frc.robot.subsystems.leds.LEDSubsystem.AnimationTypes;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class RobotContainer {
@@ -177,6 +178,12 @@ public class RobotContainer {
     this.shooter.setDefaultCommand(new RunCommand(() -> {
         this.shooter.setShooterSpeed(getShooterState());
 
+        if(this.shooter.isShooterAtSpeed()) {
+          this.led.changeAnimation(AnimationTypes.StrobeGreen);
+        } else {
+          this.led.changeAnimation(AnimationTypes.Rainbow);
+        }
+
         if(hoodDeployBtn.getAsBoolean()) {
             this.shooter.setEEAngle(64);
         } else {
@@ -185,6 +192,10 @@ public class RobotContainer {
 
         
     }, this.shooter));
+
+    this.elevator.setDefaultCommand(new ElevatorCommand(() -> this.copilotController.getRawAxis(0), this.elevator)); 
+
+    intake.setDefaultCommand(new SensorFeedCommand(intake, () -> this.copilotController.getHID().getRawButton(4)));
   }
 
   private void configureBindings() {
@@ -192,23 +203,27 @@ public class RobotContainer {
     if (this.copilotController != null) {
       //this.driveController.leftBumper().whileTrue(intake.setStateCommand(IntakeState.INTAKE));
       this.copilotController.button(5).whileTrue(intake.setStateCommand(IntakeState.EJECT));
-      intake.setDefaultCommand(new SensorFeedCommand(intake, () -> this.copilotController.getHID().getRawButton(4)));
+
       shooterAngleBtn.onTrue(new InstantCommand(() -> shooter.setShooterAngle(true)))
                       .onFalse(new InstantCommand(() -> shooter.setShooterAngle(false)));
-      this.elevator.setDefaultCommand(new ElevatorCommand(() -> this.copilotController.getRawAxis(0), this.elevator));             
+
+        
+
         climberBreaksBtn.onTrue(new InstantCommand(() ->  this.elevator.setBreaks(true)))
                         .onFalse(new InstantCommand(() -> this.elevator.setBreaks(false)));
-      this.driveController.leftBumper().whileTrue(new RunCommand(() -> {
-        //if (this.shooter.isShooterAtSpeed() && this.shooter.getShooterSpeed() < 400) {
-        //  this.shooter.setEERoller(0.1);
-        //  this.intake.setIntakeState(IntakeState.EJECT);
-        //} else {
-        //  this.shooter.setEERoller(0);
-        //  this.intake.setIntakeState(IntakeState.OFF);
-        //}
-        Logger.recordOutput("shooterRoller", Logger.getRealTimestamp());
-        this.shooter.setEERoller(0.1);
-    }).finallyDo(() -> this.shooter.setEERoller(0)));
+
+      this.driveController.rightBumper().whileTrue(new RunCommand(() -> {
+        if (this.shooter.isShooterAtSpeed() && (this.shooter.getShooterSetpoint() > 0 && this.shooter.getShooterSetpoint() < 500)) {
+          this.shooter.setEERoller(0.7); 
+          this.intake.setIntakeState(IntakeState.INTAKE);
+        } else if(this.shooter.isShooterAtSpeed() && this.shooter.getShooterSetpoint() > 500) {
+          this.shooter.setEERoller(0);
+          this.intake.setIntakeState(IntakeState.INTAKE);
+        } else {
+          this.shooter.setEERoller(0);
+          this.intake.setIntakeState(IntakeState.OFF);
+        }
+    })).onFalse(new InstantCommand( () -> this.shooter.setEERoller(0)));
     }
   }
 
