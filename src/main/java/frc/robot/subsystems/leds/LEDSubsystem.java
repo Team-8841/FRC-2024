@@ -106,48 +106,50 @@ public class LEDSubsystem extends SubsystemBase {
     public void configStatusLedBehavior(boolean offWhenActive) { m_candle.configStatusLedState(offWhenActive, 0); }
 
     public void changeAnimation(AnimationTypes toChange) {
-        m_currentAnimation = toChange;
-        
-        switch(toChange)
-        {
-            case ColorFlow:
-                m_toAnimate = new ColorFlowAnimation(128, 20, 70, 0, 0.7, m_LEDCount, Direction.Forward);
-                break;
-            case Fire:
-                m_toAnimate = new FireAnimation(0.5, 0.7, m_LEDCount, 0.7, 0.5);
-                break;
-            case Larson:
-                m_toAnimate = new LarsonAnimation(0, 255, 46, 0, 1, m_LEDCount, BounceMode.Front, 3);
-                break;
-            case Rainbow:
-                m_toAnimate = new RainbowAnimation(1, 0.1, m_LEDCount);
-                break;
-            case RgbFade:
-                m_toAnimate = new RgbFadeAnimation(0.7, 0.4, m_LEDCount);
-                break;
-            case SingleFade:
-                m_toAnimate = new SingleFadeAnimation(50, 2, 200, 0, 0.5, m_LEDCount);
-                break;
-            case Strobe:
-                m_toAnimate = new StrobeAnimation(240, 10, 180, 0, 98.0 / 256.0, m_LEDCount);
-                break;
-            case StrobeRed:
-                m_toAnimate = new StrobeAnimation(255, 0, 0, 0, 98.0 / 256.0, m_LEDCount);
-                break;
-            case StrobeGreen:
-                m_toAnimate = new StrobeAnimation(0, 255, 0, 0, 98.0 / 256.0, m_LEDCount);
-                break;
-            case Twinkle:
-                m_toAnimate = new TwinkleAnimation(30, 70, 60, 0, 0.4, m_LEDCount, TwinklePercent.Percent6);
-                break;
-            case TwinkleOff:
-                m_toAnimate = new TwinkleOffAnimation(70, 90, 175, 0, 0.8, m_LEDCount, TwinkleOffPercent.Percent100);
-                break;
-            case SetAll:
-                m_toAnimate = null;
-                break;
+        if(m_currentAnimation != toChange){// Prevent spam changing the led animation
+            m_currentAnimation = toChange;
+            
+            switch(toChange)
+            {
+                case ColorFlow:
+                    m_toAnimate = new ColorFlowAnimation(128, 20, 70, 0, 0.7, m_LEDCount, Direction.Forward);
+                    break;
+                case Fire:
+                    m_toAnimate = new FireAnimation(0.5, 0.7, m_LEDCount, 0.7, 0.5);
+                    break;
+                case Larson:
+                    m_toAnimate = new LarsonAnimation(0, 255, 46, 0, 1, m_LEDCount, BounceMode.Front, 3);
+                    break;
+                case Rainbow:
+                    m_toAnimate = new RainbowAnimation(1, 0.1, m_LEDCount);
+                    break;
+                case RgbFade:
+                    m_toAnimate = new RgbFadeAnimation(0.7, 0.4, m_LEDCount);
+                    break;
+                case SingleFade:
+                    m_toAnimate = new SingleFadeAnimation(50, 2, 200, 0, 0.5, m_LEDCount);
+                    break;
+                case Strobe:
+                    m_toAnimate = new StrobeAnimation(240, 10, 180, 0, 98.0 / 256.0, m_LEDCount);
+                    break;
+                case StrobeRed:
+                    m_toAnimate = new StrobeAnimation(255, 0, 0, 0, 98.0 / 256.0, m_LEDCount);
+                    break;
+                case StrobeGreen:
+                    m_toAnimate = new StrobeAnimation(0, 255, 0, 0, 98.0 / 256.0, m_LEDCount);
+                    break;
+                case Twinkle:
+                    m_toAnimate = new TwinkleAnimation(30, 70, 60, 0, 0.4, m_LEDCount, TwinklePercent.Percent6);
+                    break;
+                case TwinkleOff:
+                    m_toAnimate = new TwinkleOffAnimation(70, 90, 175, 0, 0.8, m_LEDCount, TwinkleOffPercent.Percent100);
+                    break;
+                case SetAll:
+                    m_toAnimate = null;
+                    break;
+            }
+            System.out.println("Changed to " + m_currentAnimation.toString());
         }
-        System.out.println("Changed to " + m_currentAnimation.toString());
     }
 
   /*-------------------------------- Custom Private Functions --------------------------------*/
