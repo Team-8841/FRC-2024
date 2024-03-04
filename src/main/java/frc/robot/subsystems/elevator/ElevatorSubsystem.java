@@ -48,6 +48,7 @@ public class ElevatorSubsystem extends SubsystemBase{
             this.setSpeed(0);
         }
         updateStatus();
+
     }
 
 
@@ -94,5 +95,7 @@ public class ElevatorSubsystem extends SubsystemBase{
         Logger.recordOutput("elevatorBrake", this.getBreaksEnabled());
         Logger.recordOutput("elevatorLower", this.getBottomLimit());
         Logger.recordOutput("elevatorUpper", this.getTopLimit());
+        Logger.recordOutput("elevatorSpeed", this.m_main.getAppliedOutput());
+        Logger.recordOutput("elevatorFollowerSpeed", this.m_follower.getAppliedOutput());
     }
 }

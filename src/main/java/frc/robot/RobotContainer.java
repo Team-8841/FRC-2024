@@ -6,11 +6,19 @@ package frc.robot;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.PathPlannerLogging;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -56,6 +64,8 @@ public class RobotContainer {
   private ElevatorSubsystem elevator;
 
   private final LEDSubsystem led = new LEDSubsystem();
+  
+  private final Field2d field = new Field2d();
 
   // Controllers
   private CommandXboxController driveController;
@@ -81,7 +91,7 @@ public class RobotContainer {
     private double getShooterState() {
 
         double potVals[] = { 1, 0.55, 0.06, -0.44, -0.96 };
-        double potRPM[] = { 0, 500, 1000, 2000, 3000 };
+        double potRPM[] = { 0, 500, 3000, 3500, 4000 };
         double epsilon = 0.1;
         double pot = this.copilotController.getRawAxis(3);
 
@@ -118,7 +128,10 @@ public class RobotContainer {
             new TalonFXSwerveModuleIO(CompRobotConstants.Mod1.constants, false),
             new TalonFXSwerveModuleIO(CompRobotConstants.Mod2.constants, false),
             new TalonFXSwerveModuleIO(CompRobotConstants.Mod3.constants, false),
-            // new DummySwerveModuleIO(),
+            // new TalonFXSwerveModuleIO(CompRobotConstants.Mod3.constants, false),
+            // new TalonFXSwerveModuleIO(CompRobotConstants.Mod2.constants, false),
+            // new TalonFXSwerveModuleIO(CompRobotConstants.Mod1.constants, false),
+            // new TalonFXSwerveModuleIO(CompRobotConstants.Mod0.constants, false),
         };
       }
       else {
@@ -176,7 +189,9 @@ public class RobotContainer {
     this.configureBindings();
 
     this.shooter.setDefaultCommand(new RunCommand(() -> {
-        this.shooter.setShooterSpeed(getShooterState());
+        if (!DriverStation.isAutonomous()) {
+          this.shooter.setShooterSpeed(getShooterState());
+        }
 
         if(this.shooter.isShooterAtSpeed()) {
           this.led.changeAnimation(AnimationTypes.StrobeGreen);
@@ -185,7 +200,7 @@ public class RobotContainer {
         }
 
         if(hoodDeployBtn.getAsBoolean()) {
-            this.shooter.setEEAngle(64);
+            this.shooter.setEEAngle(76);
         } else {
             this.shooter.setEEAngle(0);
         }
@@ -196,6 +211,33 @@ public class RobotContainer {
     this.elevator.setDefaultCommand(new ElevatorCommand(() -> this.copilotController.getRawAxis(0), this.elevator)); 
 
     intake.setDefaultCommand(new SensorFeedCommand(intake, () -> this.copilotController.getHID().getRawButton(4)));
+
+    // Logging callback for current robot pose
+    PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
+        // Do whatever you want with the pose here
+        field.setRobotPose(pose);
+    });
+
+    // Logging callback for target robot pose
+    PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+        // Do whatever you want with the pose here
+        field.getObject("target pose").setPose(pose);
+        Logger.recordOutput("Pathing/targetPose");
+    });
+
+    // Logging callback for the active path, this is sent as a list of poses
+    // PathPlannerLogging.setLogActivePathCallback((poses) -> {
+    //     // Do whatever you want with the poses here
+    //     field.getObject("path").setPoses(poses);
+    // });
+      
+    NamedCommands.registerCommand("IntakeNote", new SensorFeedCommand(this.intake, () -> true));
+    NamedCommands.registerCommand("ShootyNote", this.intake.setStateCommand(IntakeState.INTAKE));
+    NamedCommands.registerCommand("ShooterSpeaker", new InstantCommand(() -> this.shooter.setShooterSpeed(3000)));
+    NamedCommands.registerCommand("ShooterPodium", new InstantCommand(() -> this.shooter.setShooterSpeed(4000)));
+    NamedCommands.registerCommand("ShooterStop", new InstantCommand(() -> this.shooter.setShooterSpeed(0)));
+    NamedCommands.registerCommand("ShooterUp", new InstantCommand(() -> this.shooter.setShooterAngle(false)));
+    NamedCommands.registerCommand("ShooterDown", new InstantCommand(() -> this.shooter.setShooterAngle(true)));
   }
 
   private void configureBindings() {
@@ -204,10 +246,8 @@ public class RobotContainer {
       //this.driveController.leftBumper().whileTrue(intake.setStateCommand(IntakeState.INTAKE));
       this.copilotController.button(5).whileTrue(intake.setStateCommand(IntakeState.EJECT));
 
-      shooterAngleBtn.onTrue(new InstantCommand(() -> shooter.setShooterAngle(true)))
-                      .onFalse(new InstantCommand(() -> shooter.setShooterAngle(false)));
-
-        
+      shooterAngleBtn.onTrue(new InstantCommand(() -> shooter.setShooterAngle(false)))
+                      .onFalse(new InstantCommand(() -> shooter.setShooterAngle(true)));
 
         climberBreaksBtn.onTrue(new InstantCommand(() ->  this.elevator.setBreaks(true)))
                         .onFalse(new InstantCommand(() -> this.elevator.setBreaks(false)));
@@ -229,14 +269,20 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     // return new FollowPathHolonomic(
-    // PathingConstants.basicPath,
-    // this.driveTrain::getPose,
-    // this.driveTrain::getSpeed,
-    // this.driveTrain::drive,
-    // PathingConstants.pathFollowerConfig,
-    // () -> true,
-    // this.driveTrain);
-    throw new UnsupportedOperationException();
+    //   PathingConstants.basicPath,
+    //   this.driveTrain::getPose,
+    //   this.driveTrain::getSpeed,
+    //   this.driveTrain::drive,
+    //   PathingConstants.pathFollowerConfig,
+    //   () -> true,
+    //   this.driveTrain);
+    // throw new UnsupportedOperationException();
+
+    //PathPlannerPath path = PathPlannerPath.fromPathFile("Two_Note");
+
+    //return AutoBuilder.followPath(path);
+
+    return new PathPlannerAuto("Cool_Auto");
   }
 
   public Command getTeleopCommand() {

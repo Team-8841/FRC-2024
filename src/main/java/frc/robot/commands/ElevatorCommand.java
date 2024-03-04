@@ -27,10 +27,10 @@ public class ElevatorCommand extends Command{
         double stick = this.joyStickSupplier.getAsDouble();
 
         if (stick < -0.5) {
-            m_speed = -0.1;
+            m_speed = -0.8;
         }
         else if (stick > 0.5) {
-            m_speed = 0.1;
+            m_speed = 0.8;
         }
 
         //m_elevator.setSpeed(m_speed);

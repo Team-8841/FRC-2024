@@ -2,6 +2,11 @@ package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -43,11 +48,14 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
     @SuppressWarnings("all")
     public DriveTrainSubsystem(SwerveModuleIO[] swerveModules, IMU imu) {
+        double baseRadius;
         if (Constants.isCompRobot) {
             this.kinematics = SwerveConstants.compSwerveKinematics;
+            baseRadius = Math.hypot(SwerveConstants.compTrackWidth, SwerveConstants.compWheelBase);
         } 
         else {
             this.kinematics = SwerveConstants.driveBaseSwerveKinematics;
+            baseRadius = Math.hypot(SwerveConstants.driveBaseTrackWidth, SwerveConstants.driveBaseWheelBase);
         }
 
         this.swerveModules = swerveModules;
@@ -77,6 +85,37 @@ public class DriveTrainSubsystem extends SubsystemBase {
         if (RobotBase.isSimulation() && !Constants.simReplay) {
             SimManager.getInstance().registerDriveTrain(this::getPose, this::getSpeed);
         }
+
+         // Configure AutoBuilder last
+        AutoBuilder.configureHolonomic(
+                this::getPose, // Robot pose supplier
+                this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::getSpeed, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                this::drive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                        SwerveConstants.maxSpeed, // Max module speed, in m/s
+                        baseRadius, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                ),
+                () -> {
+                // Boolean supplier that controls when the path will be mirrored for the red alliance
+                // This will flip the path being followed to the red side of the field.
+                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+                },
+                this // Reference to this subsystem to set requirements
+        );
+    }
+
+    public void resetPose(Pose2d pose) {
+        this.poseEstimator.resetPosition(this.imu.getHeading(), this.getModulePositions(), pose);
     }
 
     private void initializeShuffleBoardWidgets() {
@@ -111,7 +150,13 @@ public class DriveTrainSubsystem extends SubsystemBase {
         }
 
         this.setSpeed = speeds;
+        //this.setSpeed.vxMetersPerSecond *= -1;
+        //this.setSpeed.vyMetersPerSecond *= -1;
         this.useOmegaPID = useOmegaPID;
+    }
+
+    public void drive(ChassisSpeeds speeds) {
+        this.drive(speeds, false);
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean omegaPID) {

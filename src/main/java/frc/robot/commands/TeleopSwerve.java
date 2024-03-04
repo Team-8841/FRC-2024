@@ -58,8 +58,8 @@ public class TeleopSwerve extends Command {
     @Override
     public void execute() {
         double forward = -this.driveController.getLeftY();
-        double strafe = this.driveController.getLeftX();
-        double rotation = this.driveController.getRightX();
+        double strafe = -this.driveController.getLeftX();
+        double rotation = -this.driveController.getRightX();
 
         // Drivetrain
         Translation2d driveTranslation = new Translation2d(
@@ -67,7 +67,7 @@ public class TeleopSwerve extends Command {
                 MathUtil.applyDeadband(strafe, Constants.controllerDeadband) * SwerveConstants.maxSpeed);
         rotation = MathUtil.applyDeadband(rotation, Constants.controllerDeadband)
                 * AutoConstants.MaxAngularSpeedRadiansPerSecond;
-        this.driveTrain.drive(driveTranslation, rotation, false, true);
+        this.driveTrain.drive(driveTranslation, rotation, true, true);
 
         // Intake is handled as a binding to a trigger in `RobotContainer.java`
     }

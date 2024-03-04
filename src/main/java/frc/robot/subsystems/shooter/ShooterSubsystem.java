@@ -33,7 +33,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private CANSparkMax m_endEffector = new CANSparkMax(ShooterConstants.endEffectorROTID, MotorType.kBrushless);
     private CANSparkMax m_endEffectorRoller = new CANSparkMax(19, MotorType.kBrushless);
 
-    private Solenoid m_angle = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+    private Solenoid m_angle = new Solenoid(PneumaticsModuleType.CTREPCM, 3);
 
     private DigitalInput m_EEInSensor = new DigitalInput(1);
     private DigitalInput m_EEOutSensor = new DigitalInput(2);
@@ -158,6 +158,9 @@ public class ShooterSubsystem extends SubsystemBase {
     public void zeroEEAngle() {
         m_endEffector.getEncoder().setPosition(0);
     }
+
+    LinearFilter rpsFilter = LinearFilter.movingAverage(5);
+
     /*-------------------------------- Custom Private Functions --------------------------------*/
     private void updateStatus(){
         SmartDashboard.putNumber("[EE]: Angle", getEEAngle());
@@ -165,6 +168,8 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("[Shooter]: Velocity", getShooterSpeed());
         SmartDashboard.putBoolean("[Shooter]: Angle", getShooterAngle());
 
+        Logger.recordOutput("Shooter/shooterRPS", this.getShooterSpeed());
+        Logger.recordOutput("Shooter/shooterFilteredRPS", this.rpsFilter.calculate(this.getShooterSpeed()));
     }
 
     private static void ConfigureSparkMax(CANSparkMax spark, int currentLimit, IdleMode idleMode) {
