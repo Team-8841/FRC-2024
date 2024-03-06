@@ -6,6 +6,9 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import com.ctre.phoenix.led.CANdleConfiguration;
+import com.ctre.phoenix.led.CANdle.LEDStripType;
+
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -91,7 +94,13 @@ public final class Constants {
 
         public static final int kLEDCount = 150;
 
-        public static final double kMaxBrightness = 0.7;
+        public static final CANdleConfiguration config = new CANdleConfiguration();
+
+        static {
+            config.brightnessScalar = 0.7;
+            config.disableWhenLOS = true;
+            config.stripType = LEDStripType.RGB;
+        }
     }
 
     public static final class ElevatorConstants {

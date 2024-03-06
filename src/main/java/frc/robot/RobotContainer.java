@@ -52,6 +52,7 @@ import frc.robot.subsystems.intake.RealIntakeIO;
 import frc.robot.subsystems.leds.LEDSubsystem;
 import frc.robot.subsystems.leds.LEDSubsystem.AnimationTypes;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem.HoodPosition;
 
 public class RobotContainer {
   // Sensors
@@ -88,7 +89,7 @@ public class RobotContainer {
 
     private double climberMovement;
 
-    private double getShooterState() {
+    private double getDSShooterPot() {
 
         double potVals[] = { 1, 0.55, 0.06, -0.44, -0.96 };
         double potRPM[] = { 0, 500, 3000, 3500, 4000 };
@@ -190,22 +191,10 @@ public class RobotContainer {
 
     this.shooter.setDefaultCommand(new RunCommand(() -> {
         if (!DriverStation.isAutonomous()) {
-          this.shooter.setShooterSpeed(getShooterState());
+          this.shooter.setShooterSpeed(this.getDSShooterPot());
         }
 
-        if(this.shooter.isShooterAtSpeed()) {
-          this.led.changeAnimation(AnimationTypes.StrobeGreen);
-        } else {
-          this.led.changeAnimation(AnimationTypes.Rainbow);
-        }
-
-        if(hoodDeployBtn.getAsBoolean()) {
-            this.shooter.setEEAngle(76);
-        } else {
-            this.shooter.setEEAngle(0);
-        }
-
-        
+        this.shooter.setHoodPosition(hoodDeployBtn.getAsBoolean() ? HoodPosition.DEPLOYED : HoodPosition.STOWED);
     }, this.shooter));
 
     this.elevator.setDefaultCommand(new ElevatorCommand(() -> this.copilotController.getRawAxis(0), this.elevator)); 

@@ -16,26 +16,28 @@ import frc.robot.constants.Constants.ElevatorConstants;
 
 public class ElevatorSubsystem extends SubsystemBase{
 
-    /*-------------------------------- Private Instance Variables --------------------------------*/
+    private CANSparkMax mainMotor = new CANSparkMax(ElevatorConstants.kElevatorMain, MotorType.kBrushless);
+    private CANSparkMax followerMotor = new CANSparkMax(ElevatorConstants.kElevatorFollower, MotorType.kBrushless);
 
-    private CANSparkMax m_main = new CANSparkMax(ElevatorConstants.kElevatorMain, MotorType.kBrushless);
-    private CANSparkMax m_follower = new CANSparkMax(ElevatorConstants.kElevatorFollower, MotorType.kBrushless);
+    private DigitalInput TopLimit = new DigitalInput(ElevatorConstants.kElevatorTopSensor);
+    private DigitalInput bottomLimit = new DigitalInput(ElevatorConstants.kElevatorBottomSensor);
 
-    private DigitalInput m_TopLimmit = new DigitalInput(ElevatorConstants.kElevatorTopSensor);
-    private DigitalInput m_BottomLimit = new DigitalInput(ElevatorConstants.kElevatorBottomSensor);
+    private Solenoid brakeSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
 
-    private Solenoid m_breaks = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
-
-
-
-    /*-------------------------------- Public Instance Variables --------------------------------*/
+    private static final boolean BRAKES_APPLIED = false;
+    private static final boolean BRAKES_RELINQUISHED = true;
 
     public ElevatorSubsystem() {
-        ConfigureSparkMax(m_main, 10, IdleMode.kBrake);
-        ConfigureSparkMax(m_follower, 10, IdleMode.kBrake);
+        mainMotor.restoreFactoryDefaults();
+        mainMotor.setSmartCurrentLimit(10);
+        mainMotor.setIdleMode(IdleMode.kBrake);
 
-        m_follower.follow(m_main, true);
-        m_main.setInverted(false);
+        followerMotor.restoreFactoryDefaults();
+        followerMotor.setSmartCurrentLimit(10);
+        followerMotor.setIdleMode(IdleMode.kBrake);
+
+        followerMotor.follow(mainMotor, true);
+        mainMotor.setInverted(false);
 
         this.setBreaks(true);
     }
@@ -44,7 +46,7 @@ public class ElevatorSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        if (this.getBreaksEnabled()) {
+        if (this.isBraking()) {
             this.setSpeed(0);
         }
         updateStatus();
@@ -55,47 +57,42 @@ public class ElevatorSubsystem extends SubsystemBase{
     /*-------------------------------- Custom Public Functions --------------------------------*/
 
     public void setSpeed(double speed){
-        if (!this.getBreaksEnabled()) {
-            Logger.recordOutput("elevatorSpeed", speed);
-            m_main.set(speed);
+        if (this.isBraking()) {
+            mainMotor.set(speed);
         }
     }
 
     public boolean getTopLimit() {
-        return m_TopLimmit.get();
+        return TopLimit.get();
     }
 
     public boolean getBottomLimit() {
-        return !m_BottomLimit.get();
+        return !bottomLimit.get();
     }
 
-    public void setBreaks(boolean enabled) {
-        m_breaks.set(!enabled);
+    public void setBreaks(boolean isBraking) {
+        brakeSolenoid.set(isBraking ? BRAKES_APPLIED : BRAKES_RELINQUISHED);
 
-        if (!enabled) {
+        if (isBraking == BRAKES_APPLIED) {
             this.setSpeed(0);
         }
     }
 
-    public boolean getBreaksEnabled() {
-        return !m_breaks.get();
+    public boolean isBraking() {
+        return brakeSolenoid.get() == BRAKES_APPLIED;
     }
 
-
-    /*-------------------------------- Custom Private Functions --------------------------------*/
-    private static void ConfigureSparkMax(CANSparkMax spark, int currentLimit, IdleMode idleMode) {
-        spark.restoreFactoryDefaults();
-        spark.setSmartCurrentLimit(currentLimit);
-        spark.setIdleMode(idleMode);
-    }
 
     private void updateStatus() {
         SmartDashboard.putBoolean("[Elevator]: Top Limit", getTopLimit());
         SmartDashboard.putBoolean("[Elevator]: Bottom Limit", getBottomLimit());
-        Logger.recordOutput("elevatorBrake", this.getBreaksEnabled());
+        Logger.recordOutput("elevatorBrake", this.isBraking());
         Logger.recordOutput("elevatorLower", this.getBottomLimit());
         Logger.recordOutput("elevatorUpper", this.getTopLimit());
-        Logger.recordOutput("elevatorSpeed", this.m_main.getAppliedOutput());
-        Logger.recordOutput("elevatorFollowerSpeed", this.m_follower.getAppliedOutput());
+        Logger.recordOutput("elevatorSet", this.mainMotor.get());
+        Logger.recordOutput("elevatorAppOut", this.mainMotor.getAppliedOutput());
+        Logger.recordOutput("elevatorFolAppOut", this.followerMotor.getAppliedOutput());
+        Logger.recordOutput("elevatorOutCur", this.mainMotor.getOutputCurrent());
+        Logger.recordOutput("elevatorFolOutCur", this.followerMotor.getOutputCurrent());
     }
 }
