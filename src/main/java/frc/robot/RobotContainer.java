@@ -6,6 +6,7 @@ package frc.robot;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix.led.RainbowAnimation;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -49,10 +51,8 @@ import frc.robot.subsystems.intake.DummyIntakeIO;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.RealIntakeIO;
-import frc.robot.subsystems.leds.LEDSubsystem;
-import frc.robot.subsystems.leds.LEDSubsystem.AnimationTypes;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.shooter.ShooterSubsystem.HoodPosition;
 
 public class RobotContainer {
   // Sensors
@@ -64,8 +64,8 @@ public class RobotContainer {
   private ShooterSubsystem shooter;
   private ElevatorSubsystem elevator;
 
-  private final LEDSubsystem led = new LEDSubsystem();
-  
+  private LEDSubsystem led = new LEDSubsystem(22);
+
   private final Field2d field = new Field2d();
 
   // Controllers
@@ -81,83 +81,68 @@ public class RobotContainer {
   private JoystickButton shooterAngleBtn;
   private JoystickButton climberBreaksBtn;
 
-    /* Driver Buttons */
-    private JoystickButton shootBtn;
-    private JoystickButton visionAssistBtn;
-    private JoystickButton zeroGyroBtn;
-    private double hoodTrigger;
+  /* Driver Buttons */
+  private JoystickButton shootBtn;
+  private JoystickButton visionAssistBtn;
+  private JoystickButton zeroGyroBtn;
+  private double hoodTrigger;
 
-    private double climberMovement;
+  private double climberMovement;
 
-    private double getDSShooterPot() {
+  private double getDSShooterPot() {
 
-        double potVals[] = { 1, 0.55, 0.06, -0.44, -0.96 };
-        double potRPM[] = { 0, 500, 3000, 3500, 4000 };
-        double epsilon = 0.1;
-        double pot = this.copilotController.getRawAxis(3);
+    double potVals[] = { 1, 0.55, 0.06, -0.44, -0.96 };
+    double potRPM[] = { 0, 500, 3000, 4000, 5000 };
+    double epsilon = 0.1;
+    double pot = this.copilotController.getRawAxis(3);
 
-        for (int i = 0; i < potVals.length; i++) {
-            if (potVals[i] - epsilon <= pot && potVals[i] + epsilon >= pot) {
-                return potRPM[i];
-            }
-        }
-
-        return 0;
+    for (int i = 0; i < potVals.length; i++) {
+      if (potVals[i] - epsilon <= pot && potVals[i] + epsilon >= pot) {
+        return potRPM[i];
+      }
     }
 
-
+    return 0;
+  }
 
   public RobotContainer(CommandXboxController driveController, CommandJoystick copilotController) {
     this.driveController = driveController;
     this.copilotController = copilotController;
 
+    if (copilotController != null) {
       compressorOverrideBtn = new JoystickButton(copilotController.getHID(), OIConstants.button1);
-      hoodDeployBtn = new JoystickButton(        copilotController.getHID(), OIConstants.button2);
-      hoodOverrideBtn = new JoystickButton(      copilotController.getHID(), OIConstants.button3);
-      intakeInBtn = new JoystickButton(          copilotController.getHID(), OIConstants.button4);
-      intakeOutBtn = new JoystickButton(         copilotController.getHID(), OIConstants.button5);
-      shooterAngleBtn = new JoystickButton(      copilotController.getHID(), OIConstants.button6);    
-      climberBreaksBtn = new JoystickButton(     copilotController.getHID(), OIConstants.button7);
+      hoodDeployBtn = new JoystickButton(copilotController.getHID(), OIConstants.button2);
+      hoodOverrideBtn = new JoystickButton(copilotController.getHID(), OIConstants.button3);
+      intakeInBtn = new JoystickButton(copilotController.getHID(), OIConstants.button4);
+      intakeOutBtn = new JoystickButton(copilotController.getHID(), OIConstants.button5);
+      shooterAngleBtn = new JoystickButton(copilotController.getHID(), OIConstants.button6);
+      climberBreaksBtn = new JoystickButton(copilotController.getHID(), OIConstants.button7);
       climberMovement = copilotController.getHID().getRawAxis(OIConstants.analog1);
+    }
 
-      SwerveModuleIO swerveModules[];
-        if (RobotBase.isReal()) {
+    SwerveModuleIO swerveModules[];
+    if (RobotBase.isReal()) {
       // Real robot
+      this.imu = new NavX2();
       if (Constants.isCompRobot) {
         swerveModules = new SwerveModuleIO[] {
             new TalonFXSwerveModuleIO(CompRobotConstants.Mod0.constants, false),
             new TalonFXSwerveModuleIO(CompRobotConstants.Mod1.constants, false),
             new TalonFXSwerveModuleIO(CompRobotConstants.Mod2.constants, false),
             new TalonFXSwerveModuleIO(CompRobotConstants.Mod3.constants, false),
-            // new TalonFXSwerveModuleIO(CompRobotConstants.Mod3.constants, false),
-            // new TalonFXSwerveModuleIO(CompRobotConstants.Mod2.constants, false),
-            // new TalonFXSwerveModuleIO(CompRobotConstants.Mod1.constants, false),
-            // new TalonFXSwerveModuleIO(CompRobotConstants.Mod0.constants, false),
         };
-      }
-      else {
+
+        this.intake = new IntakeSubsystem(new RealIntakeIO(), this.led);
+        this.shooter = new ShooterSubsystem(this.led);
+        this.elevator = new ElevatorSubsystem();
+      } else {
         swerveModules = new SwerveModuleIO[] {
-            //new DummySwerveModuleIO(),
-            //new DummySwerveModuleIO(),
             new MixedSwerveModuleIO(BaseRobotConstants.Mod1.constants, false),
             new MixedSwerveModuleIO(BaseRobotConstants.Mod0.constants, false),
             new MixedSwerveModuleIO(BaseRobotConstants.Mod3.constants, false),
             new MixedSwerveModuleIO(BaseRobotConstants.Mod2.constants, false),
-            //new DummySwerveModuleIO(),
-            // new DummySwerveModuleIO(),
-            // new DummySwerveModuleIO(),
-            // new DummySwerveModuleIO(),
         };
-
       }
-
-      // this.imu = new Pigeon2IO(Constants.pigeonId);
-      this.imu = new NavX2();
-
-      this.intake = new IntakeSubsystem(Constants.isCompRobot ? new RealIntakeIO() : new DummyIntakeIO());
-      this.shooter = new ShooterSubsystem();
-      //this.elevator = new ElevatorSubsystem(Constants.isCompRobot ? new RealElevatorIO() : new DummyElevatorIO());
-      this.elevator = new ElevatorSubsystem();
     } else if (Constants.simReplay) {
       // Replay
       swerveModules = new SwerveModuleIO[] {
@@ -169,7 +154,7 @@ public class RobotContainer {
 
       this.imu = new DummyIMU();
 
-      this.intake = new IntakeSubsystem(new DummyIntakeIO());
+      this.intake = new IntakeSubsystem(new DummyIntakeIO(), this.led);
     } else {
       // Physics sim
       swerveModules = new SwerveModuleIO[] {
@@ -189,87 +174,91 @@ public class RobotContainer {
 
     this.configureBindings();
 
-    this.shooter.setDefaultCommand(new RunCommand(() -> {
+    if (Constants.isCompRobot) {
+      this.shooter.setDefaultCommand(new RunCommand(() -> {
         if (!DriverStation.isAutonomous()) {
           this.shooter.setShooterSpeed(this.getDSShooterPot());
         }
+        this.shooter.setHood(hoodDeployBtn.getAsBoolean());
+      }, this.shooter));
 
-        this.shooter.setHoodPosition(hoodDeployBtn.getAsBoolean() ? HoodPosition.DEPLOYED : HoodPosition.STOWED);
-    }, this.shooter));
+      this.elevator.setDefaultCommand(new ElevatorCommand(() -> this.copilotController.getRawAxis(0), this.elevator));
+      intake.setDefaultCommand(new SensorFeedCommand(intake, () -> this.copilotController.getHID().getRawButton(4), this.led));
 
-    this.elevator.setDefaultCommand(new ElevatorCommand(() -> this.copilotController.getRawAxis(0), this.elevator)); 
-
-    intake.setDefaultCommand(new SensorFeedCommand(intake, () -> this.copilotController.getHID().getRawButton(4)));
+      NamedCommands.registerCommand("IntakeNote", new SensorFeedCommand(this.intake, () -> true, this.led));
+      NamedCommands.registerCommand("ShootyNote", this.intake.setStateCommand(IntakeState.INTAKE));
+      NamedCommands.registerCommand("ShooterSpeaker", new InstantCommand(() -> this.shooter.setShooterSpeed(3000)));
+      NamedCommands.registerCommand("ShooterPodium", new InstantCommand(() -> this.shooter.setShooterSpeed(4000)));
+      NamedCommands.registerCommand("ShooterStop", new InstantCommand(() -> this.shooter.setShooterSpeed(0)));
+      NamedCommands.registerCommand("ShooterUp", new InstantCommand(() -> this.shooter.setShooterAngle(false)));
+      NamedCommands.registerCommand("ShooterDown", new InstantCommand(() -> this.shooter.setShooterAngle(true)));
+    }
 
     // Logging callback for current robot pose
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
-        // Do whatever you want with the pose here
-        field.setRobotPose(pose);
+      // Do whatever you want with the pose here
+      field.setRobotPose(pose);
     });
 
     // Logging callback for target robot pose
     PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
-        // Do whatever you want with the pose here
-        field.getObject("target pose").setPose(pose);
-        Logger.recordOutput("Pathing/targetPose");
+      // Do whatever you want with the pose here
+      field.getObject("target pose").setPose(pose);
+      Logger.recordOutput("Pathing/targetPose");
     });
 
     // Logging callback for the active path, this is sent as a list of poses
     // PathPlannerLogging.setLogActivePathCallback((poses) -> {
-    //     // Do whatever you want with the poses here
-    //     field.getObject("path").setPoses(poses);
+    // // Do whatever you want with the poses here
+    // field.getObject("path").setPoses(poses);
     // });
-      
-    NamedCommands.registerCommand("IntakeNote", new SensorFeedCommand(this.intake, () -> true));
-    NamedCommands.registerCommand("ShootyNote", this.intake.setStateCommand(IntakeState.INTAKE));
-    NamedCommands.registerCommand("ShooterSpeaker", new InstantCommand(() -> this.shooter.setShooterSpeed(3000)));
-    NamedCommands.registerCommand("ShooterPodium", new InstantCommand(() -> this.shooter.setShooterSpeed(4000)));
-    NamedCommands.registerCommand("ShooterStop", new InstantCommand(() -> this.shooter.setShooterSpeed(0)));
-    NamedCommands.registerCommand("ShooterUp", new InstantCommand(() -> this.shooter.setShooterAngle(false)));
-    NamedCommands.registerCommand("ShooterDown", new InstantCommand(() -> this.shooter.setShooterAngle(true)));
   }
 
   private void configureBindings() {
     // Intake bindings
-    if (this.copilotController != null) {
-      //this.driveController.leftBumper().whileTrue(intake.setStateCommand(IntakeState.INTAKE));
+    if (Constants.isCompRobot) {
+      // this.driveController.leftBumper().whileTrue(intake.setStateCommand(IntakeState.INTAKE));
       this.copilotController.button(5).whileTrue(intake.setStateCommand(IntakeState.EJECT));
 
+      // hoodDeployBtn.onTrue(new InstantCommand(() -> shooter.setHoodPosition(HoodPosition.DEPLOYED)))
+      //     .onFalse(new InstantCommand(() -> shooter.setHoodPosition(HoodPosition.STOWED)));
+
       shooterAngleBtn.onTrue(new InstantCommand(() -> shooter.setShooterAngle(false)))
-                      .onFalse(new InstantCommand(() -> shooter.setShooterAngle(true)));
+          .onFalse(new InstantCommand(() -> shooter.setShooterAngle(true)));
 
-        climberBreaksBtn.onTrue(new InstantCommand(() ->  this.elevator.setBreaks(true)))
-                        .onFalse(new InstantCommand(() -> this.elevator.setBreaks(false)));
+      climberBreaksBtn.onTrue(new InstantCommand(() -> this.elevator.setBreaks(true)))
+          .onFalse(new InstantCommand(() -> this.elevator.setBreaks(false)));
 
-      this.driveController.rightBumper().whileTrue(new RunCommand(() -> {
-        if (this.shooter.isShooterAtSpeed() && (this.shooter.getShooterSetpoint() > 0 && this.shooter.getShooterSetpoint() < 500)) {
-          this.shooter.setEERoller(0.7); 
-          this.intake.setIntakeState(IntakeState.INTAKE);
-        } else if(this.shooter.isShooterAtSpeed() && this.shooter.getShooterSetpoint() > 500) {
-          this.shooter.setEERoller(0);
-          this.intake.setIntakeState(IntakeState.INTAKE);
-        } else {
-          this.shooter.setEERoller(0);
-          this.intake.setIntakeState(IntakeState.OFF);
-        }
-    })).onFalse(new InstantCommand( () -> this.shooter.setEERoller(0)));
+      this.driveController.rightTrigger(0.5)
+          .whileTrue(this.intake.setStateCommand(IntakeState.INTAKE).onlyIf(this.shooter::isShooterAtSpeed));
+
+      this.driveController.leftBumper().whileTrue(new RunCommand(() -> {
+        this.shooter.setShooterSpeed(this.driveController.getHID().getRightBumper() ? 500 : 0);
+        this.shooter.setEERoller(this.driveController.getHID().getRightBumper() ? 0.7 : 0);
+        this.shooter.setHood(true);
+      }, this.shooter)
+          .finallyDo(() -> {
+            this.shooter.setShooterSpeed(0);
+            this.shooter.setEERoller(0);
+            this.shooter.setHood(false);
+          }));
     }
   }
 
   public Command getAutonomousCommand() {
     // return new FollowPathHolonomic(
-    //   PathingConstants.basicPath,
-    //   this.driveTrain::getPose,
-    //   this.driveTrain::getSpeed,
-    //   this.driveTrain::drive,
-    //   PathingConstants.pathFollowerConfig,
-    //   () -> true,
-    //   this.driveTrain);
+    // PathingConstants.basicPath,
+    // this.driveTrain::getPose,
+    // this.driveTrain::getSpeed,
+    // this.driveTrain::drive,
+    // PathingConstants.pathFollowerConfig,
+    // () -> true,
+    // this.driveTrain);
     // throw new UnsupportedOperationException();
 
-    //PathPlannerPath path = PathPlannerPath.fromPathFile("Two_Note");
+    // PathPlannerPath path = PathPlannerPath.fromPathFile("Two_Note");
 
-    //return AutoBuilder.followPath(path);
+    // return AutoBuilder.followPath(path);
 
     return new PathPlannerAuto("Cool_Auto");
   }
@@ -283,8 +272,11 @@ public class RobotContainer {
     // () -> -this.copilotController.getX(),
     // () -> this.copilotController.getHID().getRawButton(7));
 
-    return new TeleopSwerve(this.driveTrain, this.driveController.getHID(),
-        this.copilotController == null ? null : this.copilotController.getHID());
+    return new TeleopSwerve(this.driveTrain, this.driveController.getHID());
+    // return this.shooter.initHoodCommand()
+    //  .andThen(new TeleopSwerve(this.driveTrain, this.driveController.getHID()));
+    // return this.led.setLEDs(255, 255, 255);
+    // return this.led.animate(new RainbowAnimation());
   }
 
   public Command getTestCommand() {

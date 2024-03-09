@@ -2,11 +2,19 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix.led.Animation;
+import com.ctre.phoenix.led.RgbFadeAnimation;
+import com.ctre.phoenix.led.SingleFadeAnimation;
+import com.ctre.phoenix.led.StrobeAnimation;
+
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.RunnableMotorSafety;
+import frc.robot.constants.Constants.CandleConstants;
 import frc.robot.constants.Intake.IntakeConstants;
+import frc.robot.subsystems.LEDSubsystem;
 
 public class IntakeSubsystem extends SubsystemBase {
   /*-------------------------------- Private Instance Variables --------------------------------*/
@@ -16,9 +24,15 @@ public class IntakeSubsystem extends SubsystemBase {
   private RunnableMotorSafety systemMotorSafety = new RunnableMotorSafety(
       () -> this.setIntakeState(IntakeState.OFF),
       "Intake");
+  private LEDSubsystem leds;
 
-  public IntakeSubsystem(IntakeIO hardwImpl) {
+  private Debouncer ledDebouncer = new Debouncer(0.25);
+  private Command ledCommand;
+
+  public IntakeSubsystem(IntakeIO hardwImpl, LEDSubsystem leds) {
     this.hardwImpl = hardwImpl;
+    this.leds = leds;
+    this.ledCommand = this.leds.animate(new SingleFadeAnimation(0x33, 0x66, 0xff, 0, 0.5, CandleConstants.kLEDCount));
     this.initializeShuffleboardWidgets();
   }
 
@@ -45,6 +59,14 @@ public class IntakeSubsystem extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
     this.hardwImpl.updateInputs(inputs);
     Logger.recordOutput("Intake/curState", this.curState.name());
+  
+    if (this.ledDebouncer.calculate(this.getIndexSensor())) {
+      this.leds.setDefaultCommand(this.ledCommand);
+    } 
+    else {
+      this.leds.removeDefaultCommand();
+      this.ledCommand.cancel();
+    }
   }
 
   public void setIntakeState(IntakeState state) {

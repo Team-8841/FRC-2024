@@ -57,7 +57,7 @@ public class ElevatorSubsystem extends SubsystemBase{
     /*-------------------------------- Custom Public Functions --------------------------------*/
 
     public void setSpeed(double speed){
-        if (this.isBraking()) {
+        if (!this.isBraking()) {
             mainMotor.set(speed);
         }
     }
@@ -73,7 +73,7 @@ public class ElevatorSubsystem extends SubsystemBase{
     public void setBreaks(boolean isBraking) {
         brakeSolenoid.set(isBraking ? BRAKES_APPLIED : BRAKES_RELINQUISHED);
 
-        if (isBraking == BRAKES_APPLIED) {
+        if (isBraking) {
             this.setSpeed(0);
         }
     }
@@ -86,13 +86,13 @@ public class ElevatorSubsystem extends SubsystemBase{
     private void updateStatus() {
         SmartDashboard.putBoolean("[Elevator]: Top Limit", getTopLimit());
         SmartDashboard.putBoolean("[Elevator]: Bottom Limit", getBottomLimit());
-        Logger.recordOutput("elevatorBrake", this.isBraking());
-        Logger.recordOutput("elevatorLower", this.getBottomLimit());
-        Logger.recordOutput("elevatorUpper", this.getTopLimit());
-        Logger.recordOutput("elevatorSet", this.mainMotor.get());
-        Logger.recordOutput("elevatorAppOut", this.mainMotor.getAppliedOutput());
-        Logger.recordOutput("elevatorFolAppOut", this.followerMotor.getAppliedOutput());
-        Logger.recordOutput("elevatorOutCur", this.mainMotor.getOutputCurrent());
-        Logger.recordOutput("elevatorFolOutCur", this.followerMotor.getOutputCurrent());
+        Logger.recordOutput("elevator/brake", this.isBraking());
+        Logger.recordOutput("elevator/lowerLimit", this.getBottomLimit());
+        Logger.recordOutput("elevator/upperLimit", this.getTopLimit());
+        Logger.recordOutput("elevator/motorDcycle", this.mainMotor.get());
+        Logger.recordOutput("elevator/motorAppOut", this.mainMotor.getAppliedOutput());
+        Logger.recordOutput("elevator/folMotorAppOut", this.followerMotor.getAppliedOutput());
+        Logger.recordOutput("elevator/motorOutCur", this.mainMotor.getOutputCurrent());
+        Logger.recordOutput("elevator/folMotorOutCur", this.followerMotor.getOutputCurrent());
     }
 }

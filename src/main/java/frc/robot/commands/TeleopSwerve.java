@@ -19,10 +19,8 @@ public class TeleopSwerve extends Command {
     // private Supplier<ShooterState> shooterStateSupplier;
     // private BooleanSupplier elevatorBrakeSupplier;
     private XboxController driveController;
-    private Joystick copilotController;
 
     private DriveTrainSubsystem driveTrain;
-    private ElevatorSubsystem elevator;
 
     // public TeleopSwerve(DriveTrainSubsystem driveTrain, ShooterSubsystem shooter,
     // ElevatorSubsystem elevator,
@@ -46,9 +44,8 @@ public class TeleopSwerve extends Command {
     // this.addRequirements(elevator);
     // }
 
-    public TeleopSwerve(DriveTrainSubsystem driveTrain, XboxController driveController, Joystick copilotController) {
+    public TeleopSwerve(DriveTrainSubsystem driveTrain, XboxController driveController) {
         this.driveController = driveController;
-        this.copilotController = copilotController;
 
         this.driveTrain = driveTrain;
 

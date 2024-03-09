@@ -91,16 +91,7 @@ public final class Constants {
 
     public static final class CandleConstants {
         public static final int kCandleID = 22;
-
         public static final int kLEDCount = 150;
-
-        public static final CANdleConfiguration config = new CANdleConfiguration();
-
-        static {
-            config.brightnessScalar = 0.7;
-            config.disableWhenLOS = true;
-            config.stripType = LEDStripType.RGB;
-        }
     }
 
     public static final class ElevatorConstants {

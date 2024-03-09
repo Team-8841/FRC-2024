@@ -49,7 +49,7 @@ public class CompRobotConstants {
         public static final int driveMotorID = 2;
         public static final int angleMotorID = 1;
         public static final int canCoderID = 3;
-        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(180-102.83203125);
+        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(180-102.83203125 - 339.9609375);
         public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                 angleMotorID, canCoderID, angleOffset, 0);
     }

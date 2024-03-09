@@ -4,8 +4,13 @@ import java.util.function.BooleanSupplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix.led.Animation;
+import com.ctre.phoenix.led.StrobeAnimation;
+
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.Constants.CandleConstants;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 
@@ -14,10 +19,12 @@ public class SensorFeedCommand extends Command {
     // private Debouncer feederSensorDebouncer = new Debouncer(0.06);
     private IntakeSubsystem intake;
     private BooleanSupplier predicate;
+    private LEDSubsystem leds;
 
-    public SensorFeedCommand(IntakeSubsystem intake, BooleanSupplier predicate) {
+    public SensorFeedCommand(IntakeSubsystem intake, BooleanSupplier predicate, LEDSubsystem leds) {
         this.intake = intake;
         this.predicate = predicate;
+        this.leds = leds;
         this.addRequirements(intake);
     }
 

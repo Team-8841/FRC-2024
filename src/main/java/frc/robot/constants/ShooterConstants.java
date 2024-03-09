@@ -61,18 +61,12 @@ public class ShooterConstants {
 
         shooterConfig.MotorOutput = new MotorOutputConfigs();
         shooterConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        shooterConfig.MotorOutput.PeakForwardDutyCycle = 1;
-        shooterConfig.MotorOutput.PeakReverseDutyCycle = 0;
-
-        shooterConfig.Voltage = new VoltageConfigs();
-        shooterConfig.Voltage.PeakForwardVoltage = 8;
-        shooterConfig.Voltage.PeakReverseVoltage = 0;
 
         // Per motor current limit. Total max subsystem current input is 2x this
         shooterConfig.CurrentLimits = new CurrentLimitsConfigs();
-        shooterConfig.CurrentLimits.StatorCurrentLimit = 40;
+        shooterConfig.CurrentLimits.StatorCurrentLimit = 80;
         shooterConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        shooterConfig.CurrentLimits.SupplyCurrentLimit = 40; 
+        shooterConfig.CurrentLimits.SupplyCurrentLimit = 80; 
         shooterConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         shooterConfig.OpenLoopRamps = new OpenLoopRampsConfigs();
