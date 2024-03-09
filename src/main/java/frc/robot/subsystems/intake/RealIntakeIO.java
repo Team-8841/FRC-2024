@@ -7,6 +7,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.Intake.IntakeConstants;
 
 public class RealIntakeIO implements IntakeIO {
@@ -47,6 +48,8 @@ public class RealIntakeIO implements IntakeIO {
         inputs.actualIndexRPS = this.indexEncoder.getVelocity();
 
         inputs.indexSensor = this.getIndexSensor();
+
+        SmartDashboard.putBoolean("[Intake]: Note Sensor", this.getIndexSensor());
 
         Logger.recordOutput("Intake/intakeMotorOutCur", this.intakeMotor.getOutputCurrent());
         Logger.recordOutput("Intake/indexMotorOutCur", this.indexMotor.getOutputCurrent());

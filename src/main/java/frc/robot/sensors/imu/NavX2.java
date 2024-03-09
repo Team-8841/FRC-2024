@@ -24,35 +24,35 @@ public class NavX2 extends IMU {
     public void periodic() {
         super.periodic();
 
-        Logger.recordOutput("IMU/displacementX", this.ahrs.getDisplacementX());
-        Logger.recordOutput("IMU/displacementY", this.ahrs.getDisplacementY());
-        Logger.recordOutput("IMU/displacementZ", this.ahrs.getDisplacementZ());
+        Logger.recordOutput("NavX2/displacementX", this.ahrs.getDisplacementX());
+        Logger.recordOutput("NavX2/displacementY", this.ahrs.getDisplacementY());
+        Logger.recordOutput("NavX2/displacementZ", this.ahrs.getDisplacementZ());
 
-        Logger.recordOutput("IMU/velocityX", this.ahrs.getVelocityX());
-        Logger.recordOutput("IMU/velocityY", this.ahrs.getVelocityY());
-        Logger.recordOutput("IMU/velocityZ", this.ahrs.getVelocityZ());
+        Logger.recordOutput("NavX2/velocityX", this.ahrs.getVelocityX());
+        Logger.recordOutput("NavX2/velocityY", this.ahrs.getVelocityY());
+        Logger.recordOutput("NavX2/velocityZ", this.ahrs.getVelocityZ());
 
-        Logger.recordOutput("IMU/rawGyroX", this.ahrs.getRawGyroX());
-        Logger.recordOutput("IMU/rawGyroY", this.ahrs.getRawGyroY());
-        Logger.recordOutput("IMU/rawGyroZ", this.ahrs.getRawGyroZ());
+        Logger.recordOutput("NavX2/rawGyroX", this.ahrs.getRawGyroX());
+        Logger.recordOutput("NavX2/rawGyroY", this.ahrs.getRawGyroY());
+        Logger.recordOutput("NavX2/rawGyroZ", this.ahrs.getRawGyroZ());
 
-        Logger.recordOutput("IMU/rawAccelX", this.ahrs.getRawAccelX());
-        Logger.recordOutput("IMU/rawAccelY", this.ahrs.getRawAccelY());
-        Logger.recordOutput("IMU/rawAccelZ", this.ahrs.getRawAccelZ());
+        Logger.recordOutput("NavX2/rawAccelX", this.ahrs.getRawAccelX());
+        Logger.recordOutput("NavX2/rawAccelY", this.ahrs.getRawAccelY());
+        Logger.recordOutput("NavX2/rawAccelZ", this.ahrs.getRawAccelZ());
 
-        Logger.recordOutput("IMU/rawMagX", this.ahrs.getRawMagX());
-        Logger.recordOutput("IMU/rawMagY", this.ahrs.getRawMagY());
-        Logger.recordOutput("IMU/rawMagZ", this.ahrs.getRawMagZ());
+        Logger.recordOutput("NavX2/rawMagX", this.ahrs.getRawMagX());
+        Logger.recordOutput("NavX2/rawMagY", this.ahrs.getRawMagY());
+        Logger.recordOutput("NavX2/rawMagZ", this.ahrs.getRawMagZ());
 
-        Logger.recordOutput("IMU/worldLinearAccelX", this.ahrs.getWorldLinearAccelX());
-        Logger.recordOutput("IMU/worldLinearAccelY", this.ahrs.getWorldLinearAccelY());
-        Logger.recordOutput("IMU/worldLinearAccelZ", this.ahrs.getWorldLinearAccelZ());
+        Logger.recordOutput("NavX2/worldLinearAccelX", this.ahrs.getWorldLinearAccelX());
+        Logger.recordOutput("NavX2/worldLinearAccelY", this.ahrs.getWorldLinearAccelY());
+        Logger.recordOutput("NavX2/worldLinearAccelZ", this.ahrs.getWorldLinearAccelZ());
 
-        Logger.recordOutput("IMU/calibrating", this.ahrs.isCalibrating());
-        Logger.recordOutput("IMU/rate", this.ahrs.getRate());
-        Logger.recordOutput("IMU/totalAngle", this.ahrs.getAngle());
-        Logger.recordOutput("IMU/isMoving", this.ahrs.isMoving());
-        Logger.recordOutput("IMU/isRotating", this.ahrs.isRotating());
+        Logger.recordOutput("NavX2/calibrating", this.ahrs.isCalibrating());
+        Logger.recordOutput("NavX2/rate", this.ahrs.getRate());
+        Logger.recordOutput("NavX2/totalAngle", this.ahrs.getAngle());
+        Logger.recordOutput("NavX2/isMoving", this.ahrs.isMoving());
+        Logger.recordOutput("NavX2/isRotating", this.ahrs.isRotating());
     }
 
     @Override
@@ -74,5 +74,10 @@ public class NavX2 extends IMU {
     @Override
     public boolean isSensorPresent() {
         return this.ahrs.isConnected();
+    }
+
+    @Override
+    public void reset() {
+        this.ahrs.zeroYaw();
     }
 }

@@ -104,4 +104,9 @@ public final class Constants {
         public static final int kBreaksPort = 2;
     }
 
+    public static final class VisionConstants {
+        public static final double kAssistkP = 0.085;
+
+        public static final double kMinAssistSpeed = 0.2;
+    }
 }

@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -52,6 +53,7 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.RealIntakeIO;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class RobotContainer {
@@ -63,6 +65,7 @@ public class RobotContainer {
   private IntakeSubsystem intake;
   private ShooterSubsystem shooter;
   private ElevatorSubsystem elevator;
+  private VisionSubsystem vision;
 
   private LEDSubsystem led = new LEDSubsystem(22);
 
@@ -92,7 +95,7 @@ public class RobotContainer {
   private double getDSShooterPot() {
 
     double potVals[] = { 1, 0.55, 0.06, -0.44, -0.96 };
-    double potRPM[] = { 0, 500, 3000, 4000, 5000 };
+    double potRPM[] = { 0, 1500, 2000, 4000, 6000 };
     double epsilon = 0.1;
     double pot = this.copilotController.getRawAxis(3);
 
@@ -135,6 +138,7 @@ public class RobotContainer {
         this.intake = new IntakeSubsystem(new RealIntakeIO(), this.led);
         this.shooter = new ShooterSubsystem(this.led);
         this.elevator = new ElevatorSubsystem();
+        this.vision = new VisionSubsystem();
       } else {
         swerveModules = new SwerveModuleIO[] {
             new MixedSwerveModuleIO(BaseRobotConstants.Mod1.constants, false),
@@ -176,14 +180,17 @@ public class RobotContainer {
 
     if (Constants.isCompRobot) {
       this.shooter.setDefaultCommand(new RunCommand(() -> {
-        if (!DriverStation.isAutonomous()) {
+        if (DriverStation.isTeleopEnabled()) {
+          var hid = this.driveController.getHID();
           this.shooter.setShooterSpeed(this.getDSShooterPot());
+          this.shooter.setHood(this.hoodOverrideBtn.getAsBoolean() ? hid.getLeftBumper() : false);
+          this.shooter.setShooterAngle(hid.getLeftBumper() ? true : shooterAngleBtn.getAsBoolean());
         }
-        this.shooter.setHood(hoodDeployBtn.getAsBoolean());
       }, this.shooter));
 
       this.elevator.setDefaultCommand(new ElevatorCommand(() -> this.copilotController.getRawAxis(0), this.elevator));
-      intake.setDefaultCommand(new SensorFeedCommand(intake, () -> this.copilotController.getHID().getRawButton(4), this.led));
+      intake.setDefaultCommand(
+          new SensorFeedCommand(intake, () -> this.copilotController.getHID().getRawButton(4), this.led));
 
       NamedCommands.registerCommand("IntakeNote", new SensorFeedCommand(this.intake, () -> true, this.led));
       NamedCommands.registerCommand("ShootyNote", this.intake.setStateCommand(IntakeState.INTAKE));
@@ -220,28 +227,55 @@ public class RobotContainer {
       // this.driveController.leftBumper().whileTrue(intake.setStateCommand(IntakeState.INTAKE));
       this.copilotController.button(5).whileTrue(intake.setStateCommand(IntakeState.EJECT));
 
-      // hoodDeployBtn.onTrue(new InstantCommand(() -> shooter.setHoodPosition(HoodPosition.DEPLOYED)))
-      //     .onFalse(new InstantCommand(() -> shooter.setHoodPosition(HoodPosition.STOWED)));
+      // hoodDeployBtn.onTrue(new InstantCommand(() ->
+      // shooter.setHoodPosition(HoodPosition.DEPLOYED)))
+      // .onFalse(new InstantCommand(() ->
+      // shooter.setHoodPosition(HoodPosition.STOWED)));
 
-      shooterAngleBtn.onTrue(new InstantCommand(() -> shooter.setShooterAngle(false)))
+      this.driveController.leftBumper().onTrue(new InstantCommand(() -> shooter.setShooterAngle(false)))
           .onFalse(new InstantCommand(() -> shooter.setShooterAngle(true)));
 
       climberBreaksBtn.onTrue(new InstantCommand(() -> this.elevator.setBreaks(true)))
           .onFalse(new InstantCommand(() -> this.elevator.setBreaks(false)));
 
-      this.driveController.rightTrigger(0.5)
-          .whileTrue(this.intake.setStateCommand(IntakeState.INTAKE).onlyIf(this.shooter::isShooterAtSpeed));
+      // this.driveController.leftBumper().whileTrue(new RunCommand(() -> {
+      // if (this.driveController.getHID().getRightBumper()) {
 
-      this.driveController.leftBumper().whileTrue(new RunCommand(() -> {
-        this.shooter.setShooterSpeed(this.driveController.getHID().getRightBumper() ? 500 : 0);
-        this.shooter.setEERoller(this.driveController.getHID().getRightBumper() ? 0.7 : 0);
-        this.shooter.setHood(true);
-      }, this.shooter)
-          .finallyDo(() -> {
-            this.shooter.setShooterSpeed(0);
+      // }
+
+      // this.shooter.setShooterSpeed(this.driveController.getHID().getRightBumper() ?
+      // 500 : 0);
+      // this.shooter.setEERoller(this.driveController.getHID().getRightBumper() ? 0.7
+      // : 0);
+      // this.shooter.setHood(true);
+      // }, this.shooter)
+      // .finallyDo(() -> {
+      // this.shooter.setShooterSpeed(0);
+      // this.shooter.setEERoller(0);
+      // this.shooter.setHood(false);
+      // }));
+
+      var feedCommand = new ParallelCommandGroup(
+        this.intake.setStateCommand(IntakeState.INTAKE),
+        new RunCommand(() -> {
+          if (this.shooter.isHoodSetUp()) {
+            this.shooter.setEERoller(0.7);
+          } else {
             this.shooter.setEERoller(0);
-            this.shooter.setHood(false);
-          }));
+          }
+        }).finallyDo(() -> {
+          this.shooter.setEERoller(0);
+        })).onlyIf(() -> this.shooter.isShooterAtSpeed() && this.shooter.hoodAtSP() && this.shooter.getShooterSPRPM() > 0);
+
+      this.driveController.rightTrigger(0.5).whileTrue(feedCommand);
+
+      this.driveController.leftTrigger(0.5).whileTrue(new RunCommand(() -> {
+        this.shooter.setShooterSpeed(750);
+        this.shooter.setHood(true);
+      }).finallyDo(() -> {
+        this.shooter.setShooterSpeed(0);
+        this.shooter.setHood(false);
+      }));
     }
   }
 
@@ -272,9 +306,9 @@ public class RobotContainer {
     // () -> -this.copilotController.getX(),
     // () -> this.copilotController.getHID().getRawButton(7));
 
-    return new TeleopSwerve(this.driveTrain, this.driveController.getHID());
-    // return this.shooter.initHoodCommand()
-    //  .andThen(new TeleopSwerve(this.driveTrain, this.driveController.getHID()));
+    // return new TeleopSwerve(this.driveTrain, this.driveController.getHID(), this.vision);
+    return this.shooter.initHoodCommand()
+      .andThen(new TeleopSwerve(this.driveTrain, this.driveController.getHID(), this.vision));
     // return this.led.setLEDs(255, 255, 255);
     // return this.led.animate(new RainbowAnimation());
   }

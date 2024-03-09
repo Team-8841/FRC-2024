@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -28,6 +29,8 @@ public abstract class IMU extends SubsystemBase {
     public void periodic() {
         this.updateInputs(this.inputs);
         Logger.processInputs("/IMU/Inputs", this.inputs);
+
+        SmartDashboard.putNumber("[NavX2] Heading (deg)", this.getHeading().getDegrees());
     }
 
     protected void updateInputs(IMUInputsAutoLogged inputs) {
@@ -112,4 +115,9 @@ public abstract class IMU extends SubsystemBase {
      * @return If the IMU is present.
      */
     public abstract boolean isSensorPresent();
+
+    /**
+     * Zero's the IMU
+     */
+    public abstract void reset();
 }

@@ -58,4 +58,9 @@ public class SimIMU extends IMU {
     public boolean isInitialized() {
         return true;
     }
+
+    @Override
+    public void reset() {
+        this.accumulatedYaw = 0;
+    }
 }

@@ -1,5 +1,8 @@
 package frc.robot.sensors.imu;
 
+import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,5 +33,10 @@ public class Pigeon2IO extends IMU {
     @Override
     public boolean isSensorPresent() {
         return true;
+    }
+
+    @Override
+    public void reset() {
+        this.pigeon.reset();
     }
 }
