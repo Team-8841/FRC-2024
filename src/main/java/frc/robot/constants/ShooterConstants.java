@@ -73,9 +73,9 @@ public class ShooterConstants {
         shooterConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 1;
 
         shooterConfig.Slot0 = new Slot0Configs();
-        shooterConfig.Slot0.kP = 0.005;
-        shooterConfig.Slot0.kI = 0.0;
-        shooterConfig.Slot0.kD = 0.0;
+        shooterConfig.Slot0.kP = 0.007;
+        shooterConfig.Slot0.kI = 0.005;
+        shooterConfig.Slot0.kD = 0.003;
         shooterConfig.Slot0.kV = 0.108;
 
         shooterConfig.ClosedLoopRamps = new ClosedLoopRampsConfigs();
