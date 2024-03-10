@@ -155,7 +155,7 @@ public class ShooterSubsystem extends SubsystemBase {
         {
             this.filteredRPM = this.rpmFilter.calculate(this.shooterMotor.getVelocity().getValueAsDouble() * 60);
 
-            if (this.leds != null && !this.shooterGotToSpeed && this.isShooterAtSpeed() && 60 * this.shooterSetRPS >= 250) {
+            if (this.leds != null && !this.shooterGotToSpeed && this.isShooterAtSP() && 60 * this.shooterSetRPS >= 250) {
                 // Strobe when shooter gets up to speed
                 this.leds.animate(new StrobeAnimation(0x66, 0xff, 0x33, 0, 0.33, CandleConstants.kLEDCount), 1).schedule();
                 this.shooterGotToSpeed = true;
@@ -214,7 +214,7 @@ public class ShooterSubsystem extends SubsystemBase {
         this.shooterSetRPS = rpm / 60;
         this.shooterMotor.setControl(new VelocityVoltage(rpm / 60.0).withSlot(0));
 
-        this.shooterGotToSpeed = this.isShooterAtSpeed();
+        this.shooterGotToSpeed = this.isShooterAtSP();
     }
 
     public double getShooterRPM() {
@@ -225,21 +225,13 @@ public class ShooterSubsystem extends SubsystemBase {
         return this.shooterSetRPS * 60;
     }
 
-    public boolean isShooterAtSpeed() {
+    public boolean isShooterAtSP() {
         //return this.filteredRPM > 60 * this.shooterSetRPS - 100;
-        return Math.abs(this.filteredRPM - 60 * this.shooterSetRPS) <= 100.0;
+        return Math.abs(this.filteredRPM - 60 * this.shooterSetRPS) <= 200.0;
     }
 
-    public boolean hoodAtSP() {
-        // double angleDeg = this.getEEAngle().getDegrees();
-        if (this.isHoodSetUp) {
-            // return angleDeg >= 30 && this.getEEDeployedLimit();
-            return this.getEEDeployedLimit();
-        }
-        else {
-            // return angleDeg <= 70 && this.getEEHomeLimit();
-            return this.getEEHomeLimit();
-        }
+    public boolean isHoodAtSP() {
+        return this.isHoodSetUp ? this.getEEDeployedLimit() : this.getEEHomeLimit();
     }
 
     public boolean isHoodSetUp() {
@@ -262,9 +254,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
         Logger.recordOutput("Shooter/actualShooterRPM", this.shooterMotor.getVelocity().getValueAsDouble() * 60);
         Logger.recordOutput("Shooter/filteredShooterRPM", this.filteredRPM);
-        Logger.recordOutput("Shooter/setShooterRPM", this.shooterSetRPS);
+        Logger.recordOutput("Shooter/setShooterRPM", this.shooterSetRPS * 60);
         Logger.recordOutput("Shooter/isShooterUp", this.isShooterUp());
         Logger.recordOutput("Shooter/shooterGotToSpeed", this.shooterGotToSpeed);
-        Logger.recordOutput("Shooter/shooterAtSpeed", this.isShooterAtSpeed());
+        Logger.recordOutput("Shooter/shooterAtSP", this.isShooterAtSP());
+
+        Logger.recordOutput("Shooter/hoodSetUp", this.isHoodSetUp);
+        Logger.recordOutput("Shooter/hoodAtSP", this.isHoodAtSP());
     }
 }

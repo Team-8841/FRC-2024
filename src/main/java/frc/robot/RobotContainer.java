@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -90,23 +91,9 @@ public class RobotContainer {
   private JoystickButton zeroGyroBtn;
   private double hoodTrigger;
 
+  private Command shooterCommand;
+
   private double climberMovement;
-
-  private double getDSShooterPot() {
-
-    double potVals[] = { 1, 0.55, 0.06, -0.44, -0.96 };
-    double potRPM[] = { 0, 1500, 2000, 4000, 6000 };
-    double epsilon = 0.1;
-    double pot = this.copilotController.getRawAxis(3);
-
-    for (int i = 0; i < potVals.length; i++) {
-      if (potVals[i] - epsilon <= pot && potVals[i] + epsilon >= pot) {
-        return potRPM[i];
-      }
-    }
-
-    return 0;
-  }
 
   public RobotContainer(CommandXboxController driveController, CommandJoystick copilotController) {
     this.driveController = driveController;
@@ -179,14 +166,6 @@ public class RobotContainer {
     this.configureBindings();
 
     if (Constants.isCompRobot) {
-      this.shooter.setDefaultCommand(new RunCommand(() -> {
-        if (DriverStation.isTeleopEnabled()) {
-          var hid = this.driveController.getHID();
-          this.shooter.setShooterSpeed(this.getDSShooterPot());
-          this.shooter.setHood(this.hoodOverrideBtn.getAsBoolean() ? hid.getLeftBumper() : false);
-          this.shooter.setShooterAngle(hid.getLeftBumper() ? true : shooterAngleBtn.getAsBoolean());
-        }
-      }, this.shooter));
 
       this.elevator.setDefaultCommand(new ElevatorCommand(() -> this.copilotController.getRawAxis(0), this.elevator));
       intake.setDefaultCommand(
@@ -265,7 +244,8 @@ public class RobotContainer {
           }
         }).finallyDo(() -> {
           this.shooter.setEERoller(0);
-        })).onlyIf(() -> this.shooter.isShooterAtSpeed() && this.shooter.hoodAtSP() && this.shooter.getShooterSPRPM() > 0);
+        // }));
+        })).onlyIf(() -> this.shooter.isShooterAtSP() && this.shooter.isHoodAtSP() && this.shooter.getShooterSPRPM() > 0);
 
       this.driveController.rightTrigger(0.5).whileTrue(feedCommand);
 
@@ -308,7 +288,7 @@ public class RobotContainer {
 
     // return new TeleopSwerve(this.driveTrain, this.driveController.getHID(), this.vision);
     return this.shooter.initHoodCommand()
-      .andThen(new TeleopSwerve(this.driveTrain, this.driveController.getHID(), this.vision));
+      .andThen(new TeleopSwerve(this.driveTrain, this.driveController.getHID(), this.vision, this.shooter, this.copilotController));
     // return this.led.setLEDs(255, 255, 255);
     // return this.led.animate(new RainbowAnimation());
   }

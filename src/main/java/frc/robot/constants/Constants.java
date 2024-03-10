@@ -91,7 +91,7 @@ public final class Constants {
 
     public static final class CandleConstants {
         public static final int kCandleID = 22;
-        public static final int kLEDCount = 150;
+        public static final int kLEDCount = 190;
     }
 
     public static final class ElevatorConstants {

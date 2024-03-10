@@ -1,0 +1,343 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.3576779975974802,
+        "y": 5.535402097372001
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.3435216856605992,
+        "y": 5.535514388290555
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.9539152164757623,
+        "y": 4.068332257483178
+      },
+      "prevControl": {
+        "x": 1.9645977407920523,
+        "y": 4.057930885807663
+      },
+      "nextControl": {
+        "x": 1.9432326921594723,
+        "y": 4.078733629158693
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.493736782044702,
+        "y": 4.109713899961196
+      },
+      "prevControl": {
+        "x": 2.520666981615791,
+        "y": 4.093273892286122
+      },
+      "nextControl": {
+        "x": 2.466806582473613,
+        "y": 4.1261539076362705
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.396977923763011,
+        "y": 5.507228789511221
+      },
+      "prevControl": {
+        "x": 1.3952870813456475,
+        "y": 5.50857008383526
+      },
+      "nextControl": {
+        "x": 1.3986687661803747,
+        "y": 5.505887495187182
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.9006553107598956,
+        "y": 5.5758954724954455
+      },
+      "prevControl": {
+        "x": 2.8609506169895376,
+        "y": 5.607594743055903
+      },
+      "nextControl": {
+        "x": 2.9403600045302536,
+        "y": 5.544196201934988
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.3881005048679333,
+        "y": 5.492951348778193
+      },
+      "prevControl": {
+        "x": 1.3921576886363227,
+        "y": 5.487916974094017
+      },
+      "nextControl": {
+        "x": 1.384043321099544,
+        "y": 5.497985723462368
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.9551537414550129,
+        "y": 6.97122243356984
+      },
+      "prevControl": {
+        "x": 1.9210938634554704,
+        "y": 6.965027603322839
+      },
+      "nextControl": {
+        "x": 1.9892136194545547,
+        "y": 6.97741726381684
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.8808199450754652,
+        "y": 7.000975041026337
+      },
+      "prevControl": {
+        "x": 2.88941287372424,
+        "y": 7.039223100628612
+      },
+      "nextControl": {
+        "x": 2.8722270164266903,
+        "y": 6.962726981424063
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.4275917206860274,
+        "y": 5.49295355412894
+      },
+      "prevControl": {
+        "x": 1.4301408856139404,
+        "y": 5.538801472938829
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "race",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ShootyNote"
+              }
+            },
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 1.0
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.95,
+      "command": {
+        "type": "race",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "IntakeNote"
+              }
+            },
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 1.0
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 3.05,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ShootyNote"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 4.4,
+      "command": {
+        "type": "race",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "IntakeNote"
+              }
+            },
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 1.0
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 5.1,
+      "command": {
+        "type": "race",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ShootyNote"
+              }
+            },
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 1.0
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 6.0,
+      "command": {
+        "type": "race",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "IntakeNote"
+              }
+            },
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 1.0
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 6.9,
+      "command": {
+        "type": "race",
+        "data": {
+          "commands": [
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 1.0
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "IntakeNote"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 8.0,
+      "command": {
+        "type": "race",
+        "data": {
+          "commands": [
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 1.0
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "ShootyNote"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
