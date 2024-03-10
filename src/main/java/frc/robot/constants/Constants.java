@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Constants {
     public static final boolean simReplay = false;
-    public static final double controllerDeadband = 0.1;
+    public static final double controllerDeadband = 0.15;
     public static final int pigeonId = 10;
 
     public static final int testSampleCount = 1024;
