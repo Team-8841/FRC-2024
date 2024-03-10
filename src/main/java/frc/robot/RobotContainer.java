@@ -13,6 +13,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
+import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -68,9 +69,10 @@ public class RobotContainer {
   private ElevatorSubsystem elevator;
   private VisionSubsystem vision;
 
-  private LEDSubsystem led = new LEDSubsystem(22);
+  private MjpegServer intakeCamServer = new MjpegServer("10.88.41.13", 5800);
+  private MjpegServer shooterCamServer = new MjpegServer("10.88.41.11", 5800);
 
-  private final Field2d field = new Field2d();
+  private LEDSubsystem led = new LEDSubsystem(22);
 
   // Controllers
   private CommandXboxController driveController;
@@ -160,8 +162,7 @@ public class RobotContainer {
 
     this.driveTrain = new DriveTrainSubsystem(swerveModules, this.imu);
 
-    ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
-    this.imu.initializeShuffleBoardLayout(robotTab.getLayout("IMU", BuiltInLayouts.kList));
+    this.imu.initializeShuffleBoardLayout();
 
     this.configureBindings();
 
@@ -174,7 +175,7 @@ public class RobotContainer {
       NamedCommands.registerCommand("IntakeNote", new SensorFeedCommand(this.intake, () -> true, this.led));
       NamedCommands.registerCommand("ShootyNote", this.intake.setStateCommand(IntakeState.INTAKE));
       NamedCommands.registerCommand("ShooterSpeaker", new InstantCommand(() -> this.shooter.setShooterSpeed(3000)));
-      NamedCommands.registerCommand("ShooterPodium", new InstantCommand(() -> this.shooter.setShooterSpeed(4000)));
+      NamedCommands.registerCommand("ShooterPodium", new InstantCommand(() -> this.shooter.setShooterSpeed(4500)));
       NamedCommands.registerCommand("ShooterStop", new InstantCommand(() -> this.shooter.setShooterSpeed(0)));
       NamedCommands.registerCommand("ShooterUp", new InstantCommand(() -> this.shooter.setShooterAngle(false)));
       NamedCommands.registerCommand("ShooterDown", new InstantCommand(() -> this.shooter.setShooterAngle(true)));
@@ -183,15 +184,15 @@ public class RobotContainer {
     // Logging callback for current robot pose
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
       // Do whatever you want with the pose here
-      field.setRobotPose(pose);
+      Logger.recordOutput("Pathing/curPose");
     });
 
     // Logging callback for target robot pose
     PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
       // Do whatever you want with the pose here
-      field.getObject("target pose").setPose(pose);
       Logger.recordOutput("Pathing/targetPose");
     });
+
 
     // Logging callback for the active path, this is sent as a list of poses
     // PathPlannerLogging.setLogActivePathCallback((poses) -> {
@@ -274,7 +275,7 @@ public class RobotContainer {
 
     // return AutoBuilder.followPath(path);
 
-    return new PathPlannerAuto("Cool_Auto");
+    return new PathPlannerAuto("Four_Note_Long_Auto");
   }
 
   public Command getTeleopCommand() {

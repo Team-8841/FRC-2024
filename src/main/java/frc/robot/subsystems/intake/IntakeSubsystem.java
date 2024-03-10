@@ -8,6 +8,7 @@ import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -101,5 +102,8 @@ public class IntakeSubsystem extends SubsystemBase {
     // BuiltInLayouts.kList);
     // layout.addString("State", curState::name);
     // layout.addBoolean("Feed Sensor", this::getIndexSensor);
+
+    Shuffleboard.getTab("Robot").addString("Intake State", curState::name);
+    Shuffleboard.getTab("Robot").addBoolean("Feeder Sensor", this::getIndexSensor);
   }
 }

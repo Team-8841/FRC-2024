@@ -1,15 +1,18 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.VisionConstants;
 
 public class VisionSubsystem extends SubsystemBase {
     
-    private final NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+    private final NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight-intake");
 
     // gets
     private final NetworkTableEntry tv = limelightTable.getEntry("tv");
@@ -25,7 +28,8 @@ public class VisionSubsystem extends SubsystemBase {
     // private final NetworkTableEntry stream = limelightTable.getEntry("stream");
     // private final NetworkTableEntry snapshot = limelightTable.getEntry("snapshot");
 
-    public VisionSubsystem() {}
+    public VisionSubsystem() {
+    }
 
     @Override
     public void periodic() {
@@ -91,5 +95,10 @@ public class VisionSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("[Vision] Target Vertical Offset", ty.getDouble(0.0));
         SmartDashboard.putNumber("[Vision] Target Area", getTargetArea());
         //SmartDashboard.putNumber("[Vision] Distance", getDistance());
+
+        Logger.recordOutput("Vision/validTarget", this.isTargetValid());
+        Logger.recordOutput("Vision/horizOffset", this.tx.getDouble(0));
+        Logger.recordOutput("Vision/vertOffset", this.ty.getDouble(0));
+        Logger.recordOutput("Vision/area", this.getTargetArea());
     }
 }

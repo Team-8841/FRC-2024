@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ElevatorConstants;
@@ -40,6 +41,9 @@ public class ElevatorSubsystem extends SubsystemBase{
         mainMotor.setInverted(true);
 
         this.setBreaks(true);
+
+        Shuffleboard.getTab("Robot").addBoolean("Bottom Elevator Sensor", this::getBottomLimit);
+        Shuffleboard.getTab("Robot").addBoolean("Top Elevator Sensor", this::getTopLimit);
     }
 
     /*-------------------------------- Generic Subsystem Functions --------------------------------*/

@@ -17,6 +17,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
@@ -118,7 +119,7 @@ public class Robot extends LoggedRobot {
     }
 
     this.compressor.ifPresent(compressor -> {
-      if (this.copilotController.getHID().getRawButton(1)) {
+      if (DriverStation.isAutonomousEnabled() || this.copilotController.getHID().getRawButton(1)) {
         compressor.disable();
       } else {
         compressor.enableDigital();

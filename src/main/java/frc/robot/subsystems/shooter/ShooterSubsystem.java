@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -88,6 +89,11 @@ public class ShooterSubsystem extends SubsystemBase {
         endEffectorRoller.setInverted(true);
 
         this.leds = leds;
+
+        Shuffleboard.getTab("Robot").addDouble("Shooter RPM", this::getShooterRPM);
+        Shuffleboard.getTab("Robot").addDouble("Set Shooter RPM", this::getShooterRPM);
+        Shuffleboard.getTab("Robot").addBoolean("EE Home Limit", this::getEEHomeLimit);
+        Shuffleboard.getTab("Robot").addBoolean("EE Deployed Limit", this::getEEDeployedLimit);
     }
 
     public ShooterSubsystem() {
@@ -99,36 +105,18 @@ public class ShooterSubsystem extends SubsystemBase {
         // Logging
         {
             Logger.recordOutput("Hood/EE/ActualDeg", getEEAngle().getDegrees());
-            // Logger.recordOutput("Hood/EE/SetDeg", this.setPosition.hoodAngle.getDegrees());
         }
 
         // Endeffector PID loop
         if (this.hoodInited) {
-            // double pidEffort = EEPIDController.calculate(getEEAngle().getDegrees(),
-            //         this.setPosition.hoodAngle.getDegrees());
-            // Logger.recordOutput("Hood/EE/PIDEffort", pidEffort);
-
-            // if (getEEHomeLimit() && getEEAngle().getDegrees() < 20) {
-            //     zeroEEAngle();
-            // }
-
-            // if (getEEHomeLimit() && pidEffort < 0) {
-            //     endEffector.set(0);
-            // } else if (getEEDeployedLimit() && pidEffort > 0) {
-            //     endEffector.set(0);
-            // } else {
-            //     endEffector.set(pidEffort);
-            //     // endEffector.set(0);
-            // }
-
-            // lmao
-            var eeAngle = this.getEEAngle();
-            // if (eeAngle.getDegrees() <= 115 && eeAngle.getDegrees() >= -5) {
             {
                 boolean homeLimit = this.getEEHomeLimit();
                 boolean deployedLimit = this.getEEDeployedLimit();
 
-                if (homeLimit && this.isHoodSetUp) {
+                /*if (homeLimit && deployedLimit) {
+                    this.endEffector.set(0);
+                }
+                else */if (homeLimit && this.isHoodSetUp) {
                     this.endEffector.set(-0.4);
                 }
                 else if (deployedLimit && !this.isHoodSetUp) {
@@ -169,12 +157,7 @@ public class ShooterSubsystem extends SubsystemBase {
         return new FunctionalCommand(
             () -> {}, 
             () -> {
-                if (this.getEEHomeLimit()) {
-                    this.endEffector.set(0);
-                } 
-                else {
-                    this.endEffector.set(-0.1); // Slowly move back
-                }
+                this.endEffector.set(0);
             }, 
             (interrupted) -> {
                 // Stop moving it back ofc

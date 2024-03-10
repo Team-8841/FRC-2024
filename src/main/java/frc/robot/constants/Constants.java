@@ -6,9 +6,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import com.ctre.phoenix.led.CANdleConfiguration;
-import com.ctre.phoenix.led.CANdle.LEDStripType;
-
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
