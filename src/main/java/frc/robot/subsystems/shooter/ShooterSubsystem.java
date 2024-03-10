@@ -76,7 +76,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         /* End Effector */
         endEffector.restoreFactoryDefaults();
-        endEffector.setSmartCurrentLimit(5);
+        endEffector.setSmartCurrentLimit(30);
         endEffector.setIdleMode(IdleMode.kBrake);
         endEffector.setInverted(false);
 
@@ -84,7 +84,7 @@ public class ShooterSubsystem extends SubsystemBase {
         endEffectorEncoder.setPositionConversionFactor(1.0 / (100.0 * 36.0 / 16.0));
 
         endEffectorRoller.restoreFactoryDefaults();
-        endEffectorRoller.setSmartCurrentLimit(10);
+        endEffectorRoller.setSmartCurrentLimit(30);
         endEffectorRoller.setIdleMode(IdleMode.kCoast);
         endEffectorRoller.setInverted(true);
 
