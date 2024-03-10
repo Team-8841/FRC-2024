@@ -238,7 +238,7 @@ public class RobotContainer {
         this.intake.setStateCommand(IntakeState.INTAKE),
         new RunCommand(() -> {
           if (this.shooter.isHoodSetUp()) {
-            this.shooter.setEERoller(0.7);
+            this.shooter.setEERoller(0.8);
           } else {
             this.shooter.setEERoller(0);
           }
@@ -250,7 +250,7 @@ public class RobotContainer {
       this.driveController.rightTrigger(0.5).whileTrue(feedCommand);
 
       this.driveController.leftTrigger(0.5).whileTrue(new RunCommand(() -> {
-        this.shooter.setShooterSpeed(750);
+        this.shooter.setShooterSpeed(600);
         this.shooter.setHood(true);
       }).finallyDo(() -> {
         this.shooter.setShooterSpeed(0);
