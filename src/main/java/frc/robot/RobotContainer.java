@@ -13,6 +13,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
+import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -20,10 +21,12 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -52,6 +55,7 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.RealIntakeIO;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class RobotContainer {
@@ -63,10 +67,12 @@ public class RobotContainer {
   private IntakeSubsystem intake;
   private ShooterSubsystem shooter;
   private ElevatorSubsystem elevator;
+  private VisionSubsystem vision;
+
+  private MjpegServer intakeCamServer = new MjpegServer("10.88.41.13", 5800);
+  private MjpegServer shooterCamServer = new MjpegServer("10.88.41.11", 5800);
 
   private LEDSubsystem led = new LEDSubsystem(22);
-
-  private final Field2d field = new Field2d();
 
   // Controllers
   private CommandXboxController driveController;
@@ -87,23 +93,9 @@ public class RobotContainer {
   private JoystickButton zeroGyroBtn;
   private double hoodTrigger;
 
+  private Command shooterCommand;
+
   private double climberMovement;
-
-  private double getDSShooterPot() {
-
-    double potVals[] = { 1, 0.55, 0.06, -0.44, -0.96 };
-    double potRPM[] = { 0, 500, 3000, 4000, 5000 };
-    double epsilon = 0.1;
-    double pot = this.copilotController.getRawAxis(3);
-
-    for (int i = 0; i < potVals.length; i++) {
-      if (potVals[i] - epsilon <= pot && potVals[i] + epsilon >= pot) {
-        return potRPM[i];
-      }
-    }
-
-    return 0;
-  }
 
   public RobotContainer(CommandXboxController driveController, CommandJoystick copilotController) {
     this.driveController = driveController;
@@ -135,6 +127,7 @@ public class RobotContainer {
         this.intake = new IntakeSubsystem(new RealIntakeIO(), this.led);
         this.shooter = new ShooterSubsystem(this.led);
         this.elevator = new ElevatorSubsystem();
+        this.vision = new VisionSubsystem();
       } else {
         swerveModules = new SwerveModuleIO[] {
             new MixedSwerveModuleIO(BaseRobotConstants.Mod1.constants, false),
@@ -169,26 +162,20 @@ public class RobotContainer {
 
     this.driveTrain = new DriveTrainSubsystem(swerveModules, this.imu);
 
-    ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
-    this.imu.initializeShuffleBoardLayout(robotTab.getLayout("IMU", BuiltInLayouts.kList));
+    this.imu.initializeShuffleBoardLayout();
 
     this.configureBindings();
 
     if (Constants.isCompRobot) {
-      this.shooter.setDefaultCommand(new RunCommand(() -> {
-        if (!DriverStation.isAutonomous()) {
-          this.shooter.setShooterSpeed(this.getDSShooterPot());
-        }
-        this.shooter.setHood(hoodDeployBtn.getAsBoolean());
-      }, this.shooter));
 
       this.elevator.setDefaultCommand(new ElevatorCommand(() -> this.copilotController.getRawAxis(0), this.elevator));
-      intake.setDefaultCommand(new SensorFeedCommand(intake, () -> this.copilotController.getHID().getRawButton(4), this.led));
+      intake.setDefaultCommand(
+          new SensorFeedCommand(intake, () -> this.copilotController.getHID().getRawButton(4), this.led));
 
       NamedCommands.registerCommand("IntakeNote", new SensorFeedCommand(this.intake, () -> true, this.led));
       NamedCommands.registerCommand("ShootyNote", this.intake.setStateCommand(IntakeState.INTAKE));
       NamedCommands.registerCommand("ShooterSpeaker", new InstantCommand(() -> this.shooter.setShooterSpeed(3000)));
-      NamedCommands.registerCommand("ShooterPodium", new InstantCommand(() -> this.shooter.setShooterSpeed(4000)));
+      NamedCommands.registerCommand("ShooterPodium", new InstantCommand(() -> this.shooter.setShooterSpeed(4500)));
       NamedCommands.registerCommand("ShooterStop", new InstantCommand(() -> this.shooter.setShooterSpeed(0)));
       NamedCommands.registerCommand("ShooterUp", new InstantCommand(() -> this.shooter.setShooterAngle(false)));
       NamedCommands.registerCommand("ShooterDown", new InstantCommand(() -> this.shooter.setShooterAngle(true)));
@@ -197,15 +184,15 @@ public class RobotContainer {
     // Logging callback for current robot pose
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
       // Do whatever you want with the pose here
-      field.setRobotPose(pose);
+      Logger.recordOutput("Pathing/curPose");
     });
 
     // Logging callback for target robot pose
     PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
       // Do whatever you want with the pose here
-      field.getObject("target pose").setPose(pose);
       Logger.recordOutput("Pathing/targetPose");
     });
+
 
     // Logging callback for the active path, this is sent as a list of poses
     // PathPlannerLogging.setLogActivePathCallback((poses) -> {
@@ -220,28 +207,56 @@ public class RobotContainer {
       // this.driveController.leftBumper().whileTrue(intake.setStateCommand(IntakeState.INTAKE));
       this.copilotController.button(5).whileTrue(intake.setStateCommand(IntakeState.EJECT));
 
-      // hoodDeployBtn.onTrue(new InstantCommand(() -> shooter.setHoodPosition(HoodPosition.DEPLOYED)))
-      //     .onFalse(new InstantCommand(() -> shooter.setHoodPosition(HoodPosition.STOWED)));
+      // hoodDeployBtn.onTrue(new InstantCommand(() ->
+      // shooter.setHoodPosition(HoodPosition.DEPLOYED)))
+      // .onFalse(new InstantCommand(() ->
+      // shooter.setHoodPosition(HoodPosition.STOWED)));
 
-      shooterAngleBtn.onTrue(new InstantCommand(() -> shooter.setShooterAngle(false)))
+      this.driveController.leftBumper().onTrue(new InstantCommand(() -> shooter.setShooterAngle(false)))
           .onFalse(new InstantCommand(() -> shooter.setShooterAngle(true)));
 
       climberBreaksBtn.onTrue(new InstantCommand(() -> this.elevator.setBreaks(true)))
           .onFalse(new InstantCommand(() -> this.elevator.setBreaks(false)));
 
-      this.driveController.rightTrigger(0.5)
-          .whileTrue(this.intake.setStateCommand(IntakeState.INTAKE).onlyIf(this.shooter::isShooterAtSpeed));
+      // this.driveController.leftBumper().whileTrue(new RunCommand(() -> {
+      // if (this.driveController.getHID().getRightBumper()) {
 
-      this.driveController.leftBumper().whileTrue(new RunCommand(() -> {
-        this.shooter.setShooterSpeed(this.driveController.getHID().getRightBumper() ? 500 : 0);
-        this.shooter.setEERoller(this.driveController.getHID().getRightBumper() ? 0.7 : 0);
-        this.shooter.setHood(true);
-      }, this.shooter)
-          .finallyDo(() -> {
-            this.shooter.setShooterSpeed(0);
+      // }
+
+      // this.shooter.setShooterSpeed(this.driveController.getHID().getRightBumper() ?
+      // 500 : 0);
+      // this.shooter.setEERoller(this.driveController.getHID().getRightBumper() ? 0.7
+      // : 0);
+      // this.shooter.setHood(true);
+      // }, this.shooter)
+      // .finallyDo(() -> {
+      // this.shooter.setShooterSpeed(0);
+      // this.shooter.setEERoller(0);
+      // this.shooter.setHood(false);
+      // }));
+
+      var feedCommand = new ParallelCommandGroup(
+        this.intake.setStateCommand(IntakeState.INTAKE),
+        new RunCommand(() -> {
+          if (this.shooter.isHoodSetUp()) {
+            this.shooter.setEERoller(0.8);
+          } else {
             this.shooter.setEERoller(0);
-            this.shooter.setHood(false);
-          }));
+          }
+        }).finallyDo(() -> {
+          this.shooter.setEERoller(0);
+        // }));
+        })).onlyIf(() -> this.shooter.isShooterAtSP() && this.shooter.isHoodAtSP() && this.shooter.getShooterSPRPM() > 0);
+
+      this.driveController.rightTrigger(0.5).whileTrue(feedCommand);
+
+      this.driveController.leftTrigger(0.5).whileTrue(new RunCommand(() -> {
+        this.shooter.setShooterSpeed(600);
+        this.shooter.setHood(true);
+      }).finallyDo(() -> {
+        this.shooter.setShooterSpeed(0);
+        this.shooter.setHood(false);
+      }));
     }
   }
 
@@ -260,7 +275,7 @@ public class RobotContainer {
 
     // return AutoBuilder.followPath(path);
 
-    return new PathPlannerAuto("Cool_Auto");
+    return new PathPlannerAuto("Four_Note_Long_Auto");
   }
 
   public Command getTeleopCommand() {
@@ -272,9 +287,9 @@ public class RobotContainer {
     // () -> -this.copilotController.getX(),
     // () -> this.copilotController.getHID().getRawButton(7));
 
-    return new TeleopSwerve(this.driveTrain, this.driveController.getHID());
-    // return this.shooter.initHoodCommand()
-    //  .andThen(new TeleopSwerve(this.driveTrain, this.driveController.getHID()));
+    // return new TeleopSwerve(this.driveTrain, this.driveController.getHID(), this.vision);
+    return this.shooter.initHoodCommand()
+      .andThen(new TeleopSwerve(this.driveTrain, this.driveController.getHID(), this.vision, this.shooter, this.copilotController));
     // return this.led.setLEDs(255, 255, 255);
     // return this.led.animate(new RainbowAnimation());
   }

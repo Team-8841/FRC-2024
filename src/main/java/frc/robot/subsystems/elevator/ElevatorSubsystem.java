@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ElevatorConstants;
@@ -29,17 +30,20 @@ public class ElevatorSubsystem extends SubsystemBase{
 
     public ElevatorSubsystem() {
         mainMotor.restoreFactoryDefaults();
-        mainMotor.setSmartCurrentLimit(10);
+        mainMotor.setSmartCurrentLimit(100);
         mainMotor.setIdleMode(IdleMode.kBrake);
 
         followerMotor.restoreFactoryDefaults();
-        followerMotor.setSmartCurrentLimit(10);
+        followerMotor.setSmartCurrentLimit(100);
         followerMotor.setIdleMode(IdleMode.kBrake);
 
         followerMotor.follow(mainMotor, true);
-        mainMotor.setInverted(false);
+        mainMotor.setInverted(true);
 
         this.setBreaks(true);
+
+        Shuffleboard.getTab("Robot").addBoolean("Bottom Elevator Sensor", this::getBottomLimit);
+        Shuffleboard.getTab("Robot").addBoolean("Top Elevator Sensor", this::getTopLimit);
     }
 
     /*-------------------------------- Generic Subsystem Functions --------------------------------*/
@@ -86,6 +90,7 @@ public class ElevatorSubsystem extends SubsystemBase{
     private void updateStatus() {
         SmartDashboard.putBoolean("[Elevator]: Top Limit", getTopLimit());
         SmartDashboard.putBoolean("[Elevator]: Bottom Limit", getBottomLimit());
+
         Logger.recordOutput("elevator/brake", this.isBraking());
         Logger.recordOutput("elevator/lowerLimit", this.getBottomLimit());
         Logger.recordOutput("elevator/upperLimit", this.getTopLimit());

@@ -7,7 +7,9 @@ import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -28,6 +30,8 @@ public abstract class IMU extends SubsystemBase {
     public void periodic() {
         this.updateInputs(this.inputs);
         Logger.processInputs("/IMU/Inputs", this.inputs);
+
+        SmartDashboard.putNumber("[NavX2] Heading (deg)", this.getHeading().getDegrees());
     }
 
     protected void updateInputs(IMUInputsAutoLogged inputs) {
@@ -48,13 +52,8 @@ public abstract class IMU extends SubsystemBase {
         inputs.isSensorPresent = this.isSensorPresent();
     }
 
-    public void initializeShuffleBoardLayout(ShuffleboardLayout layout) {
-        layout.addDouble("Heading", () -> this.getHeading().getDegrees()).withWidget(BuiltInWidgets.kGyro);
-        layout.addDouble("Yaw", () -> this.getYaw().getDegrees());
-        layout.addDouble("Pitch", () -> this.getPitch().getDegrees());
-        layout.addDouble("Roll", () -> this.getRoll().getDegrees());
-        layout.addBoolean("Is Initialized", this::isInitialized);
-        layout.addBoolean("Is Sensor Present", this::isSensorPresent);
+    public void initializeShuffleBoardLayout() {
+        Shuffleboard.getTab("Robot").addDouble("Heading", () -> this.getHeading().getDegrees()).withWidget(BuiltInWidgets.kGyro);
     }
 
     /**
@@ -112,4 +111,9 @@ public abstract class IMU extends SubsystemBase {
      * @return If the IMU is present.
      */
     public abstract boolean isSensorPresent();
+
+    /**
+     * Zero's the IMU
+     */
+    public abstract void reset();
 }

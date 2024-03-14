@@ -38,4 +38,9 @@ public class DummyIMU extends IMU {
     public boolean isSensorPresent() {
         return this.inputs.isSensorPresent;
     }
+
+    @Override
+    public void reset() {
+        // Do nothing
+    }
 }

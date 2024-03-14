@@ -1,5 +1,7 @@
 package frc.robot.sensors.imu.BNO055;
 
+import javax.naming.OperationNotSupportedException;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import frc.robot.sensors.imu.IMU;
@@ -35,5 +37,11 @@ public class BNO055 extends IMU {
     @Override
     public boolean isSensorPresent() {
         return this.internalBNO055.isSensorPresent();
+    }
+
+    @Override
+    public void reset() {
+        Object a = null;
+        System.out.println(a.toString());
     }
 }

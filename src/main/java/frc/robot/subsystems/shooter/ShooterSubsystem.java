@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -38,7 +39,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private PIDController EEPIDController = new PIDController(0.005, 0, 0);
 
     // private HoodPosition setPosition = HoodPosition.STOWED;
-    private boolean isHoodUp = false, hoodInited = false;
+    private boolean isHoodSetUp = false, hoodInited = false;
 
     private TalonFX shooterMotor = new TalonFX(ShooterConstants.shooterMotorID);
     private TalonFX followerMotor = new TalonFX(ShooterConstants.followerMotorID);
@@ -75,19 +76,24 @@ public class ShooterSubsystem extends SubsystemBase {
 
         /* End Effector */
         endEffector.restoreFactoryDefaults();
-        endEffector.setSmartCurrentLimit(5);
+        endEffector.setSmartCurrentLimit(30);
         endEffector.setIdleMode(IdleMode.kBrake);
-        endEffector.setInverted(true);
+        endEffector.setInverted(false);
 
         // 1:100 planetary gear reduction, then 16:36 sprocket gear reduction
         endEffectorEncoder.setPositionConversionFactor(1.0 / (100.0 * 36.0 / 16.0));
 
         endEffectorRoller.restoreFactoryDefaults();
-        endEffectorRoller.setSmartCurrentLimit(10);
+        endEffectorRoller.setSmartCurrentLimit(30);
         endEffectorRoller.setIdleMode(IdleMode.kCoast);
         endEffectorRoller.setInverted(true);
 
         this.leds = leds;
+
+        Shuffleboard.getTab("Robot").addDouble("Shooter RPM", this::getShooterRPM);
+        Shuffleboard.getTab("Robot").addDouble("Set Shooter RPM", this::getShooterRPM);
+        Shuffleboard.getTab("Robot").addBoolean("EE Home Limit", this::getEEHomeLimit);
+        Shuffleboard.getTab("Robot").addBoolean("EE Deployed Limit", this::getEEDeployedLimit);
     }
 
     public ShooterSubsystem() {
@@ -99,42 +105,25 @@ public class ShooterSubsystem extends SubsystemBase {
         // Logging
         {
             Logger.recordOutput("Hood/EE/ActualDeg", getEEAngle().getDegrees());
-            // Logger.recordOutput("Hood/EE/SetDeg", this.setPosition.hoodAngle.getDegrees());
         }
 
         // Endeffector PID loop
         if (this.hoodInited) {
-            // double pidEffort = EEPIDController.calculate(getEEAngle().getDegrees(),
-            //         this.setPosition.hoodAngle.getDegrees());
-            // Logger.recordOutput("Hood/EE/PIDEffort", pidEffort);
-
-            // if (getEEHomeLimit() && getEEAngle().getDegrees() < 20) {
-            //     zeroEEAngle();
-            // }
-
-            // if (getEEHomeLimit() && pidEffort < 0) {
-            //     endEffector.set(0);
-            // } else if (getEEDeployedLimit() && pidEffort > 0) {
-            //     endEffector.set(0);
-            // } else {
-            //     endEffector.set(pidEffort);
-            //     // endEffector.set(0);
-            // }
-
-            // lmao
-            var eeAngle = this.getEEAngle();
-            if (eeAngle.getDegrees() <= 115 && eeAngle.getDegrees() >= -5) {
+            {
                 boolean homeLimit = this.getEEHomeLimit();
                 boolean deployedLimit = this.getEEDeployedLimit();
 
-                if (homeLimit && this.isHoodUp) {
+                /*if (homeLimit && deployedLimit) {
+                    this.endEffector.set(0);
+                }
+                else */if (homeLimit && this.isHoodSetUp) {
                     this.endEffector.set(-0.4);
                 }
-                else if (deployedLimit && !this.isHoodUp) {
+                else if (deployedLimit && !this.isHoodSetUp) {
                     this.endEffector.set(0.4);
                 }
                 else if (!homeLimit && !deployedLimit) {
-                    if (this.isHoodUp) {
+                    if (this.isHoodSetUp) {
                         this.endEffector.set(-0.4);
                     }
                     else {
@@ -145,16 +134,16 @@ public class ShooterSubsystem extends SubsystemBase {
                     this.endEffector.set(0);
                 }
             }
-            else {
-                this.endEffector.set(0);
-            }
+            // else {
+            //     this.endEffector.set(0);
+            // }
         }
 
         // Shooter
         {
             this.filteredRPM = this.rpmFilter.calculate(this.shooterMotor.getVelocity().getValueAsDouble() * 60);
 
-            if (this.leds != null && !this.shooterGotToSpeed && this.isShooterAtSpeed() && 60 * this.shooterSetRPS >= 250) {
+            if (this.leds != null && !this.shooterGotToSpeed && this.isShooterAtSP() && 60 * this.shooterSetRPS >= 250) {
                 // Strobe when shooter gets up to speed
                 this.leds.animate(new StrobeAnimation(0x66, 0xff, 0x33, 0, 0.33, CandleConstants.kLEDCount), 1).schedule();
                 this.shooterGotToSpeed = true;
@@ -165,27 +154,22 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Command initHoodCommand() {
-        // return new FunctionalCommand(
-        //     () -> {}, 
-        //     () -> {
-        //         if (this.getEEHomeLimit()) {
-        //             this.endEffector.set(0);
-        //         } 
-        //         else {
-        //             this.endEffector.set(-0.1); // Slowly move back
-        //         }
-        //     }, 
-        //     (interrupted) -> {
-        //         // Stop moving it back ofc
-        //         this.endEffector.set(0);
-        //         // We initialized the hood
-        //         this.hoodInited = !interrupted;
-        //         // Zero angle
-        //         endEffector.getEncoder().setPosition(0);
-        //     }, 
-        //     () -> this.getEEHomeLimit() || this.hoodInited, 
-        //     this).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-        return null;
+        return new FunctionalCommand(
+            () -> {}, 
+            () -> {
+                this.endEffector.set(0);
+            }, 
+            (interrupted) -> {
+                // Stop moving it back ofc
+                this.endEffector.set(0);
+                // We initialized the hood
+                this.hoodInited = !interrupted;
+                // Zero angle
+                this.endEffectorEncoder.setPosition(0);
+            }, 
+            () -> this.getEEHomeLimit() || this.hoodInited, 
+            this).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+        // return null;
     }
 
     public void setEERoller(double speed) {
@@ -193,7 +177,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setHood(boolean isHoodUp) {
-        this.isHoodUp = isHoodUp;
+        this.isHoodSetUp = isHoodUp;
     }
 
     public Rotation2d getEEAngle() {
@@ -213,19 +197,32 @@ public class ShooterSubsystem extends SubsystemBase {
         this.shooterSetRPS = rpm / 60;
         this.shooterMotor.setControl(new VelocityVoltage(rpm / 60.0).withSlot(0));
 
-        this.shooterGotToSpeed = this.isShooterAtSpeed();
+        this.shooterGotToSpeed = this.isShooterAtSP();
     }
 
     public double getShooterRPM() {
         return this.filteredRPM;
     }
 
-    public boolean isShooterAtSpeed() {
+    public double getShooterSPRPM() {
+        return this.shooterSetRPS * 60;
+    }
+
+    public boolean isShooterAtSP() {
         //return this.filteredRPM > 60 * this.shooterSetRPS - 100;
-        return Math.abs(this.filteredRPM - 60 * this.shooterSetRPS) <= 100.0;
+        return Math.abs(this.filteredRPM - 60 * this.shooterSetRPS) <= 200.0;
+    }
+
+    public boolean isHoodAtSP() {
+        return this.isHoodSetUp ? this.getEEDeployedLimit() : this.getEEHomeLimit();
+    }
+
+    public boolean isHoodSetUp() {
+        return this.isHoodSetUp;
     }
 
     public void setShooterAngle(boolean isUp) {
+
         angleSolenoid.set(isUp ? SHOOTER_UP : SHOOTER_DOWN);
     }
 
@@ -235,14 +232,17 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private void updateStatus() {
         SmartDashboard.putNumber("[Shooter]: Setpoint (RPM)", this.shooterSetRPS * 60);
-        SmartDashboard.putNumber("[Shooter]: Velocity (RPM)", getShooterRPM());
-        SmartDashboard.putBoolean("[Shooter]: Is Shooter Up", isShooterUp());
+        SmartDashboard.putNumber("[Shooter]: Velocity (RPM)", this.getShooterRPM());
+        SmartDashboard.putBoolean("[Shooter]: Is Shooter Up", this.isShooterUp());
 
         Logger.recordOutput("Shooter/actualShooterRPM", this.shooterMotor.getVelocity().getValueAsDouble() * 60);
         Logger.recordOutput("Shooter/filteredShooterRPM", this.filteredRPM);
-        Logger.recordOutput("Shooter/setShooterRPM", this.shooterSetRPS);
+        Logger.recordOutput("Shooter/setShooterRPM", this.shooterSetRPS * 60);
         Logger.recordOutput("Shooter/isShooterUp", this.isShooterUp());
         Logger.recordOutput("Shooter/shooterGotToSpeed", this.shooterGotToSpeed);
-        Logger.recordOutput("Shooter/shooterAtSpeed", this.isShooterAtSpeed());
+        Logger.recordOutput("Shooter/shooterAtSP", this.isShooterAtSP());
+
+        Logger.recordOutput("Shooter/hoodSetUp", this.isHoodSetUp);
+        Logger.recordOutput("Shooter/hoodAtSP", this.isHoodAtSP());
     }
 }

@@ -6,9 +6,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import com.ctre.phoenix.led.CANdleConfiguration;
-import com.ctre.phoenix.led.CANdle.LEDStripType;
-
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -17,7 +14,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Constants {
     public static final boolean simReplay = false;
-    public static final double controllerDeadband = 0.1;
+    public static final double controllerDeadband = 0.15;
     public static final int pigeonId = 10;
 
     public static final int testSampleCount = 1024;
@@ -91,7 +88,7 @@ public final class Constants {
 
     public static final class CandleConstants {
         public static final int kCandleID = 22;
-        public static final int kLEDCount = 150;
+        public static final int kLEDCount = 190;
     }
 
     public static final class ElevatorConstants {
@@ -104,4 +101,9 @@ public final class Constants {
         public static final int kBreaksPort = 2;
     }
 
+    public static final class VisionConstants {
+        public static final double kAssistkP = 0.085;
+
+        public static final double kMinAssistSpeed = 0.2;
+    }
 }
