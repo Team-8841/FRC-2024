@@ -24,7 +24,7 @@ public class TeleopSwerve extends Command {
     private double getDSShooterPot() {
 
         double potVals[] = { 1, 0.55, 0.06, -0.44, -0.96 };
-        double potRPM[] = { 0, 2000, 3500, 4500, 5000 };
+        double potRPM[] = { 0, 2000, 4500, 5000, 5500 };
         double epsilon = 0.1;
         double pot = this.copilotController.getRawAxis(3);
 

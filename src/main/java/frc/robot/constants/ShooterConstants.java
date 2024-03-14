@@ -70,7 +70,8 @@ public class ShooterConstants {
         shooterConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         shooterConfig.OpenLoopRamps = new OpenLoopRampsConfigs();
-        shooterConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 1;
+        //Time to set speed
+        shooterConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 0.25;
 
         shooterConfig.Slot0 = new Slot0Configs();
         shooterConfig.Slot0.kP = 0.007;
@@ -79,6 +80,6 @@ public class ShooterConstants {
         shooterConfig.Slot0.kV = 0.108;
 
         shooterConfig.ClosedLoopRamps = new ClosedLoopRampsConfigs();
-        shooterConfig.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 1;
+        shooterConfig.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.25;
     }
 }

@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -93,6 +94,7 @@ public class RobotContainer {
   private Command shooterCommand;
 
   private double climberMovement;
+  public SendableChooser<Command> m_AutoChooser;
 
   public RobotContainer(CommandXboxController driveController, CommandJoystick copilotController) {
     this.driveController = driveController;
@@ -162,7 +164,6 @@ public class RobotContainer {
     this.imu.initializeShuffleBoardLayout();
 
     this.configureBindings();
-
     if (Constants.isCompRobot) {
 
       this.elevator.setDefaultCommand(new ElevatorCommand(() -> this.copilotController.getRawAxis(0), this.elevator));
@@ -171,12 +172,17 @@ public class RobotContainer {
 
       NamedCommands.registerCommand("IntakeNote", new SensorFeedCommand(this.intake, () -> true, this.led));
       NamedCommands.registerCommand("ShootyNote", this.intake.setStateCommand(IntakeState.INTAKE));
-      NamedCommands.registerCommand("ShooterSpeaker", new InstantCommand(() -> this.shooter.setShooterSpeed(3000)));
+      NamedCommands.registerCommand("ShooterSpeaker", new InstantCommand(() -> this.shooter.setShooterSpeed(4500)));
       NamedCommands.registerCommand("ShooterPodium", new InstantCommand(() -> this.shooter.setShooterSpeed(4500)));
       NamedCommands.registerCommand("ShooterStop", new InstantCommand(() -> this.shooter.setShooterSpeed(0)));
       NamedCommands.registerCommand("ShooterUp", new InstantCommand(() -> this.shooter.setShooterAngle(false)));
       NamedCommands.registerCommand("ShooterDown", new InstantCommand(() -> this.shooter.setShooterAngle(true)));
+
+      m_AutoChooser = AutoBuilder.buildAutoChooser("Four_Note_Long_Auto");
+      SmartDashboard.putData(m_AutoChooser);
     }
+
+    // m_AutoChooser.getSelected();
 
     // Logging callback for current robot pose
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
@@ -238,7 +244,7 @@ public class RobotContainer {
         this.intake.setStateCommand(IntakeState.INTAKE),
         new RunCommand(() -> {
           if (this.shooter.isHoodSetUp()) {
-            this.shooter.setEERoller(0.8);
+            this.shooter.setEERoller(0.6);
           } else {
             this.shooter.setEERoller(0);
           }
@@ -273,8 +279,9 @@ public class RobotContainer {
     // PathPlannerPath path = PathPlannerPath.fromPathFile("Two_Note");
 
     // return AutoBuilder.followPath(path);
-
-    return new PathPlannerAuto("Four_Note_Long_Auto");
+    return m_AutoChooser.getSelected();
+    
+    // return new PathPlannerAuto());
   }
 
   public Command getTeleopCommand() {

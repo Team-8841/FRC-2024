@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 
@@ -49,15 +50,15 @@ public class LEDSubsystem extends SubsystemBase {
         return new RunCommand(() -> {
             if (shooter.isShooterAtSP() && shooter.getShooterSPRPM() >= 800) {
                 // Flash green if shooter is at setpoint
-                this.candle.animate(new StrobeAnimation(0x66, 0xff, 0x33, 0, 0.33, CandleConstants.kLEDCount));
+                this.candle.animate(new SingleFadeAnimation(0, 0xff, 0, 0, 1, CandleConstants.kLEDCount));
             }
             else if (intake.getIndexSensor()) {
                 // Flash blue if intake has a note
-                this.candle.animate(new StrobeAnimation(0x33, 0x66, 0xff, 0, 0.33, CandleConstants.kLEDCount));
+                this.candle.animate(new SingleFadeAnimation(0x33, 0x66, 0xff, 0, 1, CandleConstants.kLEDCount));
             }
             else {
-                this.candle.setLEDs(0, 0, 0);
-            }
-        }, this).finallyDo(() -> this.candle.setLEDs(0, 0, 0));
+                this.candle.animate(new SingleFadeAnimation(0, 0, 0, 0, 1, CandleConstants.kLEDCount));
+            } 
+        }, this).finallyDo(() -> new SingleFadeAnimation(0, 0, 0, 0, 1, CandleConstants.kLEDCount)).ignoringDisable(true);
     }
 }

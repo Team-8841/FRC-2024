@@ -244,5 +244,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
         Logger.recordOutput("Shooter/hoodSetUp", this.isHoodSetUp);
         Logger.recordOutput("Shooter/hoodAtSP", this.isHoodAtSP());
+
+        Logger.recordOutput("Shooter/shooterSupCur", this.shooterMotor.getSupplyCurrent().getValue());
+        Logger.recordOutput("Shooter/followerSupCur", this.followerMotor.getSupplyCurrent().getValue());
     }
 }
