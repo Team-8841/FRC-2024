@@ -28,12 +28,12 @@ public class IntakeSubsystem extends SubsystemBase {
   private LEDSubsystem leds;
 
   private Debouncer ledDebouncer = new Debouncer(0.25);
-  private Command ledCommand;
+  // private Command ledCommand;
 
   public IntakeSubsystem(IntakeIO hardwImpl, LEDSubsystem leds) {
     this.hardwImpl = hardwImpl;
     this.leds = leds;
-    this.ledCommand = this.leds.animate(new SingleFadeAnimation(0x33, 0x66, 0xff, 0, 0.5, CandleConstants.kLEDCount));
+    // this.ledCommand = this.leds.animate(new SingleFadeAnimation(0x33, 0x66, 0xff, 0, 0.5, CandleConstants.kLEDCount));
     this.initializeShuffleboardWidgets();
   }
 
@@ -61,13 +61,13 @@ public class IntakeSubsystem extends SubsystemBase {
     this.hardwImpl.updateInputs(inputs);
     Logger.recordOutput("Intake/curState", this.curState.name());
   
-    if (this.ledDebouncer.calculate(this.getIndexSensor())) {
-      this.leds.setDefaultCommand(this.ledCommand);
-    } 
-    else {
-      this.leds.removeDefaultCommand();
-      this.ledCommand.cancel();
-    }
+    // if (this.ledDebouncer.calculate(this.getIndexSensor())) {
+    //   // this.leds.setDefaultCommand(this.ledCommand);
+    // } 
+    // else {
+    //   // this.leds.removeDefaultCommand();
+    //   // this.ledCommand.cancel();
+    // }
   }
 
   public void setIntakeState(IntakeState state) {

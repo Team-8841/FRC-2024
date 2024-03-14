@@ -113,10 +113,10 @@ public class ShooterSubsystem extends SubsystemBase {
                 boolean homeLimit = this.getEEHomeLimit();
                 boolean deployedLimit = this.getEEDeployedLimit();
 
-                /*if (homeLimit && deployedLimit) {
+                if (homeLimit && deployedLimit) {
                     this.endEffector.set(0);
                 }
-                else */if (homeLimit && this.isHoodSetUp) {
+                else if (homeLimit && this.isHoodSetUp) {
                     this.endEffector.set(-0.4);
                 }
                 else if (deployedLimit && !this.isHoodSetUp) {
@@ -143,11 +143,11 @@ public class ShooterSubsystem extends SubsystemBase {
         {
             this.filteredRPM = this.rpmFilter.calculate(this.shooterMotor.getVelocity().getValueAsDouble() * 60);
 
-            if (this.leds != null && !this.shooterGotToSpeed && this.isShooterAtSP() && 60 * this.shooterSetRPS >= 250) {
-                // Strobe when shooter gets up to speed
-                this.leds.animate(new StrobeAnimation(0x66, 0xff, 0x33, 0, 0.33, CandleConstants.kLEDCount), 1).schedule();
-                this.shooterGotToSpeed = true;
-            }
+            // if (this.leds != null && !this.shooterGotToSpeed && this.isShooterAtSP() && 60 * this.shooterSetRPS >= 250) {
+            //     // Strobe when shooter gets up to speed
+            //     this.leds.animate(new StrobeAnimation(0x66, 0xff, 0x33, 0, 0.33, CandleConstants.kLEDCount), 1).schedule();
+            //     this.shooterGotToSpeed = true;
+            // }
         }
 
         this.updateStatus();

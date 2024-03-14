@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -10,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.constants.Constants.CandleConstants;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class LEDSubsystem extends SubsystemBase {
     private CANdle candle;
@@ -21,24 +24,40 @@ public class LEDSubsystem extends SubsystemBase {
         this.candle.configLOSBehavior(false);
     }
 
-    public Command animate(Animation animation, double time) {
+    private Command animate(Animation animation, double time) {
         animation.setNumLed(CandleConstants.kLEDCount);
         var animCommand = new RunCommand(() -> this.candle.animate(animation, 0), this)
                 .finallyDo(() -> this.candle.clearAnimation(0));
         return time < 0 ? animCommand : new ParallelRaceGroup(animCommand, new WaitCommand(time));
     }
 
-    public Command animate(Animation animation) {
+    private Command animate(Animation animation) {
         return this.animate(animation, -1);
     }
 
-    public Command setLEDs(int r, int g, int b, double time) {
+    private Command setLEDs(int r, int g, int b, double time) {
         var animCommand = new RunCommand(() -> this.candle.setLEDs(r, g, b), this)
                 .finallyDo(() -> this.candle.setLEDs(0, 0, 0));
         return time < 0 ? animCommand : new ParallelRaceGroup(animCommand, new WaitCommand(time));
     }
 
-    public Command setLEDs(int r, int g, int b) {
+    private Command setLEDs(int r, int g, int b) {
         return this.setLEDs(r, g, b, -1);
+    }
+
+    public Command shooterIntakeFlash(ShooterSubsystem shooter, IntakeSubsystem intake) {
+        return new RunCommand(() -> {
+            if (shooter.isShooterAtSP() && shooter.getShooterSPRPM() >= 800) {
+                // Flash green if shooter is at setpoint
+                this.candle.animate(new StrobeAnimation(0x66, 0xff, 0x33, 0, 0.33, CandleConstants.kLEDCount));
+            }
+            else if (intake.getIndexSensor()) {
+                // Flash blue if intake has a note
+                this.candle.animate(new StrobeAnimation(0x33, 0x66, 0xff, 0, 0.33, CandleConstants.kLEDCount));
+            }
+            else {
+                this.candle.setLEDs(0, 0, 0);
+            }
+        }, this).finallyDo(() -> this.candle.setLEDs(0, 0, 0));
     }
 }

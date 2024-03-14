@@ -69,9 +69,6 @@ public class RobotContainer {
   private ElevatorSubsystem elevator;
   private VisionSubsystem vision;
 
-  private MjpegServer intakeCamServer = new MjpegServer("10.88.41.13", 5800);
-  private MjpegServer shooterCamServer = new MjpegServer("10.88.41.11", 5800);
-
   private LEDSubsystem led = new LEDSubsystem(22);
 
   // Controllers
@@ -199,6 +196,8 @@ public class RobotContainer {
     // // Do whatever you want with the poses here
     // field.getObject("path").setPoses(poses);
     // });
+
+    this.led.setDefaultCommand(this.led.shooterIntakeFlash(this.shooter, this.intake));
   }
 
   private void configureBindings() {
