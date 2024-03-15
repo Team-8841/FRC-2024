@@ -2,10 +2,12 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -48,7 +50,10 @@ public class LEDSubsystem extends SubsystemBase {
 
     public Command shooterIntakeFlash(ShooterSubsystem shooter, IntakeSubsystem intake) {
         return new RunCommand(() -> {
-            if (shooter.isShooterAtSP() && shooter.getShooterSPRPM() >= 800) {
+            if (DriverStation.isDisabled()) {
+                this.candle.animate(new RainbowAnimation(0.5, 0.5, CandleConstants.kLEDCount));
+            }
+            else if (shooter.isShooterAtSP() && shooter.getShooterSPRPM() >= 800) {
                 // Flash green if shooter is at setpoint
                 this.candle.animate(new SingleFadeAnimation(0, 0xff, 0, 0, 1, CandleConstants.kLEDCount));
             }
