@@ -53,9 +53,6 @@ public class ShooterConstants {
 
     public static final int endEffectorRollerID = 19;
 
-    public static final double rollerOutSpeed = 0.6; // Tune
-    public static final double rollerInSpeed = 0.0; // Tune
-
     static {
         // Shooter Motor Configs
 

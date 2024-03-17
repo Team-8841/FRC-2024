@@ -51,7 +51,7 @@ public class LEDSubsystem extends SubsystemBase {
     public Command shooterIntakeFlash(ShooterSubsystem shooter, IntakeSubsystem intake) {
         return new RunCommand(() -> {
             if (DriverStation.isDisabled()) {
-                this.candle.animate(new RainbowAnimation(0.5, 0.5, CandleConstants.kLEDCount));
+                this.candle.animate(new RainbowAnimation(0.5, 0.7, CandleConstants.kLEDCount));
             }
             else if (shooter.isShooterAtSP() && shooter.getShooterSPRPM() >= 800) {
                 // Flash green if shooter is at setpoint

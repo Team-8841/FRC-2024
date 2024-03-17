@@ -244,7 +244,7 @@ public class RobotContainer {
         this.intake.setStateCommand(IntakeState.INTAKE),
         new RunCommand(() -> {
           if (this.shooter.isHoodSetUp()) {
-            this.shooter.setEERoller(0.6);
+            this.shooter.setEERoller(0.8);
           } else {
             this.shooter.setEERoller(0);
           }
@@ -253,7 +253,16 @@ public class RobotContainer {
         // }));
         })).onlyIf(() -> this.shooter.isShooterAtSP() && this.shooter.isHoodAtSP() && this.shooter.getShooterSPRPM() > 0);
 
-      this.driveController.rightTrigger(0.5).whileTrue(feedCommand);
+      var reverseFeedCommand = new RunCommand(() -> {
+        if (this.shooter.isHoodAtSP() && this.shooter.isHoodSetUp() && this.hoodOverrideBtn.getAsBoolean()) {
+          this.shooter.setEERoller(-0.8);
+        }
+        else {
+          this.shooter.setEERoller(0);
+        }
+      }).finallyDo(() -> this.shooter.setEERoller(0));
+
+      this.driveController.rightTrigger(0.5).whileTrue(feedCommand).whileFalse(reverseFeedCommand);
 
       this.driveController.leftTrigger(0.5).whileTrue(new RunCommand(() -> {
         this.shooter.setShooterSpeed(600);
