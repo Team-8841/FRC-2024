@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.0,
-        "y": 6.0
+        "x": 7.91,
+        "y": 0.77
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.003277015498574,
-        "y": 5.993555929866778
+        "x": 7.917736442039768,
+        "y": 0.77
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.657578689039311,
-        "y": 3.686106263089092
+        "x": 5.895168834303993,
+        "y": 1.598040988411256
       },
       "prevControl": {
-        "x": 4.330427852268942,
-        "y": 4.839831096477935
+        "x": 5.868091287164802,
+        "y": 1.5980409884112556
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Source_Grab_N_Go",
   "previewStartingState": {
-    "rotation": -56.309932474020215,
+    "rotation": 0.031093733787355415,
     "velocity": 0
   },
   "useDefaultConstraints": true

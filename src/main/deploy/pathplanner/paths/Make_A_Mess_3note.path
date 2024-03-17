@@ -3,25 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.34,
-        "y": 7.48
+        "x": 0.5,
+        "y": 2.09
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.337908460651812,
-        "y": 7.514492745484428
+        "x": 0.5146856823230641,
+        "y": 2.0753143176769355
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.0,
-        "y": 6.0
+        "x": 8.409512497228924,
+        "y": 1.0951722558262704
       },
       "prevControl": {
-        "x": 3.9820373021783615,
-        "y": 6.021129752456285
+        "x": 8.402689423932651,
+        "y": 1.0564766842872018
+      },
+      "nextControl": {
+        "x": 8.416335570525197,
+        "y": 1.133867827365339
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.417248939268692,
+        "y": 3.85708206402381
+      },
+      "prevControl": {
+        "x": 8.394990938366286,
+        "y": 3.871767746341781
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,14 +55,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -172.9893952075585,
+    "rotation": 45.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Make_A_Mess_Paths",
   "previewStartingState": {
-    "rotation": 90.0,
-    "velocity": 0.0
+    "rotation": 0.0,
+    "velocity": 0
   },
   "useDefaultConstraints": true
 }

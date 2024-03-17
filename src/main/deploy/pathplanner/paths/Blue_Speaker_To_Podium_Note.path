@@ -3,45 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.37,
+        "x": 1.35,
         "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3675006759989587,
-        "y": 5.548193817738592
+        "x": 1.3472190527086272,
+        "y": 5.544391351981427
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.3,
-        "y": 6.8
+        "x": 2.1,
+        "y": 3.8
       },
       "prevControl": {
-        "x": 2.2727087845117038,
-        "y": 6.799162407786468
+        "x": 2.102429414382376,
+        "y": 3.790624612906355
       },
       "nextControl": {
-        "x": 2.327291215488296,
-        "y": 6.800837592213532
+        "x": 2.0975705856176243,
+        "y": 3.8093753870936444
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.9,
-        "y": 6.8
+        "x": 2.63,
+        "y": 3.8
       },
       "prevControl": {
-        "x": 2.9456534068740443,
-        "y": 6.778632797687029
+        "x": 2.6179234993120075,
+        "y": 3.7925300359513567
       },
       "nextControl": {
-        "x": 2.8543465931259555,
-        "y": 6.82136720231297
+        "x": 2.6420765006879923,
+        "y": 3.807469964048643
       },
       "isLocked": false,
       "linkedName": null
@@ -52,8 +52,8 @@
         "y": 5.55
       },
       "prevControl": {
-        "x": 1.4018347693715638,
-        "y": 5.556708235900792
+        "x": 1.3599462470167243,
+        "y": 5.542099110415486
       },
       "nextControl": null,
       "isLocked": false,
@@ -61,23 +61,11 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [
-    {
-      "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 2.0,
-      "constraints": {
-        "maxVelocity": 1.25,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0
-      }
-    }
-  ],
+  "constraintZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.25,
+      "waypointRelativePos": 0.5499999999999999,
       "command": {
         "type": "sequential",
         "data": {
@@ -105,7 +93,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Blue_Four_Note_Paths",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

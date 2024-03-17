@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.34,
-        "y": 7.48
+        "x": 7.96,
+        "y": 2.46
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.337908460651812,
-        "y": 7.514492745484428
+        "x": 7.967736442039768,
+        "y": 2.46
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.0,
-        "y": 6.0
+        "x": 5.717230667389305,
+        "y": 1.8223978075645586
       },
       "prevControl": {
-        "x": 3.9820373021783615,
-        "y": 6.021129752456285
+        "x": 5.730769440958901,
+        "y": 1.8223978075645586
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,14 +39,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -172.9893952075585,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Make_A_Mess_Paths",
+  "folder": "Source_Grab_N_Go",
   "previewStartingState": {
-    "rotation": 90.0,
-    "velocity": 0.0
+    "rotation": 0.031093733787355415,
+    "velocity": 0
   },
   "useDefaultConstraints": true
 }

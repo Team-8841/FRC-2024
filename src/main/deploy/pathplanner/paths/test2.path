@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.41,
-        "y": 5.49
+        "x": 2.17,
+        "y": 6.97
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.420177664017821,
-        "y": 5.500177664017821
+        "x": 2.1777364420397687,
+        "y": 6.97
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.34,
-        "y": 6.006444070133222
+        "x": 3.2028870044643734,
+        "y": 6.974868206050725
       },
       "prevControl": {
-        "x": 8.369371364646128,
-        "y": 6.006444070133222
+        "x": 2.9719695137102304,
+        "y": 6.974868206050725
       },
       "nextControl": {
-        "x": 8.310628635353872,
-        "y": 6.006444070133222
+        "x": 3.4338044952185163,
+        "y": 6.974868206050725
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.34,
-        "y": 7.48
+        "x": 2.1662037711353253,
+        "y": 6.943922437891649
       },
       "prevControl": {
-        "x": 8.31062863535387,
-        "y": 7.421257270707744
+        "x": 2.1662037711353253,
+        "y": 6.943922437891649
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,29 +46,34 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
-      "rotationDegrees": 93.47,
+      "waypointRelativePos": 0.0,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.1,
+      "rotationDegrees": 0,
       "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 1.6,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 93.47,
+    "rotation": 23.19859051364816,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Make_A_Mess_Paths",
+  "folder": "Testing auto",
   "previewStartingState": {
-    "rotation": 45.0,
+    "rotation": 21.823724619209887,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -3,7 +3,11 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "Red_Four_Note"
+    "Blue_Four_Note_Paths",
+    "Make_A_Mess_Paths",
+    "Testing auto",
+    "Red_Four_Note_Paths",
+    "Source_Grab_N_Go"
   ],
   "autoFolders": [
     "New Folder"

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.35,
-      "y": 5.55
+      "x": 0.758171319897364,
+      "y": 4.390896564767872
     },
-    "rotation": 0
+    "rotation": -59.53445508054016
   },
   "command": {
     "type": "sequential",
@@ -20,7 +20,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.6
           }
         },
         {
@@ -45,7 +45,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speaker_To_Center_Note_Forward"
+            "pathName": "Speaker_To_Center_Source_Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center_Source_Note_To_Stage_Line"
           }
         },
         {
@@ -61,7 +67,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.5
+                  "waitTime": 0.3
                 }
               }
             ]
@@ -70,7 +76,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speaker_To_Podium_Note_Forward"
+            "pathName": "Stage_Line_To_2nd_Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2nd_Note_To_Stage_Line"
           }
         },
         {
@@ -86,41 +98,10 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.4
+                  "waitTime": 0.3
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShooterStop"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "ShooterDown"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 1.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Speaker_To_Center_Field"
           }
         }
       ]

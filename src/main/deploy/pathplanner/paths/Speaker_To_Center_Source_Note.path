@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.41,
-        "y": 5.49
+        "x": 0.7272255517382878,
+        "y": 4.390896564767872
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.420177664017821,
-        "y": 5.500177664017821
+        "x": 0.7272255517382878,
+        "y": 4.383160122728104
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.34,
-        "y": 6.006444070133222
+        "x": 4.5799736875432595,
+        "y": 0.8243967844343543
       },
       "prevControl": {
-        "x": 8.369371364646128,
-        "y": 6.006444070133222
+        "x": 4.587710129583028,
+        "y": 0.816660342394586
       },
       "nextControl": {
-        "x": 8.310628635353872,
-        "y": 6.006444070133222
+        "x": 4.572237245503491,
+        "y": 0.8321332264741226
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.34,
-        "y": 7.48
+        "x": 7.914380206683707,
+        "y": 0.7702416901559713
       },
       "prevControl": {
-        "x": 8.31062863535387,
-        "y": 7.421257270707744
+        "x": 7.887302659544516,
+        "y": 0.7702416901559708
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,8 +46,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
-      "rotationDegrees": 93.47,
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
       "rotateFast": false
     }
   ],
@@ -61,13 +61,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 93.47,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Make_A_Mess_Paths",
+  "folder": "Source_Grab_N_Go",
   "previewStartingState": {
-    "rotation": 45.0,
+    "rotation": -59.03624346792642,
     "velocity": 0
   },
   "useDefaultConstraints": true

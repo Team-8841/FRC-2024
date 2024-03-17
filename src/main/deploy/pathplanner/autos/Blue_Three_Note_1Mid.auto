@@ -20,7 +20,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.6
+            "waitTime": 1.0
           }
         },
         {
@@ -45,7 +45,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speaker_To_Center_Note_Forward"
+            "pathName": "Blue_Speaker_To_Center_Note"
           }
         },
         {
@@ -70,7 +70,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speaker_To_Podium_Note_Forward"
+            "pathName": "Blue_Speaker_To_Podium_Note"
           }
         },
         {
@@ -93,9 +93,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Speaker_To_Upper_Note_Forward"
+            "name": "ShooterStop"
           }
         },
         {
@@ -105,7 +105,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "ShootyNote"
+                  "name": "ShooterDown"
                 }
               },
               {
@@ -118,9 +118,15 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "ShooterStop"
+            "pathName": "Speaker_To_Center_Field"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Return_From_Center"
           }
         }
       ]
