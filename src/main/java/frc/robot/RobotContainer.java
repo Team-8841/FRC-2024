@@ -210,6 +210,7 @@ public class RobotContainer {
   private void configureBindings() {
     // Intake bindings
     if (Constants.isCompRobot) {
+
       // this.driveController.leftBumper().whileTrue(intake.setStateCommand(IntakeState.INTAKE));
       this.copilotController.button(5).whileTrue(intake.setStateCommand(IntakeState.EJECT));
 
@@ -224,6 +225,10 @@ public class RobotContainer {
       climberBreaksBtn.onTrue(new InstantCommand(() -> this.elevator.setBreaks(true)))
           .onFalse(new InstantCommand(() -> this.elevator.setBreaks(false)));
 
+
+      this.driveController.button(7).onTrue(new InstantCommand( () -> {
+        this.imu.reset();
+      }));
       // this.driveController.leftBumper().whileTrue(new RunCommand(() -> {
       // if (this.driveController.getHID().getRightBumper()) {
 
