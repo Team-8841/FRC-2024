@@ -174,7 +174,7 @@ public class RobotContainer {
       NamedCommands.registerCommand("ShootyNote", this.intake.setStateCommand(IntakeState.INTAKE));
       NamedCommands.registerCommand("FeedInitalNote", this.intake.setStateCommand(IntakeState.FEED));
       NamedCommands.registerCommand("ShooterSpeaker", new InstantCommand(() -> this.shooter.setShooterSpeed(4500)));
-      NamedCommands.registerCommand("ShooterPodium", new InstantCommand(() -> this.shooter.setShooterSpeed(4500)));
+      NamedCommands.registerCommand("ShooterPodium", new InstantCommand(() -> this.shooter.setShooterSpeed(5000)));
       NamedCommands.registerCommand("ShooterStop", new InstantCommand(() -> this.shooter.setShooterSpeed(0)));
       NamedCommands.registerCommand("ShooterUp", new InstantCommand(() -> this.shooter.setShooterAngle(false)));
       NamedCommands.registerCommand("ShooterDown", new InstantCommand(() -> this.shooter.setShooterAngle(true)));
