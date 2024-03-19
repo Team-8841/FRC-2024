@@ -3,37 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7349619937780567,
-        "y": 6.68861985057927
+        "x": 3.26,
+        "y": 7.05
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.7272255517382878,
-        "y": 6.680883408539501
+        "x": 3.253550528277522,
+        "y": 7.058837951423852
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.6071809674021598,
-        "y": 6.9826046480904935
+        "x": 6.243308726093598,
+        "y": 7.415845402317559
       },
       "prevControl": {
-        "x": 2.5914486178832044,
-        "y": 6.9826811571303224
+        "x": 6.274384226972384,
+        "y": 7.373256716578915
+      },
+      "nextControl": {
+        "x": 6.2122332252148125,
+        "y": 7.458434088056203
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.262520098473312,
+        "y": 7.446791170476635
+      },
+      "prevControl": {
+        "x": 8.262455232113457,
+        "y": 7.471953734365841
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.45,
+      "name": "Intake on'",
+      "waypointRelativePos": 0.95,
       "command": {
         "type": "sequential",
         "data": {
@@ -50,21 +72,21 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 1.6,
+    "maxAcceleration": 1.3,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Amp_Shoot_Grab_N_Go_Paths",
   "previewStartingState": {
-    "rotation": 59.74356283647072,
+    "rotation": 16.02945596489874,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

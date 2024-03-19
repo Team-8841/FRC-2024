@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.26,
+        "y": 7.45
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 8.253550528277522,
+        "y": 7.4588379514238525
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.0945768159076077,
+        "y": 6.959395321971186
+      },
+      "prevControl": {
+        "x": 3.0945119495477527,
+        "y": 6.984557885860393
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 1.6,
+    "maxAcceleration": 1.3,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 26.952178931228907,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Amp_Shoot_Grab_N_Go_Paths",
+  "previewStartingState": {
+    "rotation": 0.5379852566379845,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

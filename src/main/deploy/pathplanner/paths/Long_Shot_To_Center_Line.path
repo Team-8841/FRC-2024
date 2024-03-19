@@ -1,0 +1,108 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.09,
+        "y": 6.96
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.083550528277522,
+        "y": 6.968837951423852
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.599185059922973,
+        "y": 6.371425726948741
+      },
+      "prevControl": {
+        "x": 6.599120193563118,
+        "y": 6.396588290837947
+      },
+      "nextControl": {
+        "x": 6.599249926282828,
+        "y": 6.346263163059534
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.071108024348884,
+        "y": 5.783456131926296
+      },
+      "prevControl": {
+        "x": 7.078876899568582,
+        "y": 5.786347734061231
+      },
+      "nextControl": {
+        "x": 7.063339149129187,
+        "y": 5.780564529791361
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.084581931558626,
+        "y": 5.775719689886526
+      },
+      "prevControl": {
+        "x": 8.080697493948778,
+        "y": 5.774273888819058
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.65,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 1.9500000000000002,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "IntakeNote"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 1.6,
+    "maxAcceleration": 1.3,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Amp_Shoot_Grab_N_Go_Paths",
+  "previewStartingState": {
+    "rotation": 24.99920023229442,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}
