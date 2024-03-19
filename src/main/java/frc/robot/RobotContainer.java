@@ -179,7 +179,7 @@ public class RobotContainer {
       NamedCommands.registerCommand("ShooterUp", new InstantCommand(() -> this.shooter.setShooterAngle(false)));
       NamedCommands.registerCommand("ShooterDown", new InstantCommand(() -> this.shooter.setShooterAngle(true)));
 
-      m_AutoChooser = AutoBuilder.buildAutoChooser("Four_Note_Long_Auto");
+      m_AutoChooser = AutoBuilder.buildAutoChooser("Blue_Four_Note");
       SmartDashboard.putData(m_AutoChooser);
     }
 
