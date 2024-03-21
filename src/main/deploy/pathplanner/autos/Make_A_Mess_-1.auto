@@ -2,15 +2,59 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.48684490928910384,
-      "y": 2.085366889875104
+      "x": 0.7272255517382878,
+      "y": 4.383160122728103
     },
-    "rotation": 0
+    "rotation": -59.74356283647064
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterSpeaker"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.4
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShooterStop"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.1
+                }
+              }
+            ]
+          }
+        },
         {
           "type": "path",
           "data": {
