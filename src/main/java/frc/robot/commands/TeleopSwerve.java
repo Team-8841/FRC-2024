@@ -19,7 +19,7 @@ public class TeleopSwerve extends Command {
     private DriveTrainSubsystem driveTrain;
     private ShooterSubsystem shooter;
     private VisionSubsystem vision;
-    private PIDController visionPID = new PIDController(0.01, 0, 0);
+    private PIDController visionPID = new PIDController(0.015, 0, 0);
 
     private double getDSShooterPot() {
 
