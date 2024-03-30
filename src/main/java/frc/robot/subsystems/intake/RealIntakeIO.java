@@ -22,6 +22,8 @@ public class RealIntakeIO implements IntakeIO {
     public RealIntakeIO() {
         this.intakeEncoder.setVelocityConversionFactor(1.0/60); // RPM to RPS
         this.indexEncoder.setVelocityConversionFactor(1.0/60); // RPM to RPS
+
+        intakeMotor.setInverted(true);
     }
 
     @Override

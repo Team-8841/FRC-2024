@@ -53,9 +53,13 @@ public class LEDSubsystem extends SubsystemBase {
             if (DriverStation.isDisabled()) {
                 this.candle.animate(new RainbowAnimation(0.5, 0.7, CandleConstants.kLEDCount));
             }
-            else if (shooter.isShooterAtSP() && shooter.getShooterSPRPM() >= 800) {
-                // Flash green if shooter is at setpoint
+            else if (shooter.isShooterAtSP() && shooter.getShooterSPRPM() >= 800 && intake.getIndexSensor()) {
+                // Flash green if shooter is at setpoint and we have a note
                 this.candle.animate(new SingleFadeAnimation(0, 0xff, 0, 0, 1, CandleConstants.kLEDCount));
+            }
+            else if (shooter.isShooterAtSP() && shooter.getShooterSPRPM() >= 800 && !intake.getIndexSensor()) {
+                // Flash green if shooter is at setpoint and we have a note
+                this.candle.animate(new SingleFadeAnimation(0xff, 0, 0, 0, 1, CandleConstants.kLEDCount));
             }
             else if (intake.getIndexSensor()) {
                 // Flash blue if intake has a note

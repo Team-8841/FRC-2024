@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3712999258396992,
+      "y": 5.549836348046125
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Blue_Speaker_To_Podium_Note_5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Blue_Speaker_To_Center_Note_5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Blue_Center_To_Amp_5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Blue_Amp_To_Middle_5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Blue_Middle_Final_5"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

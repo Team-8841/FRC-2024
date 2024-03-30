@@ -89,7 +89,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public boolean getIndexSensor() {
-    return this.hardwImpl.getIndexSensor();
+    return !this.hardwImpl.getIndexSensor();
   }
 
   public void feed() {
