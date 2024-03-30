@@ -57,7 +57,7 @@ public class TeleopSwerve extends Command {
         double forward = MathUtil.applyDeadband(-this.driveController.getLeftY(), Constants.controllerDeadband) * SwerveConstants.maxSpeed;
         double strafe;
         if (visionAssist) {
-            strafe = this.visionPID.calculate(this.vision.getTargetHorizontalOffset());
+            strafe = this.visionPID.calculate(this.vision.getTargetHorizontalOffset() * 1.5);
         }
         else {
             strafe = MathUtil.applyDeadband(-this.driveController.getLeftX(), Constants.controllerDeadband) * SwerveConstants.maxSpeed;

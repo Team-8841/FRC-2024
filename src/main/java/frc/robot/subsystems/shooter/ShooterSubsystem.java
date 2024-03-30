@@ -194,8 +194,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void setShooterSpeed(double rpm) {
         // velocity is set in RPS
-        this.shooterSetRPS = rpm / 60;
-        this.shooterMotor.setControl(new VelocityVoltage(rpm / 60.0).withSlot(0));
+        if(rpm == 0 ){
+            this.shooterMotor.setControl(new VelocityVoltage(0).withSlot(0));
+        } else {
+            this.shooterSetRPS = rpm / 60;
+            this.shooterMotor.setControl(new VelocityVoltage(rpm / 60.0).withSlot(0));
+        }
 
         this.shooterGotToSpeed = this.isShooterAtSP();
     }

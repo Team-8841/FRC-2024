@@ -17,17 +17,6 @@
     {
       "anchor": {
         "x": 2.3,
-<<<<<<< Updated upstream
-        "y": 6.85
-      },
-      "prevControl": {
-        "x": 2.2727087845117038,
-        "y": 6.8491624077864675
-      },
-      "nextControl": {
-        "x": 2.327291215488296,
-        "y": 6.850837592213532
-=======
         "y": 6.9
       },
       "prevControl": {
@@ -37,7 +26,6 @@
       "nextControl": {
         "x": 2.327291215488296,
         "y": 6.9008375922135325
->>>>>>> Stashed changes
       },
       "isLocked": false,
       "linkedName": null
@@ -45,17 +33,6 @@
     {
       "anchor": {
         "x": 2.9,
-<<<<<<< Updated upstream
-        "y": 6.85
-      },
-      "prevControl": {
-        "x": 2.9456534068740443,
-        "y": 6.828632797687029
-      },
-      "nextControl": {
-        "x": 2.8543465931259555,
-        "y": 6.87136720231297
-=======
         "y": 6.9
       },
       "prevControl": {
@@ -65,7 +42,6 @@
       "nextControl": {
         "x": 2.8543465931259555,
         "y": 6.921367202312971
->>>>>>> Stashed changes
       },
       "isLocked": false,
       "linkedName": null

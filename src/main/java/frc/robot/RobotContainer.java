@@ -6,26 +6,14 @@ package frc.robot;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix.led.RainbowAnimation;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
-import edu.wpi.first.cscore.MjpegServer;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -176,8 +164,8 @@ public class RobotContainer {
       NamedCommands.registerCommand("ShooterSpeaker", new InstantCommand(() -> this.shooter.setShooterSpeed(4250)));
       NamedCommands.registerCommand("ShooterPodium", new InstantCommand(() -> this.shooter.setShooterSpeed(5000)));
       NamedCommands.registerCommand("ShooterStop", new InstantCommand(() -> this.shooter.setShooterSpeed(0)));
-      NamedCommands.registerCommand("ShooterUp", new InstantCommand(() -> this.shooter.setShooterAngle(false)));
-      NamedCommands.registerCommand("ShooterDown", new InstantCommand(() -> this.shooter.setShooterAngle(true)));
+      NamedCommands.registerCommand("ShooterUp", new InstantCommand(() -> this.shooter.setShooterAngle(true)));
+      NamedCommands.registerCommand("ShooterDown", new InstantCommand(() -> this.shooter.setShooterAngle(false)));
 
       m_AutoChooser = AutoBuilder.buildAutoChooser("Blue_Four_Note");
       SmartDashboard.putData(m_AutoChooser);

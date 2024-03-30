@@ -49,6 +49,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "ShooterDown"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Center_Source_Note_To_Stage_Line"

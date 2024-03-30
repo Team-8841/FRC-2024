@@ -30,11 +30,11 @@ public class ElevatorSubsystem extends SubsystemBase{
 
     public ElevatorSubsystem() {
         mainMotor.restoreFactoryDefaults();
-        mainMotor.setSmartCurrentLimit(100);
+        mainMotor.setSmartCurrentLimit(60);
         mainMotor.setIdleMode(IdleMode.kBrake);
 
         followerMotor.restoreFactoryDefaults();
-        followerMotor.setSmartCurrentLimit(100);
+        followerMotor.setSmartCurrentLimit(60);
         followerMotor.setIdleMode(IdleMode.kBrake);
 
         followerMotor.follow(mainMotor, true);

@@ -2,9 +2,11 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
+import com.ctre.phoenix.led.TwinkleOffAnimation;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -51,7 +53,9 @@ public class LEDSubsystem extends SubsystemBase {
     public Command shooterIntakeFlash(ShooterSubsystem shooter, IntakeSubsystem intake) {
         return new RunCommand(() -> {
             if (DriverStation.isDisabled()) {
-                this.candle.animate(new RainbowAnimation(0.5, 0.7, CandleConstants.kLEDCount));
+                this.candle.animate(new RainbowAnimation(0.6, 0.8, CandleConstants.kLEDCount));
+                //this.candle.animate(new FireAnimation(0.7, 0.5, CandleConstants.kLEDCount, 0.4, 0.6));
+                //this.candle.animate(new SingleFadeAnimation(0, 0, 0));
             }
             else if (shooter.isShooterAtSP() && shooter.getShooterSPRPM() >= 800 && intake.getIndexSensor()) {
                 // Flash green if shooter is at setpoint and we have a note
