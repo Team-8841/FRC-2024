@@ -1,0 +1,92 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.82,
+        "y": 4.27
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.8419818924326865,
+        "y": 4.2835286396334045
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.611659960162026,
+        "y": 4.966133265599865
+      },
+      "prevControl": {
+        "x": 2.5228277811091115,
+        "y": 4.677061264938534
+      },
+      "nextControl": {
+        "x": 2.70049213921494,
+        "y": 5.255205266261195
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.1285509939440934,
+        "y": 5.5102290906336195
+      },
+      "prevControl": {
+        "x": 3.137619257694656,
+        "y": 5.501160826883057
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.2,
+      "rotationDegrees": 57.22650150861775,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "IntakeNote"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 1.5,
+    "maxAcceleration": 1.5,
+    "maxAngularVelocity": 300.0,
+    "maxAngularAcceleration": 500.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 56.88865803962802,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "robinson zion 5 note",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

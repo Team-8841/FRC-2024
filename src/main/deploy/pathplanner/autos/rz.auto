@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3712999258396992,
-      "y": 5.549836348046125
+      "x": 1.3602395625843886,
+      "y": 5.537433881885308
     },
     "rotation": 0
   },
@@ -20,32 +20,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "ShootyNote"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.3
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Blue_Speaker_To_Podium_Note_5"
+            "waitTime": 0.6
           }
         },
         {
@@ -65,12 +40,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
           }
         },
         {
@@ -88,7 +57,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Blue_Speaker_To_Center_Note_5"
+            "pathName": "1"
           }
         },
         {
@@ -113,62 +82,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Blue_Center_To_Amp_5"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "ShootyNote"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.4
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShooterStop"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Blue_Amp_To_Middle_5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShooterPodium"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Blue_Middle_Final_5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootyNote"
+            "pathName": "2"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.3
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4"
           }
         }
       ]
