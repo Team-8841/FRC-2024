@@ -1,0 +1,161 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3712999258396992,
+      "y": 5.549836348046125
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterSpeaker"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.4
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterDown"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Fast_Speaker_To_Podium_5"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.4
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterPodium"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Fast_Podium_To_Center_5"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.4
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Fast_Center_To_Amp_5"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.4
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterStop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Fast_Amp_To_Middle_5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterPodium"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Fast_Middle_Final_5"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.44,
-        "y": 5.55
+        "x": 1.37,
+        "y": 5.53
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.44,
-        "y": 5.55
+        "x": 1.364917409441928,
+        "y": 5.5269117672566495
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.2579976738900847,
-        "y": 5.546502145635871
+        "x": 2.8470106706349987,
+        "y": 5.5436264286934565
       },
       "prevControl": {
-        "x": 1.2579976738900847,
-        "y": 5.546502145635871
+        "x": 2.8470106706349987,
+        "y": 5.559099312772996
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,9 +30,27 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.45,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "IntakeNote"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 1.6,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -43,10 +61,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Blue_5_Note_Paths",
+  "folder": "New_4_Note",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3712999258396992,
-      "y": 5.549836348046125
+      "x": 1.3616137989993475,
+      "y": 5.528153544613917
     },
     "rotation": 0
   },
@@ -43,6 +43,37 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "New_4N_1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "New_4N_2"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.4
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "ShooterDown"
@@ -57,11 +88,11 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of Blue_Speaker_To_Podium_Note_5"
+            "pathName": "New_4N_3"
           }
         },
         {
-          "type": "sequential",
+          "type": "race",
           "data": {
             "commands": [
               {
@@ -82,31 +113,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "copy2"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "copy3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeNote"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.4
+            "pathName": "New_4N_4"
           }
         },
         {
@@ -122,71 +129,10 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.4
+                  "waitTime": 0.3
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Blue_Center_To_Amp_5"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "ShootyNote"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.4
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShooterStop"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Blue_Amp_To_Middle_5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShooterPodium"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Blue_Middle_Final_5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootyNote"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.3
           }
         }
       ]
