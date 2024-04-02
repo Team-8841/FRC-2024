@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3616137989993475,
-        "y": 5.551362870733224
+        "x": 8.23,
+        "y": 4.13
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3538773569595783,
-        "y": 5.551362870733224
+        "x": 9.23,
+        "y": 4.13
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.65,
-        "y": 4.095579945545856
+        "x": 3.1104144664429683,
+        "y": 5.265385969368431
       },
       "prevControl": {
-        "x": 2.6732093261193075,
-        "y": 4.095579945545856
+        "x": 1.9496767063709566,
+        "y": 5.210976386865056
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,11 +29,34 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 0.5,
+      "constraints": {
+        "maxVelocity": 5.0,
+        "maxAcceleration": 5.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    },
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.55,
+      "maxWaypointRelativePos": 0.7,
+      "constraints": {
+        "maxVelocity": 3.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.8,
       "command": {
         "type": "sequential",
         "data": {
@@ -50,7 +73,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.6,
+    "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -61,10 +84,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "New_4_Note",
+  "folder": "Marcus_5_Note",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

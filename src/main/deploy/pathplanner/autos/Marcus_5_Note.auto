@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3616137989993475,
-      "y": 5.528153544613917
+      "x": 1.35,
+      "y": 5.55
     },
     "rotation": 0
   },
@@ -20,7 +20,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.25
+            "waitTime": 0.6
           }
         },
         {
@@ -36,7 +36,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.3
+                  "waitTime": 0.4
                 }
               }
             ]
@@ -52,6 +52,37 @@
           "type": "path",
           "data": {
             "pathName": "New_4N_2"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.4
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M_5N_1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M_5N_2"
           }
         },
         {
@@ -113,7 +144,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New_4N_4"
+            "pathName": "M_5N_3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M_5N_4"
           }
         },
         {
