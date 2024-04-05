@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7,
-        "y": 6.9284495538121105
+        "x": 8.17,
+        "y": 7.42
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.692263557960231,
-        "y": 6.9284495538121105
+        "x": 6.70749524847974,
+        "y": 7.005813974209802
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.36,
-        "y": 5.55
+        "x": 3.06,
+        "y": 7.08
       },
       "prevControl": {
-        "x": 1.3832093261193077,
-        "y": 5.55
+        "x": 4.974532231571479,
+        "y": 7.3152716558005615
       },
       "nextControl": null,
       "isLocked": false,
@@ -50,20 +50,20 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.7,
-    "maxAcceleration": 2.75,
+    "maxVelocity": 4.25,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 1.123302714075519,
+    "rotation": 27.511777404067153,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Blue_Center_5_Note",
+  "folder": "Amp Shoot 4 Note",
   "previewStartingState": {
-    "rotation": 35.16977585063168,
+    "rotation": 20.106685154760626,
     "velocity": 0
   },
   "useDefaultConstraints": false

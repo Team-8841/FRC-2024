@@ -3,57 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.55,
-        "y": 5.55
+        "x": 8.23,
+        "y": 3.8
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5472190527086271,
-        "y": 5.544391351981427
+        "x": 6.583712175843435,
+        "y": 3.8288033035748024
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.1,
-        "y": 3.8
+        "x": 3.1951505624246046,
+        "y": 5.551362870733224
       },
       "prevControl": {
-        "x": 2.102429414382376,
-        "y": 3.790624612906355
-      },
-      "nextControl": {
-        "x": 2.0975705856176243,
-        "y": 3.8093753870936444
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.83,
-        "y": 3.8
-      },
-      "prevControl": {
-        "x": 2.8179234993120077,
-        "y": 3.7925300359513567
-      },
-      "nextControl": {
-        "x": 2.8420765006879924,
-        "y": 3.807469964048643
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.55,
-        "y": 5.35
-      },
-      "prevControl": {
-        "x": 1.5399462470167242,
-        "y": 5.342099110415486
+        "x": 5.067369536048707,
+        "y": 4.112384651336187
       },
       "nextControl": null,
       "isLocked": false,
@@ -65,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.5499999999999999,
+      "waypointRelativePos": 0,
       "command": {
         "type": "sequential",
         "data": {
@@ -82,7 +50,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.6,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -93,7 +61,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Red_Four_Note_Paths",
+  "folder": "Blue_Center_5_Note",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

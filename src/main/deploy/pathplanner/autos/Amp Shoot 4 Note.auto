@@ -18,6 +18,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
@@ -37,9 +43,27 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "ShooterDown"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterPodium"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Amp_Speaker_To_Amp_Note"
+            "pathName": "Amp Shoot 4N-1"
           }
         },
         {
@@ -53,18 +77,37 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "ShooterPodium"
+                        "name": "ShootyNote"
                       }
                     },
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.5
+                        "waitTime": 0.3
                       }
                     }
                   ]
                 }
-              },
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Shoot 4N-2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Shoot 4N-3"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
               {
                 "type": "race",
                 "data": {
@@ -78,82 +121,44 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.4
+                        "waitTime": 0.3
                       }
                     }
                   ]
                 }
-              },
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Shoot 4N-4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Shoot 4N-5"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "ShooterStop"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp_Note_To_Center_Line"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center_Line_To_Long_Shot"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "race",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "ShooterPodium"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.5
-                      }
-                    }
-                  ]
+                  "name": "ShootyNote"
                 }
               },
               {
-                "type": "race",
+                "type": "wait",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "ShootyNote"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.4
-                      }
-                    }
-                  ]
+                  "waitTime": 0.4
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Long_Shot_To_Center_Line"
           }
         }
       ]

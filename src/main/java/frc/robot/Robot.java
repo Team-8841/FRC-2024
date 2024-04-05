@@ -119,7 +119,7 @@ public class Robot extends LoggedRobot {
     }
 
     this.compressor.ifPresent(compressor -> {
-      if (DriverStation.isAutonomousEnabled() || this.copilotController.getHID().getRawButton(1)) {
+      if (DriverStation.isAutonomousEnabled() || this.copilotController.getHID().getRawButton(1) || this.driveController.getHID().getLeftBumper()) {
         compressor.disable();
       } else {
         compressor.enableDigital();

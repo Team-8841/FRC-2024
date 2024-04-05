@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3602395625843886,
-      "y": 5.537433881885308
+      "x": 1.3616137989993475,
+      "y": 5.528153544613917
     },
     "rotation": 0
   },
@@ -20,7 +20,38 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.6
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.3
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp_5N_1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp_5N_2"
           }
         },
         {
@@ -57,7 +88,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1"
+            "pathName": "Amp_5N_3"
           }
         },
         {
@@ -82,31 +113,57 @@
         {
           "type": "path",
           "data": {
-            "pathName": "2"
+            "pathName": "Amp_5N_4"
           }
         },
         {
-          "type": "wait",
+          "type": "race",
           "data": {
-            "waitTime": 0.2
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.3
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "3"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
+            "pathName": "Amp_5N_5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "4"
+            "pathName": "Amp_5N_6"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.3
+                }
+              }
+            ]
           }
         }
       ]

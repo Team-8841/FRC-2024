@@ -3,57 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.55,
-        "y": 5.55
+        "x": 2.65,
+        "y": 4.1
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5472190527086271,
-        "y": 5.544391351981427
+        "x": 2.644917409441928,
+        "y": 4.096911767256649
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.1,
-        "y": 3.8
+        "x": 1.3693502410391163,
+        "y": 5.528153544613917
       },
       "prevControl": {
-        "x": 2.102429414382376,
-        "y": 3.790624612906355
-      },
-      "nextControl": {
-        "x": 2.0975705856176243,
-        "y": 3.8093753870936444
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.83,
-        "y": 3.8
-      },
-      "prevControl": {
-        "x": 2.8179234993120077,
-        "y": 3.7925300359513567
-      },
-      "nextControl": {
-        "x": 2.8420765006879924,
-        "y": 3.807469964048643
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.55,
-        "y": 5.35
-      },
-      "prevControl": {
-        "x": 1.5399462470167242,
-        "y": 5.342099110415486
+        "x": 1.3693502410391163,
+        "y": 5.5436264286934565
       },
       "nextControl": null,
       "isLocked": false,
@@ -65,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.5499999999999999,
+      "waypointRelativePos": 0,
       "command": {
         "type": "sequential",
         "data": {
@@ -83,7 +51,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 1.6,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -93,7 +61,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Red_Four_Note_Paths",
+  "folder": "Amp_5_Note",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

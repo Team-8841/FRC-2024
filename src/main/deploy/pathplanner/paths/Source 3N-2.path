@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.5,
-        "y": 0.65
+        "x": 8.25,
+        "y": 0.6
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.507736442039768,
-        "y": 0.65
+        "x": 6.694975150006427,
+        "y": 0.6386822101988451
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.895168834303993,
-        "y": 1.4
+        "x": 2.3209326119307057,
+        "y": 3.6404616869102777
       },
       "prevControl": {
-        "x": 5.868091287164802,
-        "y": 1.3999999999999995
+        "x": 2.92255228581336,
+        "y": 2.289201775465573
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,21 +32,21 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": -38.3333401090987,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Source_Grab_N_Go",
+  "folder": "Source Shoot 3 Note",
   "previewStartingState": {
-    "rotation": 0.031093733787355415,
+    "rotation": 0.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

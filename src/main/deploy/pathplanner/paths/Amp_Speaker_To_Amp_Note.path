@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7349619937780567,
-        "y": 6.68861985057927
+        "x": 1.2610400524823502,
+        "y": 6.77372071301673
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.7272255517382878,
-        "y": 6.680883408539501
+        "x": 1.253303610442581,
+        "y": 6.76598427097696
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.6071809674021598,
-        "y": 6.9826046480904935
+        "x": 4.549027919384183,
+        "y": 7.183752141124488
       },
       "prevControl": {
-        "x": 2.5914486178832044,
-        "y": 6.9826811571303224
-      },
-      "nextControl": {
-        "x": 2.622913316921115,
-        "y": 6.982528139050665
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 3.264778540782526,
-        "y": 7.052232626448415
-      },
-      "prevControl": {
-        "x": 3.295854041661311,
-        "y": 7.009643940709771
+        "x": 4.580103420262969,
+        "y": 7.141163455385844
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.85,
+      "waypointRelativePos": 0.45,
       "rotationDegrees": 0,
       "rotateFast": false
     }
@@ -55,7 +39,7 @@
   "eventMarkers": [
     {
       "name": "intake on",
-      "waypointRelativePos": 0.45,
+      "waypointRelativePos": 0.25,
       "command": {
         "type": "sequential",
         "data": {
@@ -72,7 +56,7 @@
     },
     {
       "name": "drop shooter",
-      "waypointRelativePos": 0.45,
+      "waypointRelativePos": 0.25,
       "command": {
         "type": "sequential",
         "data": {
@@ -100,9 +84,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp_Shoot_Grab_N_Go_Paths",
+  "folder": "Amp Shoot 4 Note",
   "previewStartingState": {
-    "rotation": 59.74356283647072,
+    "rotation": 33.69006752597983,
     "velocity": 0
   },
   "useDefaultConstraints": false

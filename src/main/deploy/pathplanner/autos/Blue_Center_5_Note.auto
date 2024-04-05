@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.758171319897364,
-      "y": 4.390896564767872
+      "x": 1.35,
+      "y": 5.55
     },
-    "rotation": -59.53445508054016
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -20,7 +20,38 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.6
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.3
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M_5N_1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M_5N_2"
           }
         },
         {
@@ -45,7 +76,32 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speaker_To_Center_Source_Note"
+            "pathName": "M_5N_3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M_5N_4"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.6
+                }
+              }
+            ]
           }
         },
         {
@@ -55,9 +111,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "ShooterPodium"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Center_Source_Note_To_Stage_Line"
+            "pathName": "New_4N_5"
           }
         },
         {
@@ -73,7 +135,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.4
+                  "waitTime": 0.6
                 }
               }
             ]
@@ -82,13 +144,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Stage_Line_To_2nd_Note"
+            "pathName": "M_5N_6"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2nd_Note_To_Stage_Line"
+            "pathName": "M_5N_7"
           }
         },
         {

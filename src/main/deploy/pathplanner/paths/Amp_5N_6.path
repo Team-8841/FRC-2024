@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7,
-        "y": 6.9284495538121105
+        "x": 8.09,
+        "y": 5.86
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.692263557960231,
-        "y": 6.9284495538121105
+        "x": 6.475401987286158,
+        "y": 6.673146966495922
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.36,
-        "y": 5.55
+        "x": 2.9166386489924103,
+        "y": 5.528153544610108
       },
       "prevControl": {
-        "x": 1.3832093261193077,
-        "y": 5.55
+        "x": 4.146732933315683,
+        "y": 6.603518988138002
       },
       "nextControl": null,
       "isLocked": false,
@@ -35,7 +35,7 @@
       "name": "New Event Marker",
       "waypointRelativePos": 0.0,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
@@ -50,20 +50,20 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.7,
-    "maxAcceleration": 2.75,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 1.123302714075519,
+    "rotation": -1.193489423982132,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Blue_Center_5_Note",
+  "folder": "Amp_5_Note",
   "previewStartingState": {
-    "rotation": 35.16977585063168,
+    "rotation": -12.346754829887393,
     "velocity": 0
   },
   "useDefaultConstraints": false

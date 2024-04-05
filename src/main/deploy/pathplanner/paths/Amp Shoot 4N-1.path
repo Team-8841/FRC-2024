@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7,
-        "y": 6.9284495538121105
+        "x": 0.7210293813727732,
+        "y": 6.711426618536795
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.692263557960231,
-        "y": 6.9284495538121105
+        "x": 1.5008697557151895,
+        "y": 7.570574243112939
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.36,
-        "y": 5.55
+        "x": 3.06275860254803,
+        "y": 7.083858499028719
       },
       "prevControl": {
-        "x": 1.3832093261193077,
-        "y": 5.55
+        "x": 2.05015714053879,
+        "y": 6.263115538391975
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0.25,
       "command": {
         "type": "sequential",
         "data": {
@@ -50,20 +50,20 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.7,
-    "maxAcceleration": 2.75,
+    "maxVelocity": 4.25,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 1.123302714075519,
+    "rotation": 31.670693171598355,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Blue_Center_5_Note",
+  "folder": "Amp Shoot 4 Note",
   "previewStartingState": {
-    "rotation": 35.16977585063168,
+    "rotation": 59.703551823761494,
     "velocity": 0
   },
   "useDefaultConstraints": false

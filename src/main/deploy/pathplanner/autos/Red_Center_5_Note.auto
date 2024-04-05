@@ -20,7 +20,38 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.3
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M_5N_1_red"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M_5N_2_red"
           }
         },
         {
@@ -45,32 +76,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Blue_Speaker_To_Center_Note"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "ShootyNote"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.5
-                }
-              }
-            ]
+            "pathName": "M_5N_3_red"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Blue_Speaker_To_Podium_Note"
+            "pathName": "M_5N_4_red"
           }
         },
         {
@@ -86,7 +98,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.4
+                  "waitTime": 0.6
                 }
               }
             ]
@@ -95,7 +107,19 @@
         {
           "type": "named",
           "data": {
-            "name": "ShooterStop"
+            "name": "ShooterDown"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterPodium"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "m_5N_5_red"
           }
         },
         {
@@ -105,13 +129,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "ShooterDown"
+                  "name": "ShootyNote"
                 }
               },
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.0
+                  "waitTime": 0.6
                 }
               }
             ]
@@ -120,13 +144,32 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speaker_To_Center_Field"
+            "pathName": "M_5N_6_red"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Return_From_Center"
+            "pathName": "M_5N_7_red"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootyNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.4
+                }
+              }
+            ]
           }
         }
       ]

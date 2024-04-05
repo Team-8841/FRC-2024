@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 2.65,
-        "y": 7.15
+        "y": 3.85
       },
       "prevControl": null,
       "nextControl": {
         "x": 2.644917409441928,
-        "y": 7.14691176725665
+        "y": 3.8469117672566493
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3693502410391163,
-        "y": 5.528153544613917
+        "x": 1.36,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 1.3693502410391163,
-        "y": 5.5436264286934565
+        "x": 1.36,
+        "y": 5.565472884079539
       },
       "nextControl": null,
       "isLocked": false,
@@ -50,8 +50,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.6,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 1.7,
+    "maxAcceleration": 2.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -61,7 +61,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Marcus_5_Note",
+  "folder": "Blue_Center_5_Note",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
