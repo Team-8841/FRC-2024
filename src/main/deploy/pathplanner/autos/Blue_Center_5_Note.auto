@@ -129,6 +129,25 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "IntakeNote"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
                   "name": "ShootyNote"
                 }
               },
@@ -145,6 +164,12 @@
           "type": "path",
           "data": {
             "pathName": "M_5N_6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterUp"
           }
         },
         {

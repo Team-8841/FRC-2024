@@ -148,6 +148,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "ShooterUp"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "M_5N_7_red"

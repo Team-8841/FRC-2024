@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -193,9 +194,11 @@ public class RobotContainer {
     // });
 
     this.led.setDefaultCommand(this.led.shooterIntakeFlash(this.shooter, this.intake));
+    
   }
 
   private void configureBindings() {
+    
     // Intake bindings
     if (Constants.isCompRobot) {
 
